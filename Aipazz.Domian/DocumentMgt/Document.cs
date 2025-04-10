@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aipazz.Domian
+namespace Aipazz.Domian.DocumentMgt
 {
     public class Document
     {
-        public string ID { get; set; } = string.Empty;
-        public string Title { get; set; } = string.Empty;
+        public string id { get; set; } =string.Empty;
+        public string name { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
     }
 }

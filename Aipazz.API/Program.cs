@@ -3,12 +3,16 @@ using AIpazz.Infrastructure.Billing;
 using Aipazz.Application.Billing.TimeEntries.Queries;
 using AIpazz.Infrastructure;
 using Microsoft.Azure.Cosmos;
+using Aipazz.Application.DocumentMGT.Interfaces;
+using AIpazz.Infrastructure.Documentmgt;
+using Aipazz.Application.DocumentMGT.documentmgt.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllTimeEntriesQuery).Assembly));
+
 
 // Register Cosmos DB connection
 builder.Services.AddSingleton<CosmosClient>(serviceProvider =>
@@ -45,8 +49,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IDocumentRepository,DocumentRepository>();
-builder.Services.AddScoped<IDocumentService, DocumentService>();
+
+builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
+
+
 
 var app = builder.Build();
 
