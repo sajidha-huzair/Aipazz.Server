@@ -1,0 +1,18 @@
+﻿using Aipazz.Domain.Billing;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Aipazz.Application.Billing.Interfaces
+{
+    public interface ITimeEntryRepository
+    {
+        Task<List<TimeEntry>> GetAllTimeEntries();
+        Task<TimeEntry> GetTimeEntryById(string id, int matterId);
+        Task AddTimeEntry(TimeEntry timeEntry);
+        Task UpdateTimeEntry(TimeEntry timeEntry);
+        Task DeleteTimeEntry(string id, int matterId);
+    }
+}
