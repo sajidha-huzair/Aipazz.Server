@@ -1,6 +1,8 @@
 ﻿using Aipazz.Application.Billing.Interfaces;
 using Aipazz.Domain.Billing;
+using Aipazz.Domian;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,10 +15,11 @@ namespace AIpazz.Infrastructure.Billing
         private readonly Microsoft.Azure.Cosmos.Container _container;
 
 
-        public TimeEntryRepository(CosmosClient cosmosClient, string databaseName, string containerName)
+        public TimeEntryRepository(CosmosClient client, IOptions<CosmosDbOptions> options)
         {
-            var database = cosmosClient.GetDatabase(databaseName);
-            _container = database.GetContainer(containerName);
+            var db = client.GetDatabase(options.Value.DatabaseName);
+            var containerName = options.Value.Containers["TimeEntry"];
+            _container = db.GetContainer(containerName);
         }
 
         // Implement GetAllTimeEntries
