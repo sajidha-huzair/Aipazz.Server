@@ -3,6 +3,8 @@ using AIpazz.Infrastructure.Billing;
 using Aipazz.Application.Billing.TimeEntries.Queries;
 using AIpazz.Infrastructure;
 using Microsoft.Azure.Cosmos;
+using Aipazz.Domian;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,19 +12,22 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllTimeEntriesQuery).Assembly));
 
-// Register Cosmos DB connection
-builder.Services.AddSingleton<CosmosClient>(serviceProvider =>
-{
-    var configuration = builder.Configuration;
-    string? accountEndpoint = configuration["CosmosDb:AccountEndpoint"];
-    string? authKey = configuration["CosmosDb:AuthKey"];
+// Bind CosmosDbOptions
+builder.Services.Configure<CosmosDbOptions>(
+    builder.Configuration.GetSection("CosmosDb")
+);
 
-    if (string.IsNullOrEmpty(accountEndpoint) || string.IsNullOrEmpty(authKey))
+// Register CosmosClient
+builder.Services.AddSingleton<CosmosClient>(sp =>
+{
+    var options = sp.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
+
+    if (string.IsNullOrEmpty(options.AccountEndpoint) || string.IsNullOrEmpty(options.AuthKey))
     {
         throw new InvalidOperationException("Cosmos DB connection details are not configured properly.");
     }
 
-    return new CosmosClient(accountEndpoint, authKey);
+    return new CosmosClient(options.AccountEndpoint, options.AuthKey);
 });
 
 builder.Services.AddBillingServices(builder.Configuration);
