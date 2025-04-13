@@ -1,0 +1,64 @@
+name: Build and deploy ASP.Net Core app to Azure Web App - Aipazz-dev
+
+on:
+  push:
+    branches:
+      - Dev
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+
+      - name: Build with dotnet
+        run: dotnet build ./Aipazz.API/Aipazz.API.csproj --configuration Release
+
+      - name: dotnet publish
+        run: dotnet publish ./Aipazz.API/Aipazz.API.csproj --configuration Release --output ${{ runner.temp }}/myapp
+          
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: .net-app
+          path: ${{ runner.temp }}/myapp
+
+  deploy:
+    runs-on: windows-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: .net-app
+      
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2E445D47E1454BF1999D384D6A50DCCA }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_9B2F2E3C5107471081694B57981DE6BD }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F6446E2369E9481FA7A3C75B949EE51D }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: 'Aipazz-dev'
+          slot-name: 'Production'
+          package: .
