@@ -2,8 +2,10 @@
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Configuration;
+using Aipazz.Domian;
 
 namespace AIpazz.Infrastructure.Billing
 {
@@ -16,19 +18,9 @@ namespace AIpazz.Infrastructure.Billing
             {
                 // Get the CosmosClient instance from the DI container
                 var cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
+                var options = serviceProvider.GetRequiredService<IOptions<CosmosDbOptions>>();
 
-                // Retrieve configuration values for Cosmos DB
-                string? databaseName = configuration["CosmosDb:DatabaseName"];
-                string? containerName = configuration["CosmosDb:ContainerName"];
-
-                // Check if database name or container name is missing in the configuration
-                if (string.IsNullOrEmpty(databaseName) || string.IsNullOrEmpty(containerName))
-                {
-                    throw new InvalidOperationException("Cosmos DB database or container name is not configured properly.");
-                }
-
-                // Return the repository instance with the required CosmosClient, databaseName, and containerName
-                return new TimeEntryRepository(cosmosClient, databaseName, containerName);
+                return new TimeEntryRepository(cosmosClient, options);
             });
 
             // add additional repositories or services for Billing here if needed.
