@@ -5,6 +5,9 @@ using AIpazz.Infrastructure;
 using Microsoft.Azure.Cosmos;
 using Aipazz.Domian;
 using Microsoft.Extensions.Options;
+using Aipazz.Application.DocumentMGT.Interfaces;
+using AIpazz.Infrastructure.Documentmgt;
+using Aipazz.Application.DocumentMGT.documentmgt.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,8 +53,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IDocumentRepository,DocumentRepository>();
-builder.Services.AddScoped<IDocumentService, DocumentService>();
+
+builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
+
+
 
 var app = builder.Build();
 
