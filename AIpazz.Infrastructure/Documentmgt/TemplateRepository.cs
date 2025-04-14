@@ -1,32 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Aipazz.Application.DocumentMGT.Interfaces;
 using Aipazz.Domian.DocumentMgt;
 
 namespace AIpazz.Infrastructure.Documentmgt
 {
-    public class DocumentRepository : IdocumentRepository
+    public class TemplateRepository : ITemplateRepository
     {
-        public Task<List<Document>> GetAllDocuments()
+        public Task<List<Template>> GetAllTemplates()
         {
-            var documents = new List<Document>
+           var templates =  new List<Template>
             {
-                new Document
+                new Template
                 {
                     id = Guid.NewGuid().ToString(),
-                    name = "Sample DDDD",
+                    Name = "Sample Template 1",
+                    Category = "Category1",
                     Url = "/doc.pdf"
                 },
-                new Document
+                new Template
                 {
                     id = Guid.NewGuid().ToString(),
-                    name = "Sample Document 2",
+                    Name = "Sample Template 2",
+                    Category = "Category2",
                     Url = "/doc.pdf"
                 }
             };
-
-            return Task.FromResult(documents);
+            return Task.FromResult(templates);
         }
     }
 }
