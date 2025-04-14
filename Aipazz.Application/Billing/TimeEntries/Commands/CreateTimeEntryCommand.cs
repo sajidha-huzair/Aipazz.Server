@@ -8,6 +8,6 @@ using Aipazz.Domain.Billing;
 
 namespace Aipazz.Application.Billing.TimeEntries.Commands
 {
-    public record CreateTimeEntryCommand(string Id, int MatterId, string Description , TimeSpan Duration, DateTime Date, decimal RatePerHour) : IRequest<TimeEntry>;
+    public record CreateTimeEntryCommand(int MatterId, string Description , TimeSpan Duration, DateTime Date, decimal RatePerHour) : IRequest<TimeEntry>;
     
 }
