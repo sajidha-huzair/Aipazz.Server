@@ -55,6 +55,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
+builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
 
 
 
@@ -68,6 +69,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAllOrigins");
 
 app.UseAuthorization();
 
