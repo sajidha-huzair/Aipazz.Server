@@ -11,9 +11,9 @@ namespace Aipazz.Application.Billing.TimeEntries.Queries
     public class GetTimeEntryByIdQuery : IRequest<TimeEntry>
     {
         public string Id { get; set; }
-        public int MatterId { get; set; }
+        public string MatterId { get; set; }
 
-        public GetTimeEntryByIdQuery(string id, int matterId)
+        public GetTimeEntryByIdQuery(string id, string matterId)
         {
             Id = id;
             MatterId = matterId;
