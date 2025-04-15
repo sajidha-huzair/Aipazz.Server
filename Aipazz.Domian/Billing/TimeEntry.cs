@@ -14,7 +14,7 @@ namespace Aipazz.Domain.Billing
         public TimeSpan Duration { get; set; }
 
         // Foreign key reference to Matter table
-        public int matterId { get; set; }
+        public string matterId { get; set; } = string.Empty;
 
         // Description of the work done
         public string Description { get; set; } = string.Empty;
