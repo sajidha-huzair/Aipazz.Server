@@ -10,6 +10,6 @@ namespace Aipazz.Application.Billing.TimeEntries.Commands
     public class DeleteTimeEntryCommand : IRequest<bool>
     {
         public string Id { get; set; } = string.Empty;
-        public int MatterId { get; set; }
+        public string MatterId { get; set; } = string.Empty;
     }
 }

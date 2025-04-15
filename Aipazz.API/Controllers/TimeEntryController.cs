@@ -32,7 +32,7 @@ namespace Aipazz.API.Controllers
 
         // GET: api/TimeEntry/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id, int matterId)
+        public async Task<IActionResult> GetById(string id, string matterId)
         {
             var result = await _mediator.Send(new GetTimeEntryByIdQuery(id, matterId));
             if (result == null) return NotFound();
@@ -59,7 +59,7 @@ namespace Aipazz.API.Controllers
 
         // DELETE: api/TimeEntry/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id, int matterId)
+        public async Task<IActionResult> Delete(string id, string matterId)
         {
             var result = await _mediator.Send(new DeleteTimeEntryCommand { Id = id, MatterId = matterId });
             if (!result) return NotFound();
