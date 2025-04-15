@@ -1,4 +1,4 @@
-﻿using Aipazz.Domain.Billing;
+﻿using Aipazz.Domian.Billing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
