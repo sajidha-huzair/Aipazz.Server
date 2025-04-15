@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aipazz.Domain.Billing
+namespace Aipazz.Domian.Billing
 {
     public class TimeEntry
     {

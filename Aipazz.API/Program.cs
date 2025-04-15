@@ -1,13 +1,10 @@
-using Aipazz.Application;
 using AIpazz.Infrastructure.Billing;
 using Aipazz.Application.Billing.TimeEntries.Queries;
-using AIpazz.Infrastructure;
 using Microsoft.Azure.Cosmos;
 using Aipazz.Domian;
 using Microsoft.Extensions.Options;
 using Aipazz.Application.DocumentMGT.Interfaces;
 using AIpazz.Infrastructure.Documentmgt;
-using Aipazz.Application.DocumentMGT.documentmgt.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 

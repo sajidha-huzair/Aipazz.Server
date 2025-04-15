@@ -1,5 +1,5 @@
 ﻿using Aipazz.Application.Billing.TimeEntries.Queries;
-using Aipazz.Domain.Billing;
+using Aipazz.Domian.Billing;
 using Aipazz.Application.Billing.Interfaces;
 using MediatR;
 using System;
