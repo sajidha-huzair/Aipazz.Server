@@ -1,5 +1,5 @@
 ﻿using Aipazz.Application.Billing.Interfaces;
-using Aipazz.Domain.Billing;
+using Aipazz.Domian.Billing;
 using Aipazz.Domian;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
