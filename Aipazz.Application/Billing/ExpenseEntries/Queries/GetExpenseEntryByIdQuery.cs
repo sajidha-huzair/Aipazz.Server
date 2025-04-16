@@ -6,14 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aipazz.Application.Billing.TimeEntries.Queries
+namespace Aipazz.Application.Billing.ExpenseEntries.Queries
 {
-    public class GetTimeEntryByIdQuery : IRequest<TimeEntry>
+    public class GetExpenseEntryByIdQuery: IRequest<ExpenseEntry>
     {
         public string Id { get; set; }
         public string MatterId { get; set; }
 
-        public GetTimeEntryByIdQuery(string id, string matterId)
+        public GetExpenseEntryByIdQuery(string id, string matterId)
         {
             Id = id;
             MatterId = matterId;

@@ -1,5 +1,5 @@
 ﻿using Aipazz.Application.Billing.Interfaces;
-using Aipazz.Domain.Billing;
+using Aipazz.Domian.Billing;
 using Aipazz.Domian;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
@@ -46,7 +46,7 @@ namespace AIpazz.Infrastructure.Billing
         }
 
         // Implement GetTimeEntryById
-        public async Task<TimeEntry> GetTimeEntryById(string id, int matterId)
+        public async Task<TimeEntry> GetTimeEntryById(string id, string matterId)
         {
             try
             {
@@ -92,7 +92,7 @@ namespace AIpazz.Infrastructure.Billing
         }
 
         // Implement DeleteTimeEntry
-        public async Task DeleteTimeEntry(string id, int matterId)
+        public async Task DeleteTimeEntry(string id, string matterId)
         {
             try
             {

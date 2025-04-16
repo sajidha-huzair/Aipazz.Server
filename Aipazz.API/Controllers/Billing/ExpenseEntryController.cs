@@ -1,23 +1,20 @@
-﻿using Aipazz.Application.Billing.Interfaces;
-using Aipazz.Application.Billing.TimeEntries.Commands;
-using Aipazz.Application.Billing.TimeEntries.Queries;
-using Aipazz.Domain.Billing;
+﻿using Aipazz.Application.Billing.ExpenseEntries.Commands;
+using Aipazz.Application.Billing.ExpenseEntries.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace Aipazz.API.Controllers
+namespace Aipazz.API.Controllers.Billing
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TimeEntryController : ControllerBase
+    public class ExpenseEntryController : ControllerBase
     {
-       
+
         private readonly IMediator _mediator;  //Declare IMediator
 
         // Inject MediatR via Constructor
-        public TimeEntryController(IMediator mediator)
+        public ExpenseEntryController(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -26,22 +23,22 @@ namespace Aipazz.API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _mediator.Send(new GetAllTimeEntriesQuery());
+            var result = await _mediator.Send(new GetAllExpenseEntriesQuery());
             return Ok(result);
         }
 
         // GET: api/TimeEntry/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id, int matterId)
+        public async Task<IActionResult> GetById(string id, string matterId)
         {
-            var result = await _mediator.Send(new GetTimeEntryByIdQuery(id, matterId));
+            var result = await _mediator.Send(new GetExpenseEntryByIdQuery(id, matterId));
             if (result == null) return NotFound();
             return Ok(result);
         }
 
         // POST: api/TimeEntry
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateTimeEntryCommand command)
+        public async Task<IActionResult> Create([FromBody] CreateExpenseEntryCommand command)
         {
             if (command == null) return BadRequest("Invalid request.");
             var result = await _mediator.Send(command);
@@ -50,7 +47,7 @@ namespace Aipazz.API.Controllers
 
         // PUT: api/TimeEntry/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] UpdateTimeEntryCommand command)
+        public async Task<IActionResult> Update([FromBody] UpdateExpenseEntryCommand command)
         {
             if (command == null) return BadRequest("Invalid request.");
             var result = await _mediator.Send(command);
@@ -59,9 +56,9 @@ namespace Aipazz.API.Controllers
 
         // DELETE: api/TimeEntry/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id, int matterId)
+        public async Task<IActionResult> Delete(string id, string matterId)
         {
-            var result = await _mediator.Send(new DeleteTimeEntryCommand { Id = id, MatterId = matterId });
+            var result = await _mediator.Send(new DeleteExpenseEntryCommand { Id = id, MatterId = matterId });
             if (!result) return NotFound();
             return NoContent();
         }

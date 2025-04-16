@@ -23,6 +23,15 @@ namespace AIpazz.Infrastructure.Billing
                 return new TimeEntryRepository(cosmosClient, options);
             });
 
+            services.AddSingleton<IExpenseEntryRepository, ExpenseEntryRepository>(serviceProvider =>
+            {
+                // Get the CosmosClient instance from the DI container
+                var cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
+                var options = serviceProvider.GetRequiredService<IOptions<CosmosDbOptions>>();
+
+                return new ExpenseEntryRepository(cosmosClient, options);
+            });
+
             // add additional repositories or services for Billing here if needed.
 
             return services;  
