@@ -8,6 +8,8 @@ using Microsoft.Extensions.Options;
 using Aipazz.Application.DocumentMGT.Interfaces;
 using AIpazz.Infrastructure.Documentmgt;
 using Aipazz.Application.DocumentMGT.documentmgt.Queries;
+using AIpazz.Infrastructure.Documentmgt.Services;
+using AIpazz.Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +36,8 @@ builder.Services.AddSingleton<CosmosClient>(sp =>
 });
 
 builder.Services.AddBillingServices(builder.Configuration);
+builder.Services.AddInfrastructureServices();
+
 
 
 // Register CORS Policy
