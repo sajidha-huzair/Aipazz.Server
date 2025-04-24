@@ -7,6 +7,7 @@ using Aipazz.Application.DocumentMGT.Interfaces;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentFormat.OpenXml;
+using HtmlToOpenXml;
 
 namespace AIpazz.Infrastructure.Documentmgt.Services
 {
@@ -18,17 +19,22 @@ namespace AIpazz.Infrastructure.Documentmgt.Services
             using (var doc = WordprocessingDocument.Create(mem, WordprocessingDocumentType.Document))
             {
                 var mainPart = doc.AddMainDocumentPart();
-                mainPart.Document = new Document(new Body());
+                mainPart.Document = new Document();
+                var body = new Body();
 
-                var altChunkId = "AltChunkId1";
-                var chunk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.Html, altChunkId);
-                using var htmlStream = new MemoryStream(Encoding.UTF8.GetBytes(htmlContent));
-                chunk.FeedData(htmlStream);
+                // HtmlToOpenXml magic happens here 👇
+                var converter = new HtmlConverter(mainPart);
+                var paragraphs = converter.Parse(htmlContent); // returns OpenXML elements
 
-                var altChunk = new AltChunk { Id = altChunkId };
-                mainPart.Document.Body.Append(altChunk);
+                foreach (var para in paragraphs)
+                {
+                    body.Append(para);
+                }
+
+                mainPart.Document.Append(body);
                 mainPart.Document.Save();
             }
+
             return mem.ToArray();
         }
     }
