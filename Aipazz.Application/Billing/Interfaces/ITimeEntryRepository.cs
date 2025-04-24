@@ -1,4 +1,4 @@
-﻿using Aipazz.Domain.Billing;
+﻿using Aipazz.Domian.Billing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +10,9 @@ namespace Aipazz.Application.Billing.Interfaces
     public interface ITimeEntryRepository
     {
         Task<List<TimeEntry>> GetAllTimeEntries();
-        Task<TimeEntry> GetTimeEntryById(string id, int matterId);
+        Task<TimeEntry> GetTimeEntryById(string id, string matterId);
         Task AddTimeEntry(TimeEntry timeEntry);
         Task UpdateTimeEntry(TimeEntry timeEntry);
-        Task DeleteTimeEntry(string id, int matterId);
+        Task DeleteTimeEntry(string id, string matterId);
     }
 }
