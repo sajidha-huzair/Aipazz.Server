@@ -1,5 +1,6 @@
 ﻿using Aipazz.Application.DocumentMGT.documentmgt.Queries;
 using Aipazz.Application.DocumentMGT.TemplateMgt.Handlers;
+using Aipazz.Application.DocumentMGT.TemplateMgt.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,7 @@ namespace Aipazz.API.Controllers.DocumentMGt
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _mediator.Send(new GetAllDcoumentsQuery());
+            var result = await _mediator.Send(new GetAllTemplatesQuery());
             return Ok(result);
         }
 
