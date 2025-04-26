@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <Folder Include="DocumentMGT\documentmgt\Commands\" />
-    <Folder Include="DocumentMGT\TemplateMgt\Commands\" />
   </ItemGroup>
 
 </Project>

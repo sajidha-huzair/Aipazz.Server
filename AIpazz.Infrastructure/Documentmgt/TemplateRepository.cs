@@ -23,6 +23,17 @@ namespace AIpazz.Infrastructure.Documentmgt
             _container = db.GetContainer(containerName);
 
         }
+
+        public async Task CreateTemplate(Template template)
+        {
+            await _container.CreateItemAsync(template, new PartitionKey(template.id));
+        }
+
+        public async Task DeleteTemplate(string id)
+        {
+            await _container.DeleteItemAsync<Template>(id,new PartitionKey(id));
+        }
+
         public async Task<List<Template>> GetAllTemplates()
         {
             var query = new QueryDefinition("SELECT * FROM c");
@@ -41,6 +52,24 @@ namespace AIpazz.Infrastructure.Documentmgt
                 }
             }
             return templates;
+        }
+
+        public async Task<Template?> GetTemplateById(string id)
+        {
+            try {
+                ItemResponse<Template> response = await _container.ReadItemAsync<Template>(id, new PartitionKey(id));
+                return response.Resource;
+
+            
+            }
+            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound ) {
+                return null;
+            }
+        }
+
+        public async Task UpdateTemplate(Template template)
+        {
+            await _container.UpsertItemAsync(template, new PartitionKey(template.id)); ;
         }
     }
 }
