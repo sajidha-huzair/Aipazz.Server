@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Aipazz.Application.Billing.TimeEntries.Commands;
-using Aipazz.Application.Billing.Interfaces;
+using Aipazz.Application.Interfaces;
 
 namespace Aipazz.Application.Billing.TimeEntries.Handlers
 {

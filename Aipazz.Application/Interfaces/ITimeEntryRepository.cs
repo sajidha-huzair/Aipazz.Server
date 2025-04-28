@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aipazz.Application.Billing.Interfaces
+namespace Aipazz.Application.Interfaces
 {
     public interface ITimeEntryRepository
     {
