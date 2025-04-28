@@ -1,9 +1,11 @@
 using AIpazz.Infrastructure.Billing;
 using Aipazz.Application.Billing.TimeEntries.Queries;
+using Aipazz.Application.Calender.Interface;
 using Microsoft.Azure.Cosmos;
 using Aipazz.Domian;
 using Microsoft.Extensions.Options;
 using Aipazz.Application.DocumentMGT.Interfaces;
+using AIpazz.Infrastructure.Calender;
 using AIpazz.Infrastructure.Documentmgt;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,6 +55,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
+builder.Services.AddScoped<IclientmeetingRepository, clientmeetingrepository>();
 
 
 
