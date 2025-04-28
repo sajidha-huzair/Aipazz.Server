@@ -1,4 +1,7 @@
-﻿using Aipazz.Application.DocumentMGT.documentmgt.Queries;
+﻿
+using Aipazz.Application.DocumentMGT.documentmgt.Commands;
+using Aipazz.Application.DocumentMGT.documentmgt.Queries;
+using Aipazz.Domian.DocumentMgt;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,5 +25,22 @@ namespace Aipazz.API.Controllers.DocumentMGt
             var result = await _mediatR.Send(new GetAllDcoumentsQuery());
             return Ok(result);
         }
+        [HttpPost("generate")]
+        public async Task<IActionResult> GenerateWord([FromBody] HtmlInput input)
+        {
+            var fileBytes = await _mediatR.Send(new GenerateWordFromHtmlQuery(input.Html));
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Generated.docx");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SaveDocument([FromBody] SaveDocumentCommand command)
+        {
+            var savedFileName = await _mediatR.Send(command);
+            return Ok(new { Message = "Document saved successfully", FileName = savedFileName });
+        }
+
+
     }
+
+
 }

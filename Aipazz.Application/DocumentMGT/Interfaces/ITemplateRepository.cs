@@ -9,6 +9,10 @@ namespace Aipazz.Application.DocumentMGT.Interfaces
 {
     public interface ITemplateRepository
     {
-        Task<List<Template>> GetAllTemplates(); 
+        Task<List<Template>> GetAllTemplates();
+        Task<Template?> GetTemplateById(string id);
+        Task CreateTemplate(Template template);
+        Task UpdateTemplate(Template template);
+        Task DeleteTemplate(string id);
     }
 }
