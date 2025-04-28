@@ -14,8 +14,4 @@
     <ProjectReference Include="..\Aipazz.Domian\Aipazz.Domian.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DocumentMGT\documentmgt\Commands\" />
-  </ItemGroup>
-
 </Project>
