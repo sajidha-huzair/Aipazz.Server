@@ -1,4 +1,4 @@
-﻿using Aipazz.Domain.Billing;
+﻿using Aipazz.Domian.Billing;
 using MediatR;
 using System.Collections.Generic;
 using System.Threading;

@@ -1,8 +1,17 @@
-using Aipazz.Application;
 using AIpazz.Infrastructure.Billing;
 using Aipazz.Application.Billing.TimeEntries.Queries;
-using AIpazz.Infrastructure;
+using Aipazz.Application.Calender.Interface;
 using Microsoft.Azure.Cosmos;
+using Aipazz.Domian;
+using Microsoft.Extensions.Options;
+using Aipazz.Application.DocumentMGT.Interfaces;
+using AIpazz.Infrastructure.Calender;
+using AIpazz.Infrastructure.Documentmgt;
+
+using Aipazz.Application.DocumentMGT.documentmgt.Queries;
+using AIpazz.Infrastructure.Documentmgt.Services;
+using AIpazz.Infrastructure.DependencyInjection;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,22 +19,27 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(GetAllTimeEntriesQuery).Assembly));
 
-// Register Cosmos DB connection
-builder.Services.AddSingleton<CosmosClient>(serviceProvider =>
-{
-    var configuration = builder.Configuration;
-    string? accountEndpoint = configuration["CosmosDb:AccountEndpoint"];
-    string? authKey = configuration["CosmosDb:AuthKey"];
+// Bind CosmosDbOptions
+builder.Services.Configure<CosmosDbOptions>(
+    builder.Configuration.GetSection("CosmosDb")
+);
 
-    if (string.IsNullOrEmpty(accountEndpoint) || string.IsNullOrEmpty(authKey))
+// Register CosmosClient
+builder.Services.AddSingleton<CosmosClient>(sp =>
+{
+    var options = sp.GetRequiredService<IOptions<CosmosDbOptions>>().Value;
+
+    if (string.IsNullOrEmpty(options.AccountEndpoint) || string.IsNullOrEmpty(options.AuthKey))
     {
         throw new InvalidOperationException("Cosmos DB connection details are not configured properly.");
     }
 
-    return new CosmosClient(accountEndpoint, authKey);
+    return new CosmosClient(options.AccountEndpoint, options.AuthKey);
 });
 
 builder.Services.AddBillingServices(builder.Configuration);
+builder.Services.AddInfrastructureServices();
+
 
 
 // Register CORS Policy
@@ -45,8 +59,12 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IDocumentRepository,DocumentRepository>();
-builder.Services.AddScoped<IDocumentService, DocumentService>();
+
+builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
+builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
+builder.Services.AddScoped<IclientmeetingRepository, clientmeetingrepository>();
+
+
 
 var app = builder.Build();
 
@@ -58,6 +76,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAllOrigins");
 
 app.UseAuthorization();
 

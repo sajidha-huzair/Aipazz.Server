@@ -1,4 +1,5 @@
-﻿using Aipazz.Domian.Billing;
+﻿using Aipazz.Application.Billing.Interfaces;
+using Aipazz.Domian.Billing;
 using Aipazz.Domian;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
@@ -7,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Aipazz.Application.Interfaces;
 
 namespace AIpazz.Infrastructure.Billing
 {

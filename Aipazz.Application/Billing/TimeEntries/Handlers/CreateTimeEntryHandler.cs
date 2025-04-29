@@ -1,4 +1,4 @@
-﻿using Aipazz.Domain.Billing;
+﻿using Aipazz.Domian.Billing;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace Aipazz.Application.Billing.TimeEntries.Handlers
         {
             var timeEntry = new TimeEntry
             {
-                id = request.Id,
+                id = Guid.NewGuid().ToString(),
                 Duration = request.Duration,
                 matterId = request.MatterId,
                 Description = request.Description,

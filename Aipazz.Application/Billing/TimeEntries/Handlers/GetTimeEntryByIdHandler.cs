@@ -1,17 +1,12 @@
 ﻿using Aipazz.Application.Billing.TimeEntries.Queries;
-<<<<<<< Updated upstream
-using Aipazz.Domain.Billing;
-using Aipazz.Application.Billing.Interfaces;
-=======
 using Aipazz.Domian.Billing;
->>>>>>> Stashed changes
+using Aipazz.Application.Billing.Interfaces;
 using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Aipazz.Application.Interfaces;
 
 namespace Aipazz.Application.Billing.TimeEntries.Handlers
 {

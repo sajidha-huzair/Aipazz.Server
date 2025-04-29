@@ -1,13 +1,11 @@
-﻿using Microsoft.Azure.Cosmos;
+﻿using Aipazz.Application.Billing.Interfaces;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Configuration;
-<<<<<<< Updated upstream
-=======
 using Aipazz.Domian;
-using Aipazz.Application.Interfaces;
->>>>>>> Stashed changes
 
 namespace AIpazz.Infrastructure.Billing
 {
@@ -20,19 +18,18 @@ namespace AIpazz.Infrastructure.Billing
             {
                 // Get the CosmosClient instance from the DI container
                 var cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
+                var options = serviceProvider.GetRequiredService<IOptions<CosmosDbOptions>>();
 
-                // Retrieve configuration values for Cosmos DB
-                string? databaseName = configuration["CosmosDb:DatabaseName"];
-                string? containerName = configuration["CosmosDb:ContainerName"];
+                return new TimeEntryRepository(cosmosClient, options);
+            });
 
-                // Check if database name or container name is missing in the configuration
-                if (string.IsNullOrEmpty(databaseName) || string.IsNullOrEmpty(containerName))
-                {
-                    throw new InvalidOperationException("Cosmos DB database or container name is not configured properly.");
-                }
+            services.AddSingleton<IExpenseEntryRepository, ExpenseEntryRepository>(serviceProvider =>
+            {
+                // Get the CosmosClient instance from the DI container
+                var cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
+                var options = serviceProvider.GetRequiredService<IOptions<CosmosDbOptions>>();
 
-                // Return the repository instance with the required CosmosClient, databaseName, and containerName
-                return new TimeEntryRepository(cosmosClient, databaseName, containerName);
+                return new ExpenseEntryRepository(cosmosClient, options);
             });
 
             // add additional repositories or services for Billing here if needed.

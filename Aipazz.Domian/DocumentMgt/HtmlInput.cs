@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Aipazz.Domian;
 
-namespace Aipazz.Application
+namespace Aipazz.Domian.DocumentMgt
 {
-    public interface IDocumentService
+    public class HtmlInput
     {
-        List<Document> GetAllDocuments();
+        public string Html { get; set; }
     }
 }
