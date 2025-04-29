@@ -43,5 +43,21 @@ namespace Aipazz.API.Controllers.Calendar
 
             return Ok(meeting); // 200 OK with meeting details
         }
+        
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateClientMeeting(Guid id, [FromBody] UpdateClientMeetingCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest("ID mismatch between URL and body.");
+
+            var updatedMeeting = await _mediator.Send(command);
+
+            if (updatedMeeting == null)
+                return NotFound();
+
+            return Ok(updatedMeeting);
+        }
+
+        
     }
 }

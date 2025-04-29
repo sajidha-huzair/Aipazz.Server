@@ -1,10 +1,9 @@
 using Aipazz.Domian.Calender;
 using MediatR;
-using System.Collections.Generic;
 
 namespace Aipazz.Application.Calender.clientmeeting.Commands
 {
-    public record CreateClientMeetingCommand(
+    public record UpdateClientMeetingCommand(
         Guid Id,
         string Title,
         DateOnly Date,

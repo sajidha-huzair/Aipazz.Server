@@ -6,7 +6,8 @@ public interface IclientmeetingRepository
 {
     Task<List<ClientMeeting>> GetAllClientMeetings();
     Task AddClientMeeting(ClientMeeting Meeting);
-    Task<ClientMeeting> GetClientMeetingByID(int id);
+    Task<ClientMeeting> GetClientMeetingByID(Guid id);
+    Task<ClientMeeting> UpdateClientMeeting(ClientMeeting Meeting);
   
    
 }
