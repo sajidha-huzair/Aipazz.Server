@@ -57,6 +57,21 @@ namespace Aipazz.API.Controllers.Calendar
 
             return Ok(updatedMeeting);
         }
+        
+        
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMeeting(Guid id)
+        {
+            var deleted = await _mediator.Send(new DeleteClientMeetingCommand(id));
+
+            if (!deleted)
+            {
+                return NotFound(); // 404 if not found
+            }
+
+            return NoContent(); // 204 No Content (successfully deleted)
+        }
+
 
         
     }
