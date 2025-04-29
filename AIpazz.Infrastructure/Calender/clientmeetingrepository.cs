@@ -65,6 +65,18 @@ namespace AIpazz.Infrastructure.Calender
         }
         
         
+        public Task<bool> DeleteClientMeeting(Guid id)
+        {
+            var meeting = _meetings.FirstOrDefault(m => m.Id == id);
+            if (meeting != null)
+            {
+                _meetings.Remove(meeting);
+                return Task.FromResult(true);
+            }
+            return Task.FromResult(false);
+        }
+
+        
     }
 }
 
