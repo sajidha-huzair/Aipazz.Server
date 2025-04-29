@@ -1,3 +1,7 @@
-namespace Aipazz.Application.Calender.clientmeeting.queries;
+using Aipazz.Domian.Calender;
+using MediatR;
 
-public record GetClientMeetingByIdQuery();
+namespace Aipazz.Application.Calender.clientmeeting.queries
+{
+    public record GetClientMeetingByIdQuery(Guid Id) : IRequest<ClientMeeting>;
+}

@@ -17,6 +17,7 @@ public class CreateClientMeetingHandler : IRequestHandler<CreateClientMeetingCom
     public async Task<ClientMeeting> Handle(CreateClientMeetingCommand request, CancellationToken cancellationToken)
     {
         var meeting = new ClientMeeting(
+            request.Id,
             request.Title,
             request.Date,
             request.Time,
