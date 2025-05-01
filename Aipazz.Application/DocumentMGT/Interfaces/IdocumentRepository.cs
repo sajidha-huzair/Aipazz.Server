@@ -10,6 +10,7 @@ namespace Aipazz.Application.DocumentMGT.Interfaces
     public interface IdocumentRepository
     {
         Task<List<Document>> GetAllDocuments();
+        Task SaveAsync(Document document);
 
     }
 }

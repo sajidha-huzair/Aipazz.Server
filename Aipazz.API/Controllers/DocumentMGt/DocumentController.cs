@@ -1,6 +1,7 @@
 ﻿
 using Aipazz.Application.DocumentMGT.documentmgt.Commands;
 using Aipazz.Application.DocumentMGT.documentmgt.Queries;
+using Aipazz.Application.DocumentMGT.DTO;
 using Aipazz.Domian.DocumentMgt;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -32,11 +33,18 @@ namespace Aipazz.API.Controllers.DocumentMGt
             return File(fileBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Generated.docx");
         }
 
-        [HttpPost]
+        [HttpPost("Save")]
         public async Task<IActionResult> SaveDocument([FromBody] SaveDocumentCommand command)
         {
             var savedFileName = await _mediatR.Send(command);
             return Ok(new { Message = "Document saved successfully", FileName = savedFileName });
+        }
+
+        [HttpPost("SaveWithUserid")]
+        public async Task<IActionResult> Create([FromBody] CreateDocumentRequest request)
+        {
+            var id = await _mediatR.Send(new CreateDocumentCommand(request));
+            return Ok(new { DocumentId = id });
         }
 
 
