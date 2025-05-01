@@ -9,7 +9,7 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Commands
 {
     public class SaveDocumentCommand:IRequest<string>
     {
-        public string FileName { get; set; }
+        public string Name { get; set; }
         public string ContentHtml { get; set; }
     }
 }
