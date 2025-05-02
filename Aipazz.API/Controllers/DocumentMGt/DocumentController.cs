@@ -69,17 +69,19 @@ namespace Aipazz.API.Controllers.DocumentMGt
 
             return Ok(result);
         }
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetAllDocuments()
         {
-            // Get the user ID from the token
-            var userId = User.FindFirst("oid")?.Value ?? User.FindFirst("sub")?.Value;
+            // Extract the user ID from the claim
+            string userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
 
-            // If user ID is not found, log it and return unauthorized response
+            // If user ID is not found, return unauthorized
             if (string.IsNullOrWhiteSpace(userId))
             {
-             
                 return Unauthorized("User ID not found in token.");
             }
 
@@ -100,10 +102,10 @@ namespace Aipazz.API.Controllers.DocumentMGt
             catch (Exception ex)
             {
                 // Log unexpected errors
-             
                 return StatusCode(500, "An unexpected error occurred.");
             }
         }
+
 
 
 
