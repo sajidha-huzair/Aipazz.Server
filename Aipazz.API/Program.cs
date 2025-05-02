@@ -1,4 +1,4 @@
-using AIpazz.Infrastructure.Billing;
+﻿using AIpazz.Infrastructure.Billing;
 using Aipazz.Application.Billing.TimeEntries.Queries;
 using Microsoft.Azure.Cosmos;
 using Aipazz.Domian;
@@ -9,9 +9,20 @@ using AIpazz.Infrastructure.Documentmgt;
 using Aipazz.Application.DocumentMGT.documentmgt.Queries;
 using AIpazz.Infrastructure.Documentmgt.Services;
 using AIpazz.Infrastructure.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
+
+builder.Services.AddAuthorization();
+
 
 // Add services to the container.
 
@@ -53,6 +64,8 @@ builder.Services.AddCors(options =>
 });
 
 
+
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -60,6 +73,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
+
 
 
 
@@ -75,6 +89,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 app.UseHttpsRedirection();
 app.UseCors("AllowAllOrigins");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

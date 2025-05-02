@@ -12,5 +12,10 @@ namespace Aipazz.Application.DocumentMGT.Interfaces
         Task<List<Document>> GetAllDocuments();
         Task SaveAsync(Document document);
 
+        Task<Document?> GetByIdAsync(string documentId, string userId);
+        Task UpdateAsync(Document document);
+
+        Task<List<Document>> GetAllByUserIdAsync(string userId);
+
     }
 }

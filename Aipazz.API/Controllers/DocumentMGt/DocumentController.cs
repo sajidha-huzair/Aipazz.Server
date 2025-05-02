@@ -1,9 +1,11 @@
 ﻿
+using Aipazz.Application.DocumentMgt.Queries;
 using Aipazz.Application.DocumentMGT.documentmgt.Commands;
 using Aipazz.Application.DocumentMGT.documentmgt.Queries;
 using Aipazz.Application.DocumentMGT.DTO;
 using Aipazz.Domian.DocumentMgt;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,12 +22,7 @@ namespace Aipazz.API.Controllers.DocumentMGt
             _mediatR = mediator;
 
         }
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var result = await _mediatR.Send(new GetAllDcoumentsQuery());
-            return Ok(result);
-        }
+       
         [HttpPost("generate")]
         public async Task<IActionResult> GenerateWord([FromBody] HtmlInput input)
         {
@@ -46,6 +43,73 @@ namespace Aipazz.API.Controllers.DocumentMGt
             var id = await _mediatR.Send(new CreateDocumentCommand(request));
             return Ok(new { DocumentId = id });
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, [FromBody] UpdateDocumentRequest request)
+        {
+            if (id != request.DocumentId) return BadRequest("ID mismatch.");
+            var result = await _mediatR.Send(new UpdateDocumentCommand(request));
+            return result ? Ok("Updated") : NotFound("Document not found");
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDocumentById(string id)
+        {
+            // Get user ID from the token (if using Azure AD B2C)
+            var userId = User.FindFirst("oid")?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
+
+            var result = await _mediatR.Send(new GetDocumentByIdQuery(id, userId));
+
+            if (result == null)
+                return NotFound("Document not found.");
+
+            return Ok(result);
+        }
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> GetAllDocuments()
+        {
+            // Get the user ID from the token
+            var userId = User.FindFirst("oid")?.Value ?? User.FindFirst("sub")?.Value;
+
+            // If user ID is not found, log it and return unauthorized response
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+             
+                return Unauthorized("User ID not found in token.");
+            }
+
+            try
+            {
+                // Send query to Mediator to fetch documents based on userId
+                var result = await _mediatR.Send(new GetAllDocumentsQuery(userId));
+
+                // If no documents found, return an empty response or not found
+                if (result == null || !result.Any())
+                {
+                    return NotFound("No documents found.");
+                }
+
+                // Return OK with the result
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                // Log unexpected errors
+             
+                return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
+
+
+
+
+
+
 
 
     }
