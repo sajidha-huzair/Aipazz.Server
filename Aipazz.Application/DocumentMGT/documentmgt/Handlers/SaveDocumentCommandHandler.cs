@@ -21,7 +21,7 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
 
         public async Task<string> Handle(SaveDocumentCommand request, CancellationToken cancellationToken)
         {
-            var savedFileName = await _documentStorageService.SaveDocumentAsync(request.FileName, request.ContentHtml);
+            var savedFileName = await _documentStorageService.SaveDocumentAsync(request.Name, request.ContentHtml);
             return savedFileName;
         }
     }
