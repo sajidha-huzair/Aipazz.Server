@@ -1,8 +1,10 @@
 ﻿
+using System.Security.Claims;
 using Aipazz.Application.DocumentMgt.Queries;
 using Aipazz.Application.DocumentMGT.documentmgt.Commands;
 using Aipazz.Application.DocumentMGT.documentmgt.Queries;
 using Aipazz.Application.DocumentMGT.DTO;
+using Aipazz.Application.DocumentMGT.Interfaces;
 using Aipazz.Domian.DocumentMgt;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -22,7 +24,7 @@ namespace Aipazz.API.Controllers.DocumentMGt
             _mediatR = mediator;
 
         }
-       
+
         [HttpPost("generate")]
         public async Task<IActionResult> GenerateWord([FromBody] HtmlInput input)
         {
@@ -107,6 +109,22 @@ namespace Aipazz.API.Controllers.DocumentMGt
         }
 
 
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var success = await _mediatR.Send(new DeleteDocumentCommand(id, userId));
+            if (!success)
+                return NotFound("Document not found or unauthorized.");
+
+            return NoContent();
+        }
+
+
 
 
 
@@ -115,6 +133,5 @@ namespace Aipazz.API.Controllers.DocumentMGt
 
 
     }
-
-
 }
+    

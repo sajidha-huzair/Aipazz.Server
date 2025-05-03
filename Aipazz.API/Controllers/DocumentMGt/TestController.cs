@@ -16,5 +16,9 @@ namespace Aipazz.API.Controllers.DocumentMGt
             var claims = User.Claims.Select(c => new { c.Type, c.Value });
             return Ok(claims);
         }
+
+
+
+
     }
 }

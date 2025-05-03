@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Aipazz.Application.DocumentMGT.Interfaces;
 using Aipazz.Domian.DocumentMgt;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
 
@@ -76,8 +77,11 @@ namespace AIpazz.Infrastructure.Documentmgt
             return results;
         }
 
+      
 
-
-
+        public async Task DeleteAsync(string documentId, string userId)
+        {
+            await _container.DeleteItemAsync<Document>(documentId, new PartitionKey(userId));
+        }
     }
 }
