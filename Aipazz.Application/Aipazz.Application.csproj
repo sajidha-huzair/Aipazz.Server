@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Calender\courtdate\Commonds\" />
     <Folder Include="DocumentMGT\documentmgt\Commands\" />
     <Folder Include="DocumentMGT\TemplateMgt\Commands\" />
   </ItemGroup>

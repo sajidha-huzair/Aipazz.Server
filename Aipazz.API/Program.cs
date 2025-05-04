@@ -8,6 +8,8 @@ using Aipazz.Application.DocumentMGT.Interfaces;
 using AIpazz.Infrastructure.Calender;
 using AIpazz.Infrastructure.Documentmgt;
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -56,6 +58,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
 builder.Services.AddScoped<IclientmeetingRepository, clientmeetingrepository>();
+builder.Services.AddScoped<ICourtDateFormRepository, CourtDateFormRepository>();
+
 
 
 
