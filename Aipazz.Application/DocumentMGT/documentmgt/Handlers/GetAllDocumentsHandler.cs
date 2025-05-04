@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aipazz.Application.DocumentMGT.documentmgt.Queries;
-using Aipazz.Application.DocumentMGT.Interfaces;
+﻿using Aipazz.Application.DocumentMgt.Queries;
+
 using Aipazz.Domian.DocumentMgt;
 using MediatR;
+using Aipazz.Application.DocumentMGT.Interfaces;
 
-namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
+namespace Aipazz.Application.DocumentMgt.Handlers
 {
-    public class GetAllDocumentsHandler : IRequestHandler<GetAllDcoumentsQuery, List<Document>>
+    public class GetAllDocumentsHandler : IRequestHandler<GetAllDocumentsQuery, List<Document>>
     {
         private readonly IdocumentRepository _repository;
 
@@ -18,9 +14,10 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
         {
             _repository = repository;
         }
-        public async Task<List<Document>> Handle(GetAllDcoumentsQuery request, CancellationToken cancellationToken)
+
+        public async Task<List<Document>> Handle(GetAllDocumentsQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetAllDocuments();
+            return await _repository.GetAllByUserIdAsync(request.UserId);
         }
     }
 }

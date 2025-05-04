@@ -7,17 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
+    <PackageReference Include="HtmlToOpenXml.dll" Version="3.2.4" />
     <PackageReference Include="MediatR" Version="12.5.0" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="3.8.4" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="3.8.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Aipazz.Domian\Aipazz.Domian.csproj" />
-  </ItemGroup>
+  </ItemGrohttps://github.com/sajidha-huzair/Aipazz.Server/pull/37/conflict?name=Aipazz.Application%252FAipazz.Application.csproj&ancestor_oid=2414de785ecd853bd2e1cddb61db1fa049cde8a5&base_oid=51f3fcfc3f0bf822c6972b63826bfc91fdbcd7da&head_oid=7caad1362280b1ca212ecde5c1fb245bd5719c5aup>
 
   <ItemGroup>
     <Folder Include="Calender\courtdate\Commonds\" />
     <Folder Include="DocumentMGT\documentmgt\Commands\" />
     <Folder Include="DocumentMGT\TemplateMgt\Commands\" />
   </ItemGroup>
+
 
 </Project>
