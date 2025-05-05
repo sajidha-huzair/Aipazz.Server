@@ -1,20 +1,31 @@
 using Aipazz.Application.Calender.Interface;
-using Aipazz.Domian.Calender;
+using Aipazz.Domian.Calender; // ✅ Make sure the namespace is spelled correctly in your project!
 
 namespace AIpazz.Infrastructure.Calender
 {
     public class CourtDateFormRepository : ICourtDateFormRepository
     {
-        private static readonly List<CourtDateForm> _courtDates = new();
+        // ✅ Only one declaration of _courtDates
+        private readonly List<CourtDateForm> _courtDates = new()
+        {
+            new CourtDateForm
+            {
+                Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+                CourtDate = DateTime.Today.AddDays(3),
+                CaseNumber = "CASE-001",
+                CourtName = "Supreme Court",
+                Description = "Hearing of primary case."
+            }
+        };
 
         public Task<List<CourtDateForm>> GetAllCourtDates()
         {
             return Task.FromResult(_courtDates);
         }
 
-        public Task<CourtDateForm> GetCourtDateById(Guid id)
+        public Task<CourtDateForm> GetCourtDateFormById(Guid id)
         {
-            var result = _courtDates.FirstOrDefault(cd => cd.Id == id);
+            var result = _courtDates.FirstOrDefault(c => c.Id == id);
             return Task.FromResult(result);
         }
 
