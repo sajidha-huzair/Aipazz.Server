@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aipazz.Domian.DocumentMgt;
+﻿using Aipazz.Domian.DocumentMgt;
 using MediatR;
 
-namespace Aipazz.Application.DocumentMGT.documentmgt.Queries
+namespace Aipazz.Application.DocumentMgt.Queries
 {
-    public record GetAllDcoumentsQuery() : IRequest<List<Document>>;
+    public class GetAllDocumentsQuery : IRequest<List<Document>>
+    {
+        public string UserId { get; set; }
+
+        public GetAllDocumentsQuery(string userId)
+        {
+            UserId = userId;
+        }
+    }
 }

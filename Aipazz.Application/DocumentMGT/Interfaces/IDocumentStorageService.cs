@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Aipazz.Application.DocumentMGT.Interfaces
 {
-    public interface IWordGenerator
+    public interface IDocumentStorageService
     {
-        byte[] GenerateFromHtml(string htmlContent);
+        Task<string> SaveDocumentAsync(string fileName, string contentHtml);
+
     }
 }
