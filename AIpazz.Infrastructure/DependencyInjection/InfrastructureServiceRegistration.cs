@@ -1,4 +1,3 @@
-﻿using Aipazz.Application.client.Interfaces;
 using Aipazz.Application.DocumentMGT.documentmgt.Commands;
 using Aipazz.Application.DocumentMGT.Interfaces;
 using AIpazz.Infrastructure.Documentmgt.Services;
