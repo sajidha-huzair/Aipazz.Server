@@ -5,7 +5,7 @@ using Aipazz.Application.client.Queries;
 using System.Threading.Tasks;
 using Aipazz.Application.Billing.TimeEntries.Queries;
 
-namespace LawfirmAPI.API.Controllers
+namespace Aipazz.API.Controllers.client
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -22,7 +22,7 @@ namespace LawfirmAPI.API.Controllers
         public async Task<IActionResult> AddClient([FromBody] AddClientCommand command)
         {
             var client = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetClientByName), new { name = client.name }, client);
+            return CreatedAtAction(nameof(GetClientByName), new { client.name }, client);
         }
 
         [HttpPut("{id}")]
