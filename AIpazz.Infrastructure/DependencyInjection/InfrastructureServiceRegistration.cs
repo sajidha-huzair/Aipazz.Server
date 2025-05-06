@@ -1,5 +1,7 @@
+﻿using Aipazz.Application.client.Interfaces;
 using Aipazz.Application.DocumentMGT.documentmgt.Commands;
 using Aipazz.Application.DocumentMGT.Interfaces;
+using Aipazz.Infrastructure.client;
 using AIpazz.Infrastructure.Documentmgt.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,6 +13,7 @@ namespace AIpazz.Infrastructure.DependencyInjection
         {
             services.AddScoped<IWordGenerator, WordGenerator>();
             services.AddScoped<IDocumentStorageService, DocumentStorageService>();
+            services.AddScoped<IClientRepository, ClientRepository>();
 
 
             return services;
