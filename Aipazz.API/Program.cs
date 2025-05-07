@@ -5,6 +5,7 @@ using Aipazz.Domian;
 using Microsoft.Extensions.Options;
 using Aipazz.Application.DocumentMGT.Interfaces;
 using AIpazz.Infrastructure.Documentmgt;
+using Aipazz.Infrastructure.Matters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,9 @@ builder.Services.AddSingleton<CosmosClient>(sp =>
 });
 
 builder.Services.AddBillingServices(builder.Configuration);
+builder.Services.AddMatterServices();
+
+
 
 
 // Register CORS Policy
