@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Aipazz.Application.DocumentMGT.Interfaces;
 using AIpazz.Infrastructure.Calender;
 using AIpazz.Infrastructure.Documentmgt;
+using Aipazz.Infrastructure.Matters;
 
 using Aipazz.Application.DocumentMGT.documentmgt.Queries;
 using AIpazz.Infrastructure.Documentmgt.Services;
@@ -49,7 +50,12 @@ builder.Services.AddSingleton<CosmosClient>(sp =>
 });
 
 builder.Services.AddBillingServices(builder.Configuration);
+
+builder.Services.AddMatterServices();
+
+
 builder.Services.AddInfrastructureServices();
+
 
 
 
