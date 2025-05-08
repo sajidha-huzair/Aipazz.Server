@@ -104,5 +104,30 @@ namespace AIpazz.Infrastructure.Billing
                 Console.WriteLine($"Error deleting expense entry: {ex.Message}");
             }
         }
+
+        public async Task<List<ExpenseEntry>> GetExpenseEntriesByMatterIdAsync(string matterId)
+        {
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.matterId = @matterId")
+                .WithParameter("@matterId", matterId);
+
+            var iterator = _container.GetItemQueryIterator<ExpenseEntry>(
+                query,
+                requestOptions: new QueryRequestOptions
+                {
+                    PartitionKey = new PartitionKey(matterId) // if matterId is your partition key
+                });
+
+            List<ExpenseEntry> expenseEntries = new();
+
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                expenseEntries.AddRange(response);
+            }
+
+            return expenseEntries;
+        }
+
+
     }
 }

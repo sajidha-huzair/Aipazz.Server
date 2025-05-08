@@ -8,6 +8,7 @@ using Aipazz.Domian.client;
 using Aipazz.Domian;
 using Microsoft.Extensions.Options;
 using Aipazz.Domian.Billing;
+using System.Net;
 
 namespace Aipazz.Infrastructure.client
 {
@@ -37,7 +38,7 @@ namespace Aipazz.Infrastructure.client
                 }
                 catch (CosmosException ex)
                 {
-                    Console.WriteLine($"Error fetching expense entries: {ex.Message}");
+                    Console.WriteLine($"Error fetching clients: {ex.Message}");
                 }
             }
 
@@ -51,7 +52,7 @@ namespace Aipazz.Infrastructure.client
                 var response = await _container.ReadItemAsync<Client>(id, new PartitionKey(id));
                 return response.Resource;
             }
-            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
             }
@@ -62,18 +63,41 @@ namespace Aipazz.Infrastructure.client
             var query = new QueryDefinition("SELECT * FROM c WHERE c.name = @name")
                 .WithParameter("@name", name);
             var iterator = _container.GetItemQueryIterator<Client>(query);
-            var response = await iterator.ReadNextAsync();
-            return response.FirstOrDefault();
+
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                var client = response.FirstOrDefault();
+                if (client != null)
+                    return client;
+            }
+
+            return null;
         }
 
-        public async Task<Client?> GetByNICAsync(string nic)
+        public async Task<Client?> GetByNicAsync(string nic)
         {
             var query = new QueryDefinition("SELECT * FROM c WHERE c.nic = @nic")
-                .WithParameter("@nic", nic);
-            var iterator = _container.GetItemQueryIterator<Client>(query);
-            var response = await iterator.ReadNextAsync();
-            return response.FirstOrDefault();
+                            .WithParameter("@nic", nic);
+
+            using var iterator = _container.GetItemQueryIterator<Client>(
+                query,
+                requestOptions: new QueryRequestOptions
+                {
+                    PartitionKey = new PartitionKey(nic)
+                });
+
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                var client = response.FirstOrDefault();
+                if (client != null)
+                    return client;
+            }
+
+            return null;
         }
+
 
         public async Task CreateAsync(Client client)
         {

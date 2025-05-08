@@ -19,13 +19,13 @@ namespace Aipazz.Application.Matters.matter.Handlers
 
         public async Task<bool> Handle(DeleteMatterCommand request, CancellationToken cancellationToken)
         {
-            var matter = await _repository.GetMatterById(request.Id, request.Title);
+            var matter = await _repository.GetMatterById(request.Id, request.ClientNic);
             if (matter == null)
             {
-                throw new KeyNotFoundException($"Matter with Id {request.Id} and Title {request.Title} not found.");
+                throw new KeyNotFoundException($"Matter with Id {request.Id} and Title {request.ClientNic} not found.");
             }
 
-            await _repository.DeleteMatter(request.Id, request.Title);
+            await _repository.DeleteMatter(request.Id, request.ClientNic);
             return true;
         }
     }
