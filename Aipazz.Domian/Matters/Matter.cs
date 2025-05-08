@@ -9,7 +9,7 @@ namespace Aipazz.Domian.Matters
         
         public required string id { get; set; }
 
-        public string title { get; set; } = string.Empty; // Partition Key
+        public string title { get; set; } = string.Empty; 
 
         public string CaseNumber { get; set; } = string.Empty;
 
@@ -17,7 +17,7 @@ namespace Aipazz.Domian.Matters
 
         public string Description { get; set; } = string.Empty;
 
-        public string ClientName { get; set; } = string.Empty;
+        public string ClientNic { get; set; } = string.Empty;// Partition Key
 
         public List<string> TeamMembers { get; set; } = new();
     }

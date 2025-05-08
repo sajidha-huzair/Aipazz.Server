@@ -19,17 +19,17 @@ namespace Aipazz.Application.Matters.matter.Handlers
 
         public async Task<Matter> Handle(UpdateMatterCommand request, CancellationToken cancellationToken)
         {
-            var matter = await _repository.GetMatterById(request.Id, request.Title);
+            var matter = await _repository.GetMatterById(request.Id, request.ClientNic);
             if (matter == null)
             {
-                throw new KeyNotFoundException($"Matter with Id {request.Id} and Title {request.Title} not found.");
+                throw new KeyNotFoundException($"Matter with Id {request.Id} and Title {request.ClientNic} not found.");
             }
 
             // Update properties
             matter.CaseNumber = request.CaseNumber;
             matter.Date = request.Date;
             matter.Description = request.Description;
-            matter.ClientName = request.ClientName;
+            matter.ClientNic = request.ClientNic;
             matter.TeamMembers = request.TeamMembers;
 
             await _repository.UpdateMatter(matter);

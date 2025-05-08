@@ -9,7 +9,7 @@ namespace Aipazz.Application.client.Interfaces
     {
         Task<List<Client>> GetAllClients();
         Task<Client?> GetByNameAsync(string name);
-        Task<Client?> GetByNICAsync(string nic);
+        Task<Client?> GetByNicAsync(string nic);
         Task CreateAsync(Client client);
         Task UpdateAsync(Client client);
         Task DeleteAsync(string id);
