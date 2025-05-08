@@ -37,6 +37,7 @@ namespace Aipazz.Application.Billing.ExpenseEntries.Handlers
                 Rate = e.Rate,
                 Amount = e.Quantity * e.Rate,
                 Date = e.Date,
+                Description = e.Description
             }).ToList();
         }
     }
