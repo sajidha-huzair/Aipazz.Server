@@ -26,9 +26,9 @@ namespace Aipazz.API.Controllers.Matters
 
         // GET: api/Matter/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id, string title)
+        public async Task<IActionResult> GetById(string id, string ClientNic)
         {
-            var result = await _mediator.Send(new GetMatterByIdQuery(id, title));
+            var result = await _mediator.Send(new GetMatterByIdQuery(id, ClientNic));
             if (result == null) return NotFound();
             return Ok(result);
         }
@@ -39,7 +39,7 @@ namespace Aipazz.API.Controllers.Matters
         {
             if (command == null) return BadRequest("Invalid request.");
             var result = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { Id = result.id, Title = result.title }, result);
+            return CreatedAtAction(nameof(GetById), new { Id = result.id, clientNic = result.ClientNic }, result);
         }
 
         // PUT: api/Matter/5
@@ -53,11 +53,20 @@ namespace Aipazz.API.Controllers.Matters
 
         // DELETE: api/Matter/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id, string title)
+        public async Task<IActionResult> Delete(string id, string ClientNic)
         {
-            var result = await _mediator.Send(new DeleteMatterCommand { Id = id, Title = title });
+            var result = await _mediator.Send(new DeleteMatterCommand { Id = id, ClientNic = ClientNic });
             if (!result) return NotFound();
             return NoContent();
         }
+
+        // API/Controllers/MatterController.cs
+        [HttpGet("titles")]
+        public async Task<IActionResult> GetMatterTitles()
+        {
+            var result = await _mediator.Send(new GetAllMatterTitlesQuery());
+            return Ok(result);
+        }
+
     }
 }

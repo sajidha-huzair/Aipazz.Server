@@ -26,7 +26,7 @@ namespace Aipazz.Application.Matters.matter.Handlers
                 CaseNumber = request.CaseNumber,
                 Date = request.Date,
                 Description = request.Description,
-                ClientName = request.ClientName,
+                ClientNic = request.ClientNic,
                 TeamMembers = request.TeamMembers
             };
 
