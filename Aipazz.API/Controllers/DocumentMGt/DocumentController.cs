@@ -48,6 +48,7 @@ namespace Aipazz.API.Controllers.DocumentMGt
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(string id, [FromBody] UpdateDocumentRequest request)
         {
             if (id != request.DocumentId) return BadRequest("ID mismatch.");
