@@ -28,6 +28,7 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
             Directory.CreateDirectory(userFolder);
             var fileName = $"{Guid.NewGuid()}_{request.FileName}.docx";
             var fullpah = Path.Combine(userFolder, fileName);
+            var htmlFilePath = Path.Combine(userFolder, fileName + ".html");
 
             using (var ms = new MemoryStream())
             {
@@ -47,13 +48,15 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                 }
                 await File.WriteAllBytesAsync(fullpah, ms.ToArray(), cancellationToken);
             }
+            await File.WriteAllTextAsync(htmlFilePath, request.ContentHtml, cancellationToken);
 
             //save metadata
             var document = new Aipazz.Domian.DocumentMgt.Document
             {
                 FileName = request.FileName,
                 Userid = request.UserId,
-                Url = fullpah.Replace("\\", "/")
+                Url = fullpah.Replace("\\", "/"),
+                HtmlUrl = htmlFilePath.Replace("\\", "/"),
             };
 
             await _repo.SaveAsync(document);
