@@ -58,7 +58,7 @@ namespace Aipazz.API.Controllers.DocumentMGt
 
 
         [HttpGet("{id}")]
-        [Authorize]
+     
         public async Task<IActionResult> GetDocumentById(string id)
         {
             
