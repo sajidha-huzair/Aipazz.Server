@@ -41,7 +41,11 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                 string htmlContent = await System.IO.File.ReadAllTextAsync(document.HtmlUrl);
                 return new DocumentHtmlResponse
                     {
-                        HtmlContent = htmlContent
+                       
+                    HtmlContent = htmlContent,
+                    DocumentId = document.id,
+                    UserId = document.Userid,
+                    FileName = document.FileName
                 };
                 
             }

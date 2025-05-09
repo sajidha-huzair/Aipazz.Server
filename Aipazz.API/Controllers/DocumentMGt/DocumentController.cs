@@ -75,7 +75,8 @@ namespace Aipazz.API.Controllers.DocumentMGt
             if (result == null)
                 return NotFound("Document not found.");
 
-            return Ok(new { HtmlContent = result });
+            return Ok(result);
+
         }
 
         [HttpGet]
