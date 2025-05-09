@@ -54,6 +54,11 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                     // Save to file
                     await File.WriteAllBytesAsync(doc.Url, ms.ToArray(), cancellationToken);
                 }
+                // ✅ Save updated HTML content
+                if (!string.IsNullOrEmpty(doc.HtmlUrl))
+                {
+                    await File.WriteAllTextAsync(doc.HtmlUrl, request.ContentHtml, cancellationToken);
+                }
 
                 await _repo.UpdateAsync(doc);
                 return true;
