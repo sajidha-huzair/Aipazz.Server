@@ -33,7 +33,9 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
             if (!File.Exists(filePath))
             {
                 Console.WriteLine("File does not exist at the specified path.");
+                Console.WriteLine("File does not exit in path");
                 return null;
+                
             }
 
             try
