@@ -19,12 +19,12 @@ namespace AIpazz.Infrastructure.Documentmgt.Services
             _blobServiceClient = blobServiceClient;
         }
 
-        public async Task<string> SaveWordDocumentAsync(string userId, string fileName, byte[] content)
+        public async Task<string> SaveWordDocumentAsync(string userId, string documentId,  string fileName, byte[] content)
         {
             var blobContainer = _blobServiceClient.GetBlobContainerClient(_containerName);
             await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
 
-            var blobName = $"{userId}/{Guid.NewGuid()}_{fileName}.docx";
+            var blobName = $"{userId}/{documentId}_{fileName}.docx";
             var blobClient = blobContainer.GetBlobClient(blobName);
 
             using var stream = new MemoryStream(content);
@@ -33,12 +33,12 @@ namespace AIpazz.Infrastructure.Documentmgt.Services
             return blobClient.Uri.ToString();
         }
 
-        public async Task<string> SaveHtmlContentAsync(string userId, string fileName, string htmlContent)
+        public async Task<string> SaveHtmlContentAsync(string userId, string documentId, string fileName, string htmlContent)
         {
             var blobContainer = _blobServiceClient.GetBlobContainerClient(_containerName);
             await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
 
-            var blobName = $"{userId}/{Guid.NewGuid()}_{fileName}.html";
+            var blobName = $"{userId}/{documentId}_{fileName}.html";
             var blobClient = blobContainer.GetBlobClient(blobName);
 
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(htmlContent));
@@ -46,5 +46,34 @@ namespace AIpazz.Infrastructure.Documentmgt.Services
 
             return blobClient.Uri.ToString();
         }
+
+        public async Task<string> UpdateWordDocumentAsync(string userId, string documentId, string fileName, byte[] content)
+        {
+            var blobContainer = _blobServiceClient.GetBlobContainerClient(_containerName);
+            await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
+
+            var blobName = $"{userId}/{documentId}_{fileName}.docx";
+            var blobClient = blobContainer.GetBlobClient(blobName);
+
+            using var stream = new MemoryStream(content);
+            await blobClient.UploadAsync(stream, overwrite: true);
+
+            return blobClient.Uri.ToString();
+        }
+
+        public async Task<string> UpdateHtmlContentAsync(string userId, string documentId, string fileName, string htmlContent)
+        {
+            var blobContainer = _blobServiceClient.GetBlobContainerClient(_containerName);
+            await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
+
+            var blobName = $"{userId}/{documentId}_{fileName}.html";
+            var blobClient = blobContainer.GetBlobClient(blobName);
+
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(htmlContent));
+            await blobClient.UploadAsync(stream, overwrite: true);
+
+            return blobClient.Uri.ToString();
+        }
+
     }
 }

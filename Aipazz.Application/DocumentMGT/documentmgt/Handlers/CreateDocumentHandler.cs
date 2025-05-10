@@ -29,6 +29,8 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
         {
             var request = command.Request;
             byte[] wordContent;
+            var documentId = Guid.NewGuid().ToString();
+
 
             using (var ms = new MemoryStream())
             {
@@ -49,8 +51,8 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                 wordContent = ms.ToArray();
             }
 
-            var wordUrl = await _fileStorageService.SaveWordDocumentAsync(request.UserId, request.FileName, wordContent);
-            var htmlUrl = await _fileStorageService.SaveHtmlContentAsync(request.UserId, request.FileName, request.ContentHtml);
+            var wordUrl = await _fileStorageService.SaveWordDocumentAsync(request.UserId, documentId, request.FileName, wordContent);
+            var htmlUrl = await _fileStorageService.SaveHtmlContentAsync(request.UserId, documentId, request.FileName, request.ContentHtml);
 
             var document = new Aipazz.Domian.DocumentMgt.Document
             {
