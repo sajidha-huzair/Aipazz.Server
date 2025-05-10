@@ -17,52 +17,51 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
     public class CreateDocumentHandler : IRequestHandler<CreateDocumentCommand, string>
     {
         private readonly IdocumentRepository _repo;
-        public CreateDocumentHandler(IdocumentRepository repo)
+        private readonly IFileStorageService _fileStorageService;
+
+        public CreateDocumentHandler(IdocumentRepository repo, IFileStorageService fileStorageService)
         {
             _repo = repo;
+            _fileStorageService = fileStorageService;
         }
+
         public async Task<string> Handle(CreateDocumentCommand command, CancellationToken cancellationToken)
         {
             var request = command.Request;
-            var userFolder = Path.Combine("UserDocuments", request.UserId);
-            Directory.CreateDirectory(userFolder);
-            var fileName = $"{Guid.NewGuid()}_{request.FileName}.docx";
-            var fullpah = Path.Combine(userFolder, fileName);
-            var htmlFilePath = Path.Combine(userFolder, fileName + ".html");
+            byte[] wordContent;
 
             using (var ms = new MemoryStream())
             {
-                using(WordprocessingDocument wordDoc = WordprocessingDocument.Create(ms, DocumentFormat.OpenXml.WordprocessingDocumentType.Document, true))
+                using (var wordDoc = WordprocessingDocument.Create(ms, DocumentFormat.OpenXml.WordprocessingDocumentType.Document, true))
                 {
-                    MainDocumentPart mainPart = wordDoc.AddMainDocumentPart();
+                    var mainPart = wordDoc.AddMainDocumentPart();
                     mainPart.Document = new Document(new Body());
-                    HtmlConverter converter = new HtmlConverter(mainPart);
+                    var converter = new HtmlConverter(mainPart);
                     var paragraphs = converter.Parse(request.ContentHtml);
 
-                    Body body = mainPart.Document.Body;
+                    var body = mainPart.Document.Body;
                     foreach (var para in paragraphs)
                         body.Append(para);
 
                     mainPart.Document.Save();
-                    
                 }
-                await File.WriteAllBytesAsync(fullpah, ms.ToArray(), cancellationToken);
-            }
-            await File.WriteAllTextAsync(htmlFilePath, request.ContentHtml, cancellationToken);
 
-            //save metadata
+                wordContent = ms.ToArray();
+            }
+
+            var wordUrl = await _fileStorageService.SaveWordDocumentAsync(request.UserId, request.FileName, wordContent);
+            var htmlUrl = await _fileStorageService.SaveHtmlContentAsync(request.UserId, request.FileName, request.ContentHtml);
+
             var document = new Aipazz.Domian.DocumentMgt.Document
             {
                 FileName = request.FileName,
                 Userid = request.UserId,
-                Url = fullpah.Replace("\\", "/"),
-                HtmlUrl = htmlFilePath.Replace("\\", "/"),
+                Url = wordUrl,
+                HtmlUrl = htmlUrl,
             };
 
             await _repo.SaveAsync(document);
             return document.id;
-           
-            
         }
     }
 }
