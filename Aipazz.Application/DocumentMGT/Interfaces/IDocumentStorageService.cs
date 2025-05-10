@@ -10,5 +10,6 @@ namespace Aipazz.Application.DocumentMGT.Interfaces
     {
         Task<string> SaveDocumentAsync(string fileName, string contentHtml);
 
+
     }
 }

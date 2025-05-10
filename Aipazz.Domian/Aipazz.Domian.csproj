@@ -11,6 +11,7 @@
     <PackageReference Include="HtmlToOpenXml.dll" Version="3.2.4" />
     <PackageReference Include="Microsoft.Identity.Web" Version="3.8.4" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="3.8.4" />
+    <PackageReference Include="OpenXmlPowerTools" Version="4.5.3.2" />
   </ItemGroup>
 
 </Project>

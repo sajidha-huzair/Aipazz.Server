@@ -1,26 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Xml.Linq;
 using Aipazz.Application.DocumentMGT.documentmgt.Queries;
+using Aipazz.Application.DocumentMGT.DTO;
 using Aipazz.Application.DocumentMGT.Interfaces;
 using Aipazz.Domian.DocumentMgt;
+using DocumentFormat.OpenXml.Packaging;
 using MediatR;
+using OpenXmlPowerTools;
 
 namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
 {
-    public class GetDocumentByIdHandler : IRequestHandler<GetDocumentByIdQuery, Document?>
+    public class GetDocumentByIdHandler : IRequestHandler<GetDocumentByIdQuery, DocumentHtmlResponse?>
     {
         private readonly IdocumentRepository _repository;
+
         public GetDocumentByIdHandler(IdocumentRepository repository)
         {
             _repository = repository;
-            
         }
-        public async Task<Document?> Handle(GetDocumentByIdQuery request, CancellationToken cancellationToken)
+
+        public async Task<DocumentHtmlResponse?> Handle(GetDocumentByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetByIdAsync(request.DocumentId, request.UserId);
+            var document = await _repository.GetByIdAsync(request.DocumentId, request.UserId);
+            if (document == null || string.IsNullOrWhiteSpace(document.HtmlUrl))
+            {
+                Console.WriteLine("Document not found or URL is null/empty.");
+                return null;
+            }
+
+            try
+            {
+                using var httpClient = new HttpClient();
+                var htmlContent = await httpClient.GetStringAsync(document.HtmlUrl);
+
+                return new DocumentHtmlResponse
+                {
+                    HtmlContent = htmlContent,
+                    DocumentId = document.id,
+                    UserId = document.Userid,
+                    FileName = document.FileName
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error retrieving HTML from blob: {ex.Message}");
+                return null;
+            }
         }
+
     }
 }
