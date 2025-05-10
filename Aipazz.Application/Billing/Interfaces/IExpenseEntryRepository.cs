@@ -14,5 +14,6 @@ namespace Aipazz.Application.Billing.Interfaces
         Task AddExpenseEntry(ExpenseEntry ExpenseEntry);
         Task UpdateExpenseEntry(ExpenseEntry ExpenseEntry);
         Task DeleteExpenseEntry(string id, string matterId);
+        Task<List<ExpenseEntry>> GetExpenseEntriesByMatterIdAsync(string matterId);
     }
 }
