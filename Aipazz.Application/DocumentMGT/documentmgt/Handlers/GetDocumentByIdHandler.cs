@@ -27,36 +27,25 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                 return null;
             }
 
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), document.HtmlUrl.Replace("/", Path.DirectorySeparatorChar.ToString()));
-            Console.WriteLine($"File path: {filePath}");
-
-            if (!File.Exists(filePath))
-            {
-                Console.WriteLine("File does not exist at the specified path.");
-                Console.WriteLine("File does not exit in path");
-                return null;
-                
-            }
-
             try
             {
-                string htmlContent = await System.IO.File.ReadAllTextAsync(document.HtmlUrl);
+                using var httpClient = new HttpClient();
+                var htmlContent = await httpClient.GetStringAsync(document.HtmlUrl);
+
                 return new DocumentHtmlResponse
-                    {
-                       
+                {
                     HtmlContent = htmlContent,
                     DocumentId = document.id,
                     UserId = document.Userid,
                     FileName = document.FileName
                 };
-                
             }
             catch (Exception ex)
             {
-                // Log any exceptions
-                Console.WriteLine($"Error: {ex.Message}");
-                return null; // Or handle the exception as needed
+                Console.WriteLine($"Error retrieving HTML from blob: {ex.Message}");
+                return null;
             }
         }
+
     }
 }
