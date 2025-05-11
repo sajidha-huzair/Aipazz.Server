@@ -60,6 +60,7 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
 
             var document = new Aipazz.Domian.DocumentMgt.Document
             {
+                id = documentId,
                 FileName = request.FileName,
                 Userid = request.UserId,
                 Url = wordUrl,
