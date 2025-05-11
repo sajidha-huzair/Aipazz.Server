@@ -4,7 +4,7 @@ namespace Aipazz.Domian.DocumentMgt
 {
     public class Document
     {
-        public string id { get; set; } = Guid.NewGuid().ToString();
+        public string id { get; set; }
         public string FileName { get; set; } = string.Empty;
         public string Userid { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
