@@ -37,7 +37,12 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                     HtmlContent = htmlContent,
                     DocumentId = document.id,
                     UserId = document.Userid,
-                    FileName = document.FileName
+                    FileName = document.FileName,
+                    Url = document.Url,
+                    HtmlUrl = document.HtmlUrl,
+                    CreatedAt = document.CreatedAt,
+                    LastModifiedAt = document.LastModifiedAt,
+
                 };
             }
             catch (Exception ex)
