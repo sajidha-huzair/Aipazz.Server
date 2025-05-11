@@ -29,13 +29,17 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
         {
             var request = command.Request;
             byte[] wordContent;
+            //this below id used to save the docuemnt
             var documentId = Guid.NewGuid().ToString();
+            
+
 
 
             using (var ms = new MemoryStream())
             {
                 using (var wordDoc = WordprocessingDocument.Create(ms, DocumentFormat.OpenXml.WordprocessingDocumentType.Document, true))
                 {
+
                     var mainPart = wordDoc.AddMainDocumentPart();
                     mainPart.Document = new Document(new Body());
                     var converter = new HtmlConverter(mainPart);
