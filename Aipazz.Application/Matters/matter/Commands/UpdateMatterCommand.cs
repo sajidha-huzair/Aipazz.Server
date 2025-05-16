@@ -14,5 +14,7 @@ namespace Aipazz.Application.Matters.matter.Commands
         public string Description { get; set; } = string.Empty;
         public string ClientName { get; set; } = string.Empty;
         public List<string> TeamMembers { get; set; } = new();
+        public CourtType CourtType { get; set; }
+
     }
 }

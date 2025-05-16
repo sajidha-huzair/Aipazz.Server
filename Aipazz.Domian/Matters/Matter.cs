@@ -20,5 +20,9 @@ namespace Aipazz.Domian.Matters
         public string ClientName { get; set; } = string.Empty;
 
         public List<string> TeamMembers { get; set; } = new();
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public CourtType CourtType { get; set; }
+
     }
 }

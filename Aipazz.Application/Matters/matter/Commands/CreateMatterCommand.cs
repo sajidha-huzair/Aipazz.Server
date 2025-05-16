@@ -11,6 +11,7 @@ namespace Aipazz.Application.Matters.matter.Commands
         DateTime? Date,
         string Description,
         string ClientName,
-        List<string> TeamMembers
+        List<string> TeamMembers,
+        CourtType CourtType
     ) : IRequest<Matter>;
 }

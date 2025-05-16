@@ -31,6 +31,7 @@ namespace Aipazz.Application.Matters.matter.Handlers
             matter.Description = request.Description;
             matter.ClientName = request.ClientName;
             matter.TeamMembers = request.TeamMembers;
+            matter.CourtType = request.CourtType;
 
             await _repository.UpdateMatter(matter);
             return matter;

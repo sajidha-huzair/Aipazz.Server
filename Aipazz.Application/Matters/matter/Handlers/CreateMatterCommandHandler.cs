@@ -27,7 +27,8 @@ namespace Aipazz.Application.Matters.matter.Handlers
                 Date = request.Date,
                 Description = request.Description,
                 ClientName = request.ClientName,
-                TeamMembers = request.TeamMembers
+                TeamMembers = request.TeamMembers,
+                CourtType = request.CourtType
             };
 
             await _repository.AddMatter(matter);
