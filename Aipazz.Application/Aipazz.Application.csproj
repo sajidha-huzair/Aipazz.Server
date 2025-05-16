@@ -7,16 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
+    <PackageReference Include="HtmlToOpenXml.dll" Version="3.2.4" />
     <PackageReference Include="MediatR" Version="12.5.0" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="3.8.4" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="3.8.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Aipazz.Domian\Aipazz.Domian.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DocumentMGT\documentmgt\Commands\" />
-    <Folder Include="DocumentMGT\TemplateMgt\Commands\" />
   </ItemGroup>
 
 </Project>

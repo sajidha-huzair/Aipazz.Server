@@ -1,13 +1,31 @@
-using AIpazz.Infrastructure.Billing;
+﻿using AIpazz.Infrastructure.Billing;
 using Aipazz.Application.Billing.TimeEntries.Queries;
+using Aipazz.Application.Calender.Interface;
 using Microsoft.Azure.Cosmos;
 using Aipazz.Domian;
 using Microsoft.Extensions.Options;
 using Aipazz.Application.DocumentMGT.Interfaces;
+using AIpazz.Infrastructure.Calender;
 using AIpazz.Infrastructure.Documentmgt;
 using Aipazz.Infrastructure.Matters;
 
+using Aipazz.Application.DocumentMGT.documentmgt.Queries;
+using AIpazz.Infrastructure.Documentmgt.Services;
+using AIpazz.Infrastructure.DependencyInjection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+
+
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
+
+builder.Services.AddAuthorization();
+
 
 // Add services to the container.
 
@@ -32,7 +50,11 @@ builder.Services.AddSingleton<CosmosClient>(sp =>
 });
 
 builder.Services.AddBillingServices(builder.Configuration);
+
 builder.Services.AddMatterServices();
+
+
+builder.Services.AddInfrastructureServices();
 
 
 
@@ -50,6 +72,8 @@ builder.Services.AddCors(options =>
 });
 
 
+
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -57,6 +81,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
+builder.Services.AddScoped<IclientmeetingRepository, clientmeetingrepository>();
+
 
 
 
@@ -72,6 +98,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 app.UseHttpsRedirection();
 app.UseCors("AllowAllOrigins");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
