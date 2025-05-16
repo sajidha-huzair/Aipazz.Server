@@ -10,6 +10,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OpenXmlPowerTools;
 
 namespace Aipazz.API.Controllers.DocumentMGt
 {
@@ -56,10 +57,15 @@ namespace Aipazz.API.Controllers.DocumentMGt
 
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetDocumentById(string id)
         {
-            // Get user ID from the token (if using Azure AD B2C)
-            var userId = User.FindFirst("oid")?.Value;
+            
+            // Extract the user ID from the claim
+            string userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
 
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized("User ID not found in token.");
@@ -70,6 +76,7 @@ namespace Aipazz.API.Controllers.DocumentMGt
                 return NotFound("Document not found.");
 
             return Ok(result);
+
         }
 
         [HttpGet]
@@ -123,6 +130,8 @@ namespace Aipazz.API.Controllers.DocumentMGt
 
             return NoContent();
         }
+
+
 
 
 

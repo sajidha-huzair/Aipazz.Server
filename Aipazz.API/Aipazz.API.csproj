@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.2" />
     <PackageReference Include="Microsoft.Identity.Web" Version="3.8.4" />
     <PackageReference Include="Microsoft.Identity.Web.UI" Version="3.8.4" />
+    <PackageReference Include="OpenXmlPowerTools" Version="4.5.3.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 

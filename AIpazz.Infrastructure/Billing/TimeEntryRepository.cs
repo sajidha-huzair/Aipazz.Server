@@ -103,6 +103,31 @@ namespace AIpazz.Infrastructure.Billing
                 Console.WriteLine($"Error deleting time entry: {ex.Message}");
             }
         }
+
+        public async Task<List<TimeEntry>> GetTimeEntriesByMatterIdAsync(string matterId)
+        {
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.matterId = @matterId")
+                .WithParameter("@matterId", matterId);
+
+            var iterator = _container.GetItemQueryIterator<TimeEntry>(
+                query,
+                requestOptions: new QueryRequestOptions
+                {
+                    PartitionKey = new PartitionKey(matterId) // assuming it's the partition key
+                });
+
+            List<TimeEntry> timeEntries = new();
+
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                timeEntries.AddRange(response);
+            }
+
+            return timeEntries;
+        }
+
+
     }
 }
 

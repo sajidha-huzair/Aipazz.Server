@@ -59,5 +59,22 @@ namespace Aipazz.API.Controllers.client
             var result = await _mediator.Send(new GetAllClientsQuery());
             return Ok(result);
         }
+
+        [HttpGet("{nic}/details")]
+        public async Task<IActionResult> GetClientWithDetails(string nic)
+        {
+            var result = await _mediator.Send(new GetClientWithDetailsQuery(nic));
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
+
+        [HttpGet("with-entries")]
+        public async Task<IActionResult> GetClientsWithEntries()
+        {
+            var result = await _mediator.Send(new GetClientsWithEntriesQuery());
+            return Ok(result);
+        }
+
+
     }
 }

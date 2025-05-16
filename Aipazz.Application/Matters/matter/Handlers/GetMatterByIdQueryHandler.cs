@@ -18,7 +18,7 @@ namespace Aipazz.Application.Matters.matter.Handlers
 
         public async Task<Matter> Handle(GetMatterByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetMatterById(request.Id, request.Title);
+            return await _repository.GetMatterById(request.Id, request.clientNic);
         }
     }
 }

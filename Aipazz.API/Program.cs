@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Azure.Storage.Blobs;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 
 
 
@@ -82,6 +84,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
 builder.Services.AddScoped<IclientmeetingRepository, clientmeetingrepository>();
+
+builder.Services.AddSingleton(x =>
+    new BlobServiceClient(builder.Configuration["AzureBlob:ConnectionString"])
+);
+builder.Services.AddScoped<IFileStorageService, AzureBlobStorageService>();
+
 
 
 

@@ -16,7 +16,7 @@ namespace Aipazz.Infrastructure.Matters
         public MatterRepository(CosmosClient client, IOptions<CosmosDbOptions> options)
         {
             var db = client.GetDatabase(options.Value.DatabaseName);
-            var containerName = options.Value.Containers["matters"];
+            var containerName = options.Value.Containers["matter"];
             _container = db.GetContainer(containerName);
         }
 
@@ -42,13 +42,13 @@ namespace Aipazz.Infrastructure.Matters
             return matters;
         }
 
-        public async Task<Matter> GetMatterById(string id, string title)
+        public async Task<Matter> GetMatterById(string id, string ClientNic)
         {
             try
             {
                 var response = await _container.ReadItemAsync<Matter>(
                     id,
-                    new PartitionKey(title)
+                    new PartitionKey(ClientNic)
                 );
                 return response.Resource;
             }
@@ -63,9 +63,10 @@ namespace Aipazz.Infrastructure.Matters
         {
             try
             {
-                // Ensure CourtType is populated at this point
-                await _container.CreateItemAsync(matter, new PartitionKey(matter.title));
+                await _container.CreateItemAsync(matter, new PartitionKey(matter.ClientNic));
                 Console.WriteLine($"Successfully added matter ID: {matter.id}, CourtType: {matter.CourtType}");
+                // Ensure CourtType is populated at this point
+                
             }
             catch (CosmosException ex)
             {
@@ -77,7 +78,7 @@ namespace Aipazz.Infrastructure.Matters
         {
             try
             {
-                await _container.UpsertItemAsync(matter, new PartitionKey(matter.title));
+                await _container.UpsertItemAsync(matter, new PartitionKey(matter.ClientNic));
             }
             catch (CosmosException ex)
             {
@@ -85,16 +86,40 @@ namespace Aipazz.Infrastructure.Matters
             }
         }
 
-        public async Task DeleteMatter(string id, string title)
+        public async Task DeleteMatter(string id, string ClientNic)
         {
             try
             {
-                await _container.DeleteItemAsync<Matter>(id, new PartitionKey(title));
+                await _container.DeleteItemAsync<Matter>(id, new PartitionKey(ClientNic));
             }
             catch (CosmosException ex)
             {
                 Console.WriteLine($"Error deleting matter: {ex.Message}");
             }
         }
+        public async Task<List<Matter>> GetMattersByClientNicAsync(string ClientNic)
+        {
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.ClientNic = @ClientNic")
+                .WithParameter("@ClientNic", ClientNic);
+
+            var iterator = _container.GetItemQueryIterator<Matter>(
+                query,
+                requestOptions: new QueryRequestOptions
+                {
+                    PartitionKey = new PartitionKey(ClientNic) // only if ClientNic is the partition key
+                });
+
+            List<Matter> matters = new();
+
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                matters.AddRange(response);
+            }
+
+            return matters;
+        }
+
+
     }
 }

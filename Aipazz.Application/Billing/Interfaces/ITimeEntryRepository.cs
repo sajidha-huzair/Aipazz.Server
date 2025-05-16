@@ -14,5 +14,6 @@ namespace Aipazz.Application.Billing.Interfaces
         Task AddTimeEntry(TimeEntry timeEntry);
         Task UpdateTimeEntry(TimeEntry timeEntry);
         Task DeleteTimeEntry(string id, string matterId);
+        Task<List<TimeEntry>> GetTimeEntriesByMatterIdAsync(string matterId);
     }
 }

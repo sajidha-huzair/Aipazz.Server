@@ -1,4 +1,5 @@
-﻿using Aipazz.Domian.Billing;
+﻿using Aipazz.Application.DTOs;
+using Aipazz.Domian.Billing;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -8,5 +9,7 @@ using System.Threading.Tasks;
 
 namespace Aipazz.Application.Billing.ExpenseEntries.Queries
 {
-    public record GetAllExpenseEntriesQuery() : IRequest<List<ExpenseEntry>>;
+    public class GetAllExpenseEntriesQuery : IRequest<List<ExpenseEntryDto>>
+    {
+    }
 }

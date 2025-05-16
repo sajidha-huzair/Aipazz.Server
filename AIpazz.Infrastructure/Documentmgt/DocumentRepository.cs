@@ -40,15 +40,23 @@ namespace AIpazz.Infrastructure.Documentmgt
 
         public async Task<Document?> GetByIdAsync(string documentId, string userId)
         {
-            try
+            Console.WriteLine($"Querying document with ID: {documentId}, UserID: {userId}");
+
+            var sql = new QueryDefinition("SELECT * FROM c WHERE c.id = @id AND c.Userid = @userId")
+                .WithParameter("@id", documentId)
+            .WithParameter("@userId", userId);
+
+
+            var iterator = _container.GetItemQueryIterator<Document>(sql);
+            while (iterator.HasMoreResults)
             {
-                var response = await _container.ReadItemAsync<Document>(documentId, new PartitionKey(userId));
-                return response.Resource;
+                var response = await iterator.ReadNextAsync();
+                var document = response.FirstOrDefault();
+                if (document != null)
+                    return document;
             }
-            catch (CosmosException e) when (e.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                return null;
-            }
+            return null;
+
         }
 
         public async Task SaveAsync(Document document)

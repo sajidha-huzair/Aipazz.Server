@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Aipazz.Application.DocumentMGT.documentmgt.Commands;
 using Aipazz.Application.DocumentMGT.Interfaces;
@@ -15,12 +15,14 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
     public class UpdateDocumentHandler : IRequestHandler<UpdateDocumentCommand, bool>
     {
         private readonly IdocumentRepository _repo;
+        private readonly IFileStorageService _fileStorageService;
 
-        public UpdateDocumentHandler(IdocumentRepository repo)
+        public UpdateDocumentHandler(IdocumentRepository repo, IFileStorageService fileStorageService)
         {
             _repo = repo;
-
+            _fileStorageService = fileStorageService;
         }
+
         public async Task<bool> Handle(UpdateDocumentCommand command, CancellationToken cancellationToken)
         {
             var request = command.Request;
@@ -33,37 +35,33 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
 
             doc.LastModifiedAt = DateTime.UtcNow;
 
-            if (!string.IsNullOrEmpty(doc.Url))
+            // Generate Word document in memory
+            byte[] wordBytes;
+            using (var ms = new MemoryStream())
             {
-                using (var ms = new MemoryStream())
+                using (WordprocessingDocument wordDoc = WordprocessingDocument.Create(ms, DocumentFormat.OpenXml.WordprocessingDocumentType.Document, true))
                 {
-                    using (WordprocessingDocument wordDoc = WordprocessingDocument.Create(ms, DocumentFormat.OpenXml.WordprocessingDocumentType.Document, true))
+                    var mainpart = wordDoc.AddMainDocumentPart();
+                    mainpart.Document = new Document(new Body());
+                    var converter = new HtmlConverter(mainpart);
+                    var paragraphs = converter.Parse(request.ContentHtml);
+                    foreach (var para in paragraphs)
                     {
-                        MainDocumentPart mainpart = wordDoc.AddMainDocumentPart();
-                        mainpart.Document = new Document(new Body());
-                        HtmlConverter converter = new HtmlConverter(mainpart);
-                        var paragraphs = converter.Parse(request.ContentHtml);
-                        var body = mainpart.Document.Body;
-                        foreach (var para in paragraphs)
-                        {
-                            body.Append(para);
-                        }
-                        mainpart.Document.Save();
+                        mainpart.Document.Body.Append(para);
                     }
-
-                    // Save to file
-                    await File.WriteAllBytesAsync(doc.Url, ms.ToArray(), cancellationToken);
+                    mainpart.Document.Save();
                 }
-
-                await _repo.UpdateAsync(doc);
-                return true;
+                wordBytes = ms.ToArray();
             }
 
-            // Fallback if doc.Url is empty or null
-            return false;
+            // Save Word document
+            doc.Url = await _fileStorageService.UpdateWordDocumentAsync(request.UserId, request.DocumentId, request.FileName, wordBytes);
 
+            // Save HTML content
+            doc.HtmlUrl = await _fileStorageService.UpdateHtmlContentAsync(request.UserId, request.DocumentId, request.FileName, request.ContentHtml);
 
-        }
+            await _repo.UpdateAsync(doc);
+            return true;
         }
     }
-
+}
