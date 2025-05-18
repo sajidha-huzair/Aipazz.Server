@@ -5,8 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Aipazz.Application.Billing.TimeEntries.Queries;
 using Aipazz.Application.Billing.Interfaces;
-using Aipazz.Application.DTOs;
 using Aipazz.Application.Matters.Interfaces;
+using Aipazz.Application.Billing.DTOs;
+
 
 namespace Aipazz.Application.Billing.TimeEntries.Handlers
 {
@@ -23,12 +24,13 @@ namespace Aipazz.Application.Billing.TimeEntries.Handlers
 
         public async Task<List<TimeEntryDto>> Handle(GetAllTimeEntriesQuery request, CancellationToken cancellationToken)
         {
-            var entries = await _repository.GetAllTimeEntries();
+            var entries = await _repository.GetAllTimeEntries(request.UserId);
             var matters = await _matterRepository.GetAllMatters();
 
             return entries.Select(e => new TimeEntryDto
             {
                 Id = e.id,
+                UserId= e.UserId,
                 MatterTitle = matters.FirstOrDefault(m => m.id == e.matterId)?.title ?? "",
                 Description = e.Description,
                 Date = e.Date,

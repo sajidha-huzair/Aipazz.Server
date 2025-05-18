@@ -10,6 +10,8 @@ namespace Aipazz.Domian.Billing
     {
         public string id { get; set; } = string.Empty;
 
+        public string UserId { get; set; } = string.Empty;
+
         // Duration in hours, minutes, and seconds
         public TimeSpan Duration { get; set; }
 

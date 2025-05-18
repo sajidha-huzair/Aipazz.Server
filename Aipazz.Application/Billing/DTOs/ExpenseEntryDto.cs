@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aipazz.Application.DTOs
+namespace Aipazz.Application.Billing.DTOs
 {
     public class ExpenseEntryDto
     {
         public string Id { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
         public decimal Rate { get; set; }
         public decimal Quantity { get; set; }

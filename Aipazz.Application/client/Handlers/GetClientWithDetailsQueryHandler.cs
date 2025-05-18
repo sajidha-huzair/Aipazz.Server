@@ -1,7 +1,7 @@
-﻿using Aipazz.Application.Billing.Interfaces;
+﻿using Aipazz.Application.Billing.DTOs;
+using Aipazz.Application.Billing.Interfaces;
 using Aipazz.Application.client.Interfaces;
 using Aipazz.Application.client.Queries;
-using Aipazz.Application.DTOs;
 using Aipazz.Application.Matters.Interfaces;
 using MediatR;
 using System;
@@ -48,8 +48,8 @@ namespace Aipazz.Application.client.Handlers
 
             foreach (var matter in matters)
             {
-                var timeEntries = await _timeRepo.GetTimeEntriesByMatterIdAsync(matter.id!);
-                var expenseEntries = await _expenseRepo.GetExpenseEntriesByMatterIdAsync(matter.id!);
+                var timeEntries = await _timeRepo.GetTimeEntriesByMatterIdAsync(matter.id!, request.UserId);
+                var expenseEntries = await _expenseRepo.GetExpenseEntriesByMatterIdAsync(matter.id!, request.UserId);
 
                 var matterDto = new MatterWithEntriesDto
                 {

@@ -9,11 +9,11 @@ namespace Aipazz.Application.Billing.Interfaces
 {
     public interface IExpenseEntryRepository
     {
-        Task<List<ExpenseEntry>> GetAllExpenseEntries();
-        Task<ExpenseEntry> GetExpenseEntryById(string id, string matterId);
+        Task<List<ExpenseEntry>> GetAllExpenseEntries(string userId);
+        Task<ExpenseEntry> GetExpenseEntryById(string id, string matterId, string userId);
         Task AddExpenseEntry(ExpenseEntry ExpenseEntry);
         Task UpdateExpenseEntry(ExpenseEntry ExpenseEntry);
-        Task DeleteExpenseEntry(string id, string matterId);
-        Task<List<ExpenseEntry>> GetExpenseEntriesByMatterIdAsync(string matterId);
+        Task DeleteExpenseEntry(string id, string matterId, string userId);
+        Task<List<ExpenseEntry>> GetExpenseEntriesByMatterIdAsync(string matterId, string userId);
     }
 }
