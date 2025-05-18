@@ -1,4 +1,4 @@
-﻿using Aipazz.Application.DTOs;
+﻿using Aipazz.Application.Billing.DTOs;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -11,11 +11,15 @@ namespace Aipazz.Application.client.Queries
     public class GetClientWithDetailsQuery : IRequest<ClientWithMattersDto>
     {
         public string ClientNic { get; set; }
+        public string UserId { get; set; } 
 
-        public GetClientWithDetailsQuery(string nic)
+        public GetClientWithDetailsQuery(string clientNic, string userId)
         {
-            ClientNic = nic;
+            ClientNic = clientNic;
+            UserId = userId;
         }
     }
 
 }
+
+

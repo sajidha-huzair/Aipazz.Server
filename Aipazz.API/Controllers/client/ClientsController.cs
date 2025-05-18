@@ -4,6 +4,7 @@ using Aipazz.Application.client.Commands;
 using Aipazz.Application.client.Queries;
 using System.Threading.Tasks;
 using Aipazz.Application.Billing.TimeEntries.Queries;
+using System.Security.Claims;
 
 namespace Aipazz.API.Controllers.client
 {
@@ -63,17 +64,19 @@ namespace Aipazz.API.Controllers.client
         [HttpGet("{nic}/details")]
         public async Task<IActionResult> GetClientWithDetails(string nic)
         {
-            var result = await _mediator.Send(new GetClientWithDetailsQuery(nic));
-            if (result == null) return NotFound();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // from JWT / Azure AD
+            var result = await _mediator.Send(new GetClientWithDetailsQuery(nic, userId));
             return Ok(result);
         }
 
         [HttpGet("with-entries")]
         public async Task<IActionResult> GetClientsWithEntries()
         {
-            var result = await _mediator.Send(new GetClientsWithEntriesQuery());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _mediator.Send(new GetClientsWithEntriesQuery(userId));
             return Ok(result);
         }
+
 
 
     }

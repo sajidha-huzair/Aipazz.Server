@@ -48,12 +48,28 @@ namespace Aipazz.API.Controllers.DocumentMGt
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(string id, [FromBody] UpdateDocumentRequest request)
         {
-            if (id != request.DocumentId) return BadRequest("ID mismatch.");
+            // Extract the user ID from the claim
+            string userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
+
+            // Set the route ID to the DocumentId in the request
+            // This ensures they always match
+            request.DocumentId = id;
+
+            // Set the user ID from the token to the request
+            request.UserId = userId;
+
             var result = await _mediatR.Send(new UpdateDocumentCommand(request));
             return result ? Ok("Updated") : NotFound("Document not found");
         }
+
 
 
         [HttpGet("{id}")]

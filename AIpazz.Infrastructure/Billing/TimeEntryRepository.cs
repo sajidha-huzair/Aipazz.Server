@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Microsoft.Azure.Cosmos.Linq;
 
 namespace AIpazz.Infrastructure.Billing
 {
@@ -23,45 +24,36 @@ namespace AIpazz.Infrastructure.Billing
         }
 
         // Implement GetAllTimeEntries
-        public async Task<List<TimeEntry>> GetAllTimeEntries()
+        public async Task<List<TimeEntry>> GetAllTimeEntries(string userId)
         {
-            var query = new QueryDefinition("SELECT * FROM c");
-            var iterator = _container.GetItemQueryIterator<TimeEntry>(query);
-            List<TimeEntry> timeEntries = new List<TimeEntry>();
+            var query = _container.GetItemLinqQueryable<TimeEntry>(allowSynchronousQueryExecution: false)
+                                  .Where(t => t.UserId == userId)
+                                  .AsQueryable();
 
+            var iterator = query.ToFeedIterator();
+            var results = new List<TimeEntry>();
             while (iterator.HasMoreResults)
             {
-                try
-                {
-                    var response = await iterator.ReadNextAsync();
-                    timeEntries.AddRange(response);
-                }
-                catch (CosmosException ex)
-                {
-                    Console.WriteLine($"Error fetching time entries: {ex.Message}");
-                }
+                var response = await iterator.ReadNextAsync();
+                results.AddRange(response);
             }
 
-            return timeEntries;
+            return results;
         }
 
-        // Implement GetTimeEntryById
-        public async Task<TimeEntry> GetTimeEntryById(string id, string matterId)
+        public async Task<TimeEntry> GetTimeEntryById(string id, string matterId, string userId)
         {
             try
             {
-                var response = await _container.ReadItemAsync<TimeEntry>(
-                id,
-                    new PartitionKey(matterId) // Ensure partition key matches Cosmos DB setup
-                );
-                return response.Resource;
+                var response = await _container.ReadItemAsync<TimeEntry>(id, new PartitionKey(matterId));
+                return response.Resource?.UserId == userId ? response.Resource : null;
             }
-            catch (CosmosException ex)
+            catch
             {
-                Console.WriteLine($"Error fetching time entry: {ex.Message}");
                 return null;
             }
         }
+
 
         // Implement AddTimeEntry
         public async Task AddTimeEntry(TimeEntry timeEntry)
@@ -81,51 +73,41 @@ namespace AIpazz.Infrastructure.Billing
         // Implement UpdateTimeEntry
         public async Task UpdateTimeEntry(TimeEntry timeEntry)
         {
-            try
-            {
-                await _container.UpsertItemAsync(timeEntry, new PartitionKey(timeEntry.matterId));
-            }
-            catch (CosmosException ex)
-            {
-                Console.WriteLine($"Error updating time entry: {ex.Message}");
-            }
+            var existing = await GetTimeEntryById(timeEntry.id, timeEntry.matterId, timeEntry.UserId);
+            if (existing == null) return;
+
+            await _container.UpsertItemAsync(timeEntry, new PartitionKey(timeEntry.matterId));
         }
 
+
         // Implement DeleteTimeEntry
-        public async Task DeleteTimeEntry(string id, string matterId)
+        public async Task DeleteTimeEntry(string id, string matterId, string userId)
         {
-            try
+            var entry = await GetTimeEntryById(id, matterId, userId);
+            if (entry != null)
             {
                 await _container.DeleteItemAsync<TimeEntry>(id, new PartitionKey(matterId));
             }
-            catch (CosmosException ex)
-            {
-                Console.WriteLine($"Error deleting time entry: {ex.Message}");
-            }
         }
 
-        public async Task<List<TimeEntry>> GetTimeEntriesByMatterIdAsync(string matterId)
+
+        public async Task<List<TimeEntry>> GetTimeEntriesByMatterIdAsync(string matterId, string userId)
         {
-            var query = new QueryDefinition("SELECT * FROM c WHERE c.matterId = @matterId")
-                .WithParameter("@matterId", matterId);
+            var query = _container.GetItemLinqQueryable<TimeEntry>(allowSynchronousQueryExecution: false)
+                                  .Where(t => t.matterId == matterId && t.UserId == userId)
+                                  .ToFeedIterator();
 
-            var iterator = _container.GetItemQueryIterator<TimeEntry>(
-                query,
-                requestOptions: new QueryRequestOptions
-                {
-                    PartitionKey = new PartitionKey(matterId) // assuming it's the partition key
-                });
+            var timeEntries = new List<TimeEntry>();
 
-            List<TimeEntry> timeEntries = new();
-
-            while (iterator.HasMoreResults)
+            while (query.HasMoreResults)
             {
-                var response = await iterator.ReadNextAsync();
+                var response = await query.ReadNextAsync();
                 timeEntries.AddRange(response);
             }
 
             return timeEntries;
         }
+
 
 
     }

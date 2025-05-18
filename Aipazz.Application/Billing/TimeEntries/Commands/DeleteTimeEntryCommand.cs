@@ -11,5 +11,6 @@ namespace Aipazz.Application.Billing.TimeEntries.Commands
     {
         public string Id { get; set; } = string.Empty;
         public string MatterId { get; set; } = string.Empty;
+        public string UserId {  get; set; } = string.Empty;
     }
 }

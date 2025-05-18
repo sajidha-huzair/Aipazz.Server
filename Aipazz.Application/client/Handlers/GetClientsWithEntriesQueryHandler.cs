@@ -1,7 +1,7 @@
-﻿using Aipazz.Application.Billing.Interfaces;
+﻿using Aipazz.Application.Billing.DTOs;
+using Aipazz.Application.Billing.Interfaces;
 using Aipazz.Application.client.Interfaces;
 using Aipazz.Application.client.Queries;
-using Aipazz.Application.DTOs;
 using Aipazz.Application.Matters.Interfaces;
 using MediatR;
 using System;
@@ -33,18 +33,18 @@ namespace Aipazz.Application.client.Handlers
 
         public async Task<List<ClientWithMattersDto>> Handle(GetClientsWithEntriesQuery request, CancellationToken cancellationToken)
         {
-            var allMatters = await _matterRepo.GetAllMatters(); // assumes this returns all matters
+            var allMatters = await _matterRepo.GetAllMatters(); // You may want to filter matters by user later
             var result = new List<ClientWithMattersDto>();
 
             var clientNicToMattersWithEntries = new Dictionary<string, List<MatterWithEntriesDto>>();
 
             foreach (var matter in allMatters)
             {
-                var timeEntries = await _timeRepo.GetTimeEntriesByMatterIdAsync(matter.id!);
-                var expenseEntries = await _expenseRepo.GetExpenseEntriesByMatterIdAsync(matter.id!);
+                var timeEntries = await _timeRepo.GetTimeEntriesByMatterIdAsync(matter.id!, request.UserId); 
+                var expenseEntries = await _expenseRepo.GetExpenseEntriesByMatterIdAsync(matter.id!,request.UserId);
 
                 if (!timeEntries.Any() && !expenseEntries.Any())
-                    continue; // Skip if no entries
+                    continue;
 
                 var matterDto = new MatterWithEntriesDto
                 {
@@ -97,4 +97,4 @@ namespace Aipazz.Application.client.Handlers
         }
     }
 
-}
+    }
