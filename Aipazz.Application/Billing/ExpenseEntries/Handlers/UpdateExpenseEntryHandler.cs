@@ -1,5 +1,6 @@
 ﻿using Aipazz.Application.Billing.ExpenseEntries.Commands;
 using Aipazz.Application.Billing.Interfaces;
+using Aipazz.Application.Billing.DTOs;
 using Aipazz.Domian.Billing;
 using MediatR;
 using System;
@@ -11,7 +12,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Aipazz.Application.Billing.ExpenseEntries.Handlers
 {
-    public class UpdateExpenseEntryHandler : IRequestHandler<UpdateExpenseEntryCommand, ExpenseEntry>
+    public class UpdateExpenseEntryHandler : IRequestHandler<UpdateExpenseEntryCommand, ExpenseEntryDto>
     {
         private readonly IExpenseEntryRepository _repository;
 
@@ -20,24 +21,32 @@ namespace Aipazz.Application.Billing.ExpenseEntries.Handlers
             _repository = repository;
         }
 
-        public async Task<ExpenseEntry> Handle(UpdateExpenseEntryCommand request, CancellationToken cancellationToken)
+        public async Task<ExpenseEntryDto> Handle(UpdateExpenseEntryCommand request, CancellationToken cancellationToken)
         {
-            var ExpenseEntry = await _repository.GetExpenseEntryById(request.Id, request.MatterId);
-            if (ExpenseEntry == null)
+            var existing = await _repository.GetExpenseEntryById(request.Id, request.MatterId, request.UserId);
+            if (existing == null) return null;
+
+            existing.Description = request.Description;
+            existing.Category = request.Category;
+            existing.Quantity = request.Quantity;
+            existing.Date = request.Date;
+            existing.Rate = request.Rate;
+            existing.Status = request.Status;
+
+            await _repository.UpdateExpenseEntry(existing);
+
+            return new ExpenseEntryDto
             {
-                throw new KeyNotFoundException($"Expense entry with Id {request.Id} and MatterId {request.MatterId} not found.");
-            }
-
-            // Update properties
-            ExpenseEntry.Category = request.Category;
-            ExpenseEntry.Quantity = request.Quantity;
-            ExpenseEntry.Rate = request.Rate;
-            ExpenseEntry.Description = request.Description;
-            ExpenseEntry.Date = request.Date;
-            ExpenseEntry.Status = request.Status;
-
-            await _repository.UpdateExpenseEntry(ExpenseEntry);
-            return ExpenseEntry;
+                Id = existing.id,
+                UserId = existing.UserId,
+                Description = existing.Description,
+                Category = existing.Category,
+                Quantity = existing.Quantity,
+                Date = existing.Date,
+                Rate = existing.Rate,
+                Amount = existing.Amount,
+                
+            };
         }
     }
 }
