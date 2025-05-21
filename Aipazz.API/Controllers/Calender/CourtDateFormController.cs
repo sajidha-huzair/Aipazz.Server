@@ -1,3 +1,4 @@
+using Aipazz.Application.Calendar.CourtDateForms.queries;
 using Aipazz.Application.Calendar.CourtDateForms.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -22,5 +23,16 @@ namespace Aipazz.API.Controllers.Calendar
             var result = await _mediator.Send(new GetCourtDateFormListQuery());
             return Ok(result);
         }
+        
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var result = await _mediator.Send(new GetCourtDateFormByIdQuery(id));
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
+
     }
 }
