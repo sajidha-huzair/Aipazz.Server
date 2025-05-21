@@ -6,5 +6,6 @@ namespace Aipazz.Application.Calender.Interfaces
     {
         List<CourtDateForm> GetAll();
         // Other CRUD methods will go here later
+        Task<CourtDateForm?> GetById(Guid id);
     }
 }
