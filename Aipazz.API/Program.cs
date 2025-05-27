@@ -18,6 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Azure.Storage.Blobs;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Aipazz.Infrastructure.Matters;
 
 
 
@@ -53,7 +54,10 @@ builder.Services.AddSingleton<CosmosClient>(sp =>
 
 builder.Services.AddBillingServices(builder.Configuration);
 
-builder.Services.AddMatterServices();
+builder.Services.AddMatterServices(builder.Configuration);
+
+
+
 
 
 builder.Services.AddInfrastructureServices();

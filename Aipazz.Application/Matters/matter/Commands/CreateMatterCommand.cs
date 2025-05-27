@@ -10,7 +10,7 @@ namespace Aipazz.Application.Matters.matter.Commands
         string CaseNumber,
         DateTime? Date,
         string Description,
-        CourtType CourtType
+        CourtType CourtType,
         string ClientNic,
         List<string> TeamMembers
     ) : IRequest<Matter>;
