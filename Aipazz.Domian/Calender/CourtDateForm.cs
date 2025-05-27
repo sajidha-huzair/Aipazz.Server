@@ -1,4 +1,4 @@
-namespace Aipazz.Domian.Calendar
+namespace Aipazz.Domian.Calender
 {
     public class CourtDateForm
     {

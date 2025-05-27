@@ -1,4 +1,4 @@
-using Aipazz.Domian.Calendar;
+using Aipazz.Domian.Calender;
 using MediatR;
 
 namespace Aipazz.Application.Calendar.CourtDateForms.queries

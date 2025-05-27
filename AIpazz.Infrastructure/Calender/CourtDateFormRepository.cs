@@ -1,11 +1,11 @@
 using Aipazz.Application.Calender.Interfaces;
-using Aipazz.Domian.Calendar;
+using Aipazz.Domian.Calender;
 
 namespace Aipazz.Infrastructure.Calendar
 {
     public class CourtDateFormRepository : ICourtDateFormRepository
     {
-        
+        private readonly List<CourtDateForm> _courtDates = new List<CourtDateForm>();
         public CourtDateFormRepository()
         {
             _courtDates.Add(new CourtDateForm
@@ -18,21 +18,40 @@ namespace Aipazz.Infrastructure.Calendar
             });
         }
         
-        
-        
-        private readonly List<CourtDateForm> _courtDates = new();
 
         public List<CourtDateForm> GetAll()
         {
             return _courtDates;
         }
-
-        // Other methods (Add, Update, Delete) will go here
+        
         
         public Task<CourtDateForm?> GetById(Guid id)
         {
             var courtDate = _courtDates.FirstOrDefault(cd => cd.Id == id);
             return Task.FromResult(courtDate);
         }
+        
+        
+        public void AddCourtDateForm(CourtDateForm courtDateForm) // 👈 Add this method
+        {
+            _courtDates.Add(courtDateForm);
+        }
+
+        public Task<CourtDateForm?> UpdateCourtDateForm(Guid modelId, CourtDateForm courtDateForm)
+        {
+            var existing = _courtDates.FirstOrDefault(cd => cd.Id == modelId);
+    
+            if (existing == null)
+            {
+                return Task.FromResult<CourtDateForm?>(null);
+            }
+
+            existing.CaseNumber = courtDateForm.CaseNumber;
+            existing.CourtName = courtDateForm.CourtName;
+            existing.Date = courtDateForm.Date;
+
+            return Task.FromResult(existing);
+        }
+
     }
 }
