@@ -1,6 +1,6 @@
 using Aipazz.Application.Calendar.CourtDateForms.Queries;
 using Aipazz.Application.Calender.Interfaces;
-using Aipazz.Domian.Calendar;
+using Aipazz.Domian.Calender;
 using MediatR;
 
 namespace Aipazz.Application.Calendar.CourtDateForms.Handlers

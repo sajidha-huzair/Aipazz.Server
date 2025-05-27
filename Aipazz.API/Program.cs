@@ -86,7 +86,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
 builder.Services.AddScoped<IclientmeetingRepository, clientmeetingrepository>();
-builder.Services.AddScoped<ICourtDateFormRepository, CourtDateFormRepository>();
+builder.Services.AddSingleton<ICourtDateFormRepository, CourtDateFormRepository>();
 
 
 builder.Services.AddSingleton(x =>
