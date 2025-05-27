@@ -9,6 +9,7 @@ namespace Aipazz.Domian.Billing
     public class ExpenseEntry
     {
         public string id { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
         public string matterId { get; set; } = string.Empty; // FK to Matter
         public string Category { get; set; } = string.Empty;  // e.g., Travel
         public int Quantity { get; set; }

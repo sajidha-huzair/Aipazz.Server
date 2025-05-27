@@ -1,6 +1,6 @@
-﻿using Aipazz.Application.Billing.ExpenseEntries.Queries;
+﻿using Aipazz.Application.Billing.DTOs;
+using Aipazz.Application.Billing.ExpenseEntries.Queries;
 using Aipazz.Application.Billing.Interfaces;
-using Aipazz.Application.DTOs;
 using Aipazz.Application.Matters.Interfaces;
 using Aipazz.Domian.Billing;
 using MediatR;
@@ -25,12 +25,13 @@ namespace Aipazz.Application.Billing.ExpenseEntries.Handlers
 
         public async Task<List<ExpenseEntryDto>> Handle(GetAllExpenseEntriesQuery request, CancellationToken cancellationToken)
         {
-            var entries = await _repository.GetAllExpenseEntries();
+            var entries = await _repository.GetAllExpenseEntries(request.UserId);
             var matters = await _matterRepository.GetAllMatters();
 
             return entries.Select(e => new ExpenseEntryDto
             {
                 Id = e.id,
+                UserId = e.UserId,
                 MatterTitle = matters.FirstOrDefault(m => m.id == e.matterId)?.title ?? "",
                 Category = e.Category,
                 Quantity = e.Quantity,

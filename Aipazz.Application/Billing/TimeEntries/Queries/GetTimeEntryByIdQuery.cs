@@ -1,4 +1,5 @@
-﻿using Aipazz.Domian.Billing;
+﻿using Aipazz.Application.Billing.DTOs;
+using Aipazz.Domian.Billing;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -8,15 +9,11 @@ using System.Threading.Tasks;
 
 namespace Aipazz.Application.Billing.TimeEntries.Queries
 {
-    public class GetTimeEntryByIdQuery : IRequest<TimeEntry>
+    public class GetTimeEntryByIdQuery(string id, string matterId, string userId) : IRequest<TimeEntryDto>
     {
-        public string Id { get; set; }
-        public string MatterId { get; set; }
-
-        public GetTimeEntryByIdQuery(string id, string matterId)
-        {
-            Id = id;
-            MatterId = matterId;
-        }
+        public string Id { get; } = id;
+        public string MatterId { get; } = matterId;
+        public string UserId { get; } = userId;
     }
 }
+

@@ -3,11 +3,15 @@ using Aipazz.Application.Billing.ExpenseEntries.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Aipazz.API.Controllers.Billing
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ExpenseEntryController : ControllerBase
     {
 
@@ -19,48 +23,57 @@ namespace Aipazz.API.Controllers.Billing
             _mediator = mediator;
         }
 
-        // GET: api/TimeEntry
+       
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _mediator.Send(new GetAllExpenseEntriesQuery());
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _mediator.Send(new GetAllExpenseEntriesQuery(userId));
             return Ok(result);
         }
 
-        // GET: api/TimeEntry/5
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id, string matterId)
+        public async Task<IActionResult> GetById(string id, [FromQuery] string matterId)
         {
-            var result = await _mediator.Send(new GetExpenseEntryByIdQuery(id, matterId));
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _mediator.Send(new GetExpenseEntryByIdQuery(id, matterId,userId));
             if (result == null) return NotFound();
             return Ok(result);
         }
 
-        // POST: api/TimeEntry
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateExpenseEntryCommand command)
         {
             if (command == null) return BadRequest("Invalid request.");
+            command.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { Id = result.id, MatterId = result.matterId }, result);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id, matterId = command.MatterId }, result);
         }
 
-        // PUT: api/TimeEntry/5
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] UpdateExpenseEntryCommand command)
+        public async Task<IActionResult> Update(string id, [FromBody] UpdateExpenseEntryCommand command)
         {
-            if (command == null) return BadRequest("Invalid request.");
+            if (command == null || id != command.Id)
+                return BadRequest("Invalid request.");
+            command.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var result = await _mediator.Send(command);
             return Ok(result);
         }
 
-        // DELETE: api/TimeEntry/5
+ 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id, string matterId)
         {
-            var result = await _mediator.Send(new DeleteExpenseEntryCommand { Id = id, MatterId = matterId });
-            if (!result) return NotFound();
-            return NoContent();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _mediator.Send(new DeleteExpenseEntryCommand
+            {
+                Id = id,
+                MatterId = matterId,
+                UserId = userId
+            });
+
+            return result ? NoContent() : NotFound();
         }
     }
 }

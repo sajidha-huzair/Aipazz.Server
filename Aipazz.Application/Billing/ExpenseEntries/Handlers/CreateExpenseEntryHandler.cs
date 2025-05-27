@@ -1,5 +1,6 @@
 ﻿using Aipazz.Application.Billing.ExpenseEntries.Commands;
 using Aipazz.Application.Billing.Interfaces;
+using Aipazz.Application.Billing.DTOs;
 using Aipazz.Domian.Billing;
 using MediatR;
 using System;
@@ -11,7 +12,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Aipazz.Application.Billing.ExpenseEntries.Handlers
 {
-    public class CreateExpenseEntryHandler : IRequestHandler<CreateExpenseEntryCommand, ExpenseEntry>
+    public class CreateExpenseEntryHandler : IRequestHandler<CreateExpenseEntryCommand, ExpenseEntryDto>
     {
         private readonly IExpenseEntryRepository _repository;
 
@@ -20,9 +21,9 @@ namespace Aipazz.Application.Billing.ExpenseEntries.Handlers
             _repository = repository;
         }
 
-        public async Task<ExpenseEntry> Handle(CreateExpenseEntryCommand request, CancellationToken cancellationToken)
+        public async Task<ExpenseEntryDto> Handle(CreateExpenseEntryCommand request, CancellationToken cancellationToken)
         {
-            var ExpenseEntry = new ExpenseEntry
+            var expenseEntry = new ExpenseEntry
             {
                 id = Guid.NewGuid().ToString(),
                 matterId = request.MatterId,
@@ -31,11 +32,21 @@ namespace Aipazz.Application.Billing.ExpenseEntries.Handlers
                 Rate=request.Rate,
                 Description = request.Description,
                 Date = request.Date,
-                Status=request.Status
+                UserId=request.UserId
             };
 
-            await _repository.AddExpenseEntry(ExpenseEntry);
-            return ExpenseEntry;
+            await _repository.AddExpenseEntry(expenseEntry);
+            return new ExpenseEntryDto
+            {
+                Id = expenseEntry.id,
+                UserId = expenseEntry.UserId,
+                Category = expenseEntry.Category,
+                Quantity = expenseEntry.Quantity,
+                Description = expenseEntry.Description,
+                Date = expenseEntry.Date,
+                Rate = expenseEntry.Rate,
+                Amount = expenseEntry.Amount
+            };
         }
     }
 }

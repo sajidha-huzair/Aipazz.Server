@@ -1,10 +1,7 @@
-﻿using Aipazz.Application.Billing.TimeEntries.Commands;
-using Aipazz.Application.Billing.Interfaces;
+﻿using Aipazz.Application.Billing.Interfaces;
+using Aipazz.Application.Billing.TimeEntries.Commands;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Aipazz.Application.Billing.TimeEntries.Handlers
@@ -20,13 +17,10 @@ namespace Aipazz.Application.Billing.TimeEntries.Handlers
 
         public async Task<bool> Handle(DeleteTimeEntryCommand request, CancellationToken cancellationToken)
         {
-            var timeEntry = await _repository.GetTimeEntryById(request.Id, request.MatterId);
-            if (timeEntry == null)
-            {
-                throw new KeyNotFoundException($"Time entry with Id {request.Id} and MatterId {request.MatterId} not found.");
-            }
+            var existing = await _repository.GetTimeEntryById(request.Id, request.MatterId, request.UserId);
+            if (existing == null) return false;
 
-            await _repository.DeleteTimeEntry(request.Id, request.MatterId);
+            await _repository.DeleteTimeEntry(request.Id, request.MatterId, request.UserId);
             return true;
         }
     }
