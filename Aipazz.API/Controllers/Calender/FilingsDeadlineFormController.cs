@@ -1,3 +1,4 @@
+using Aipazz.Application.Calender.Commands.FilingsDeadlineForms;
 using Aipazz.Application.Calender.FilingsDeadlineForm.Queries;
 using Aipazz.Application.Calender.Queries.FilingsDeadlineForms;
 using MediatR;
@@ -33,6 +34,14 @@ namespace Aipazz.API.Controllers.Calendar
 
             return Ok(result);
         }
+        
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] AddFilingsDeadlineFormCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
 
     }
 }
