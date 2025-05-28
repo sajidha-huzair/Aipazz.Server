@@ -52,6 +52,18 @@ namespace Aipazz.Infrastructure.Calendar
 
             return Task.FromResult(existing);
         }
+        
+        
+        public bool DeleteCourtDateForm(Guid id)
+        {
+            var courtDate = _courtDates.FirstOrDefault(cd => cd.Id == id);
+            if (courtDate == null)
+                return false;
+
+            _courtDates.Remove(courtDate);
+            return true;
+        }
+
 
     }
 }
