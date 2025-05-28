@@ -1,3 +1,4 @@
+using Aipazz.Application.Calender.TeamMeeting.Commands;
 using Aipazz.Application.Calender.TeamMeeting.Queries;
 using Aipazz.Application.Calender.TeamMeetingForms.Queries;
 using Aipazz.Domian.Calender;
@@ -33,6 +34,14 @@ namespace Aipazz.API.Controllers.Calendar
                 return NotFound();
             return Ok(result);
         }
+        
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] AddTeamMeetingFormCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(result);
+        }
+
 
     }
 }
