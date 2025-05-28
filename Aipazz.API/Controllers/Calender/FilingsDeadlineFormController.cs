@@ -41,6 +41,18 @@ namespace Aipazz.API.Controllers.Calendar
             var result = await _mediator.Send(command);
             return Ok(result);
         }
+        
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(Guid id, [FromBody] UpdateFilingsDeadlineFormCommand command)
+        {
+            if (id != command.Id) return BadRequest("ID mismatch");
+
+            var result = await _mediator.Send(command);
+
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
+
 
 
     }
