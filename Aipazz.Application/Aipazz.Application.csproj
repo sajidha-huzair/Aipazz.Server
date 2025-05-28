@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <Folder Include="Calender\FilingsDeadLineForm\Commands\" />
-    <Folder Include="Calender\FilingsDeadLineForm\Handlers\" />
   </ItemGroup>
 
 </Project>
