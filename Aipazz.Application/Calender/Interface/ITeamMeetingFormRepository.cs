@@ -4,10 +4,10 @@ namespace Aipazz.Application.Calender.Interfaces
 {
     public interface ITeamMeetingFormRepository
     {
-        List<TeamMeetingForm> GetAll();
-        Task<TeamMeetingForm?> GetById(Guid id);
-        void Add(TeamMeetingForm form);
-        Task<TeamMeetingForm?> Update(Guid id, TeamMeetingForm form);
+        List<Domian.Calender.TeamMeetingForm> GetAll();
+        Task<Domian.Calender.TeamMeetingForm?> GetById(Guid id);
+        void Add(Domian.Calender.TeamMeetingForm form);
+        Task<Domian.Calender.TeamMeetingForm?> Update(Guid id, Domian.Calender.TeamMeetingForm form);
         Task<bool> Delete(Guid id);
     }
 }

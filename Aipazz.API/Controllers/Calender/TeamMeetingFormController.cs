@@ -1,3 +1,4 @@
+using Aipazz.Application.Calender.TeamMeeting.Queries;
 using Aipazz.Application.Calender.TeamMeetingForms.Queries;
 using Aipazz.Domian.Calender;
 using MediatR;
@@ -24,6 +25,14 @@ namespace Aipazz.API.Controllers.Calendar
             return Ok(result);
         }
 
-        // Other endpoints will go here later
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var result = await _mediator.Send(new GetTeamMeetingFormByIdQuery(id));
+            if (result == null)
+                return NotFound();
+            return Ok(result);
+        }
+
     }
 }

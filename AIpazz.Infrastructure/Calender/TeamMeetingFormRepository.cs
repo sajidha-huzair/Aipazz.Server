@@ -1,7 +1,7 @@
 using Aipazz.Application.Calender.Interfaces;
 using Aipazz.Domian.Calender;
 
-namespace AIpazz.Infrastructure.Calendar
+namespace AIpazz.Infrastructure.Calender
 {
     public class TeamMeetingFormRepository : ITeamMeetingFormRepository
     {
