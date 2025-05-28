@@ -53,6 +53,15 @@ namespace Aipazz.API.Controllers.Calendar
 
             return Ok(result);
         }
+        
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var result = await _mediator.Send(new DeleteTeamMeetingFormCommand(id));
+            if (!result) return NotFound();
+            return NoContent();
+        }
+
 
 
 
