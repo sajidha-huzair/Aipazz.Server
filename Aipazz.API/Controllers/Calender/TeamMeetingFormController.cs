@@ -41,6 +41,19 @@ namespace Aipazz.API.Controllers.Calendar
             var result = await _mediator.Send(command);
             return Ok(result);
         }
+        
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, UpdateTeamMeetingFormCommand command)
+        {
+            if (id != command.Id)
+                return BadRequest("Mismatched ID");
+
+            var result = await _mediator.Send(command);
+            if (result == null) return NotFound();
+
+            return Ok(result);
+        }
+
 
 
     }
