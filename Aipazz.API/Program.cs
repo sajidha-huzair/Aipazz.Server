@@ -12,6 +12,7 @@ using Aipazz.Infrastructure.Matters;
 
 using Aipazz.Application.DocumentMGT.documentmgt.Queries;
 using Aipazz.Infrastructure.Calendar;
+using AIpazz.Infrastructure.Calendar;
 using AIpazz.Infrastructure.Documentmgt.Services;
 using AIpazz.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -87,6 +88,7 @@ builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
 builder.Services.AddScoped<IclientmeetingRepository, clientmeetingrepository>();
 builder.Services.AddSingleton<ICourtDateFormRepository, CourtDateFormRepository>();
+builder.Services.AddSingleton<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
 
 
 builder.Services.AddSingleton(x =>
