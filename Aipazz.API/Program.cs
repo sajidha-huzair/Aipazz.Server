@@ -89,6 +89,7 @@ builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
 builder.Services.AddScoped<IclientmeetingRepository, clientmeetingrepository>();
 builder.Services.AddSingleton<ICourtDateFormRepository, CourtDateFormRepository>();
 builder.Services.AddSingleton<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
+builder.Services.AddSingleton<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
 
 
 builder.Services.AddSingleton(x =>

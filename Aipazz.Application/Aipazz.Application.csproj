@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Aipazz.Domian\Aipazz.Domian.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Calender\TeamMeeting\Commands\" />
+  </ItemGroup>
+
 </Project>
