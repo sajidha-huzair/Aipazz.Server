@@ -1,3 +1,4 @@
+using Aipazz.Application.Calendar.CourtDateForms.Commands;
 using Aipazz.Application.Calendar.CourtDateForms.queries;
 using Aipazz.Application.Calendar.CourtDateForms.Queries;
 using Aipazz.Application.Calender.CourtDateForm.Commands;
@@ -56,6 +57,18 @@ namespace Aipazz.API.Controllers.Calendar
 
             return Ok(result);
         }
+        
+        
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var result = await _mediator.Send(new DeleteCourtDateFormCommand(id));
+            if (!result)
+                return NotFound();
+
+            return NoContent();
+        }
+
 
 
 

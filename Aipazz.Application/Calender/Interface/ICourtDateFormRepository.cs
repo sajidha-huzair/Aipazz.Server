@@ -10,5 +10,7 @@ namespace Aipazz.Application.Calender.Interfaces
         void AddCourtDateForm(Domian.Calender.CourtDateForm courtDateForm);
         
         Task<Domian.Calender.CourtDateForm> UpdateCourtDateForm(Guid modelId,Domian.Calender.CourtDateForm courtDateForm);
+        bool DeleteCourtDateForm(Guid id);
+
     }
 }
