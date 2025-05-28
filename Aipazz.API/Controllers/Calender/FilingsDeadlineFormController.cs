@@ -52,6 +52,16 @@ namespace Aipazz.API.Controllers.Calendar
             if (result == null) return NotFound();
             return Ok(result);
         }
+        
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var result = await _mediator.Send(new DeleteFilingsDeadlineFormCommand(id));
+
+            if (!result) return NotFound();
+            return NoContent(); // 204 No Content
+        }
+
 
 
 
