@@ -57,8 +57,11 @@ namespace AIpazz.Infrastructure.Calendar
             var form = _forms.FirstOrDefault(f => f.Id == id);
             if (form == null) return Task.FromResult(false);
 
-            _forms.Remove(form);
+            _forms.Remove(form); 
             return Task.FromResult(true);
+
         }
+        
+        
     }
 }
