@@ -3,9 +3,9 @@ using Aipazz.Application.Calender.TeamMeetingForms.Queries;
 using Aipazz.Domian.Calender;
 using MediatR;
 
-namespace Aipazz.Application.Calender.TeamMeetingForms.Handlers
+namespace Aipazz.Application.Calender.TeamMeeting.Handlers
 {
-    public class GetAllTeamMeetingFormsHandler : IRequestHandler<GetAllTeamMeetingFormsQuery, List<TeamMeetingForm>>
+    public class GetAllTeamMeetingFormsHandler : IRequestHandler<GetAllTeamMeetingFormsQuery, List<Domian.Calender.TeamMeetingForm>>
     {
         private readonly ITeamMeetingFormRepository _repository;
 
@@ -14,7 +14,7 @@ namespace Aipazz.Application.Calender.TeamMeetingForms.Handlers
             _repository = repository;
         }
 
-        public Task<List<TeamMeetingForm>> Handle(GetAllTeamMeetingFormsQuery request, CancellationToken cancellationToken)
+        public Task<List<Domian.Calender.TeamMeetingForm>> Handle(GetAllTeamMeetingFormsQuery request, CancellationToken cancellationToken)
         {
             var data = _repository.GetAll();
             return Task.FromResult(data);
