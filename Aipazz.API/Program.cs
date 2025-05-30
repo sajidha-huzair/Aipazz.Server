@@ -1,6 +1,7 @@
 ﻿using AIpazz.Infrastructure.Billing;
 using Aipazz.Application.Billing.TimeEntries.Queries;
 using Aipazz.Application.Calender.Interface;
+using Aipazz.Application.Calender.Interfaces;
 using Microsoft.Azure.Cosmos;
 using Aipazz.Domian;
 using Microsoft.Extensions.Options;
@@ -10,6 +11,8 @@ using AIpazz.Infrastructure.Documentmgt;
 using Aipazz.Infrastructure.Matters;
 
 using Aipazz.Application.DocumentMGT.documentmgt.Queries;
+using Aipazz.Infrastructure.Calendar;
+using AIpazz.Infrastructure.Calendar;
 using AIpazz.Infrastructure.Documentmgt.Services;
 using AIpazz.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -84,6 +87,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
 builder.Services.AddScoped<IclientmeetingRepository, clientmeetingrepository>();
+builder.Services.AddSingleton<ICourtDateFormRepository, CourtDateFormRepository>();
+builder.Services.AddSingleton<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
+builder.Services.AddSingleton<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
+
 
 builder.Services.AddSingleton(x =>
     new BlobServiceClient(builder.Configuration["AzureBlob:ConnectionString"])
