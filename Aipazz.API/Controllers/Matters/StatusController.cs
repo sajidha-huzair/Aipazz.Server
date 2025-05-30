@@ -2,11 +2,12 @@
 using Aipazz.Application.Matters.matterStatus.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace Aipazz.API.Controllers.Matters
 {
-    [ApiController]
     [Route("api/[controller]")]
+    [ApiController]
     public class StatusController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -24,11 +25,11 @@ namespace Aipazz.API.Controllers.Matters
             return Ok(result);
         }
 
-        // GET: api/Status/{id}/{name}
-        [HttpGet("{id}/{Name}")]
-        public async Task<IActionResult> GetById(string id, string Name)
+        // GET: api/Status/{id}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(string id)
         {
-            var result = await _mediator.Send(new GetStatusByIdQuery(id, Name));
+            var result = await _mediator.Send(new GetStatusByIdQuery(id));
             if (result == null) return NotFound();
             return Ok(result);
         }
@@ -37,28 +38,28 @@ namespace Aipazz.API.Controllers.Matters
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateStatusCommand command)
         {
-            if (command == null) return BadRequest("Invalid request.");
-            var created = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id, name = created.Name }, created);
+            if (command == null) return BadRequest("Invalid status data.");
+            var result = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetById), new { id = result.id }, result);
         }
 
         // PUT: api/Status/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] UpdateStatusCommand command)
         {
-            if (command == null || command.Id != id)
-                return BadRequest("Invalid request.");
+            if (command == null || id != command.Id)
+                return BadRequest("Invalid update request.");
 
-            var updated = await _mediator.Send(command);
-            return Ok(updated);
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
 
-        // DELETE: api/Status/{id}/{name}
-        [HttpDelete("{id}/{Name}")]
-        public async Task<IActionResult> Delete(string id, string Name)
+        // DELETE: api/Status/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
         {
-            var deleted = await _mediator.Send(new DeleteStatusCommand { Id = id, name = Name });
-            if (!deleted) return NotFound();
+            var success = await _mediator.Send(new DeleteStatusCommand(id));
+            if (!success) return NotFound();
             return NoContent();
         }
     }

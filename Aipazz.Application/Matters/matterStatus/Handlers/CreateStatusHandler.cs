@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Aipazz.Application.Matters.matterStatus.Commands;
 using Aipazz.Application.Matters.Interfaces;
 using Aipazz.Domian.Matters;
@@ -23,8 +18,8 @@ namespace Aipazz.Application.Matters.matterStatus.Handlers
         {
             var status = new Status
             {
-                Id = Guid.NewGuid().ToString(),
-                Name = request.name
+                id = Guid.NewGuid().ToString(),
+                Name = request.Name
             };
 
             await _repository.AddStatus(status);
@@ -32,4 +27,3 @@ namespace Aipazz.Application.Matters.matterStatus.Handlers
         }
     }
 }
-

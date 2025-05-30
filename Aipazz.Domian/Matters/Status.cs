@@ -8,7 +8,7 @@ namespace Aipazz.Domian.Matters
 {
     public class Status
     {
-        public required string Id { get; set; }  // Cosmos DB ID
-        public string Name { get; set; } = string.Empty; // e.g., "To Do", "In Progress"
+        public required string id { get; set; }  // Partition Key
+        public string Name { get; set; } = string.Empty;
     }
 }
