@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Azure.Storage.Blobs;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Aipazz.Infrastructure.Matters;
+using Aipazz.Application.Matters.Interfaces;
 
 
 
@@ -94,6 +95,7 @@ builder.Services.AddScoped<IclientmeetingRepository, clientmeetingrepository>();
 builder.Services.AddSingleton<ICourtDateFormRepository, CourtDateFormRepository>();
 builder.Services.AddSingleton<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
 builder.Services.AddSingleton<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
+
 
 
 builder.Services.AddSingleton(x =>
