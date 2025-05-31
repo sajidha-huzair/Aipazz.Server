@@ -1,10 +1,10 @@
-﻿using Aipazz.Application.Billing.DTOs;
+﻿using Aipazz.Domian.client;
 using MediatR;
 using System.Collections.Generic;
 
 namespace Aipazz.Application.client.Queries
 {
-    public class GetClientsWithEntriesQuery : IRequest<List<ClientWithMattersDto>>
+    public class GetClientsWithEntriesQuery : IRequest<List<Client>>
     {
         public string UserId { get; }
 
@@ -13,5 +13,4 @@ namespace Aipazz.Application.client.Queries
             UserId = userId;
         }
     }
-
 }

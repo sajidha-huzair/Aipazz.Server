@@ -9,7 +9,5 @@ using Aipazz.Domian.client;
 
 namespace Aipazz.Application.client.Queries
 {
-  
-        public record GetAllClientsQuery() : IRequest<List<Client>>;
-    
+    public record GetAllClientsQuery() : IRequest<List<Client>>;
 }

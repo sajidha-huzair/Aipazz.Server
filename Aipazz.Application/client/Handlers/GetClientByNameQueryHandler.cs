@@ -2,10 +2,7 @@
 using Aipazz.Domian.client;
 using Aipazz.Application.client.Queries;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Aipazz.Application.client.Handlers
@@ -21,7 +18,7 @@ namespace Aipazz.Application.client.Handlers
 
         public async Task<Client?> Handle(GetClientByNameQuery request, CancellationToken cancellationToken)
         {
-            return await _clientRepository.GetByNameAsync(request.Name ?? string.Empty);
+            return await _clientRepository.GetByNameAsync(request.FirstName ?? string.Empty, request.LastName ?? string.Empty);
         }
     }
 }
