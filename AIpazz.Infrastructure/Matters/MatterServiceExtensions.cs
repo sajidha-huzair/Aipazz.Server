@@ -23,7 +23,8 @@ namespace Aipazz.Infrastructure.Matters
                 return new StatusRepository(cosmosClient, options);
             });
 
-            // Add more Matter-related services here if needed
+            services.AddSingleton<StatusSeeder>();
+
 
             return services;
         }

@@ -12,6 +12,7 @@ namespace Aipazz.Application.Matters.matter.Commands
         string Description,
         CourtType CourtType,
         string ClientNic,
+        string StatusId,
         List<string> TeamMembers
     ) : IRequest<Matter>;
 }

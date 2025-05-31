@@ -11,6 +11,8 @@ namespace Aipazz.Application.Matters.Interfaces
         Task<Status?> GetStatusById(string id); 
         Task AddStatus(Status status);
         Task UpdateStatus(Status status);
-        Task DeleteStatus(string id); 
+        Task DeleteStatus(string id);
+        Task<Status?> GetStatusByName(string name);
+
     }
 }

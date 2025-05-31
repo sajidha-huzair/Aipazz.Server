@@ -32,6 +32,7 @@ namespace Aipazz.Application.Matters.matter.Handlers
             matter.ClientNic = request.ClientNic;
             matter.TeamMembers = request.TeamMembers;
             matter.CourtType = request.CourtType;
+            matter.StatusId = request.StatusId;
 
             await _repository.UpdateMatter(matter);
             return matter;

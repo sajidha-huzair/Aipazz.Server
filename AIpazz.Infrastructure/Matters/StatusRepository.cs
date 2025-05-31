@@ -68,5 +68,16 @@ namespace Aipazz.Infrastructure.Matters
             }
         }
 
+        public async Task<Status?> GetStatusByName(string name)
+        {
+            var query = _container.GetItemLinqQueryable<Status>(allowSynchronousQueryExecution: true)
+                .Where(s => s.Name == name)
+                .AsEnumerable()
+                .FirstOrDefault();
+
+            return query;
+        }
+
+
     }
 }
