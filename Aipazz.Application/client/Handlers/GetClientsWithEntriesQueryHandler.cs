@@ -33,7 +33,7 @@ namespace Aipazz.Application.client.Handlers
 
         public async Task<List<ClientWithMattersDto>> Handle(GetClientsWithEntriesQuery request, CancellationToken cancellationToken)
         {
-            var allMatters = await _matterRepo.GetAllMatters(); // You may want to filter matters by user later
+            var allMatters = await _matterRepo.GetAllMatters(request.UserId); // You may want to filter matters by user later
             var result = new List<ClientWithMattersDto>();
 
             var clientNicToMattersWithEntries = new Dictionary<string, List<MatterWithEntriesDto>>();

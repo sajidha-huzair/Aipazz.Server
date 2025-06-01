@@ -8,6 +8,7 @@ namespace Aipazz.Domian.Matters
     {
         
         public required string id { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         public string title { get; set; } = string.Empty; 
 
@@ -20,5 +21,10 @@ namespace Aipazz.Domian.Matters
         public string ClientNic { get; set; } = string.Empty;// Partition Key
 
         public List<string> TeamMembers { get; set; } = new();
+        public required string StatusId { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public CourtType CourtType { get; set; }
+
     }
 }
