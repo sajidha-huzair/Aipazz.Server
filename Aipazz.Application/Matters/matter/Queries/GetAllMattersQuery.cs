@@ -4,5 +4,13 @@ using System.Collections.Generic;
 
 namespace Aipazz.Application.Matters.matter.Queries
 {
-    public record GetAllMattersQuery() : IRequest<List<Matter>>;
+    public class GetAllMattersQuery : IRequest<List<Matter>>
+    {
+        public string UserId { get; set; }
+
+        public GetAllMattersQuery(string userId)
+        {
+            UserId = userId;
+        }
+    }
 }

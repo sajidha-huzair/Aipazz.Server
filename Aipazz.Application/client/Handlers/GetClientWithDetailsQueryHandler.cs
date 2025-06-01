@@ -36,7 +36,7 @@ namespace Aipazz.Application.client.Handlers
             var client = await _clientRepo.GetByNicAsync(request.ClientNic);
             if (client == null) return null;
 
-            var matters = await _matterRepo.GetMattersByClientNicAsync(request.ClientNic);
+            var matters = await _matterRepo.GetMattersByClientNicAsync(request.ClientNic, request.UserId);
 
             var result = new ClientWithMattersDto
             {

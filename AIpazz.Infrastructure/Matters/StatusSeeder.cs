@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Aipazz.Domian;
 using Aipazz.Domian.Matters;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
-using Aipazz.Domian;
 
 namespace Aipazz.Infrastructure.Matters
 {
@@ -26,27 +27,43 @@ namespace Aipazz.Infrastructure.Matters
             _container = db.GetContainer(containerName);
         }
 
-        public async Task SeedDefaultStatusesAsync()
+        public async Task SeedDefaultStatusesAsync(string userId)
         {
+            // 1. Check if the user already has statuses
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.UserId = @userId")
+                .WithParameter("@userId", userId);
+
+            var iterator = _container.GetItemQueryIterator<Status>(query, requestOptions: new QueryRequestOptions
+            {
+                PartitionKey = new PartitionKey(userId)
+            });
+
+            var existingStatuses = new List<Status>();
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                existingStatuses.AddRange(response);
+            }
+
+            // If statuses already exist for the user, skip seeding
+            if (existingStatuses.Any())
+                return;
+
+            // 2. Seed default statuses for this user
             foreach (var statusName in DefaultStatuses)
             {
-                var id = statusName.ToLower().Replace(" ", "-"); // e.g., "to-do"
-                try
+                var status = new Status
                 {
-                    await _container.ReadItemAsync<Status>(id, new PartitionKey(id));
-                    // Already exists, skip.
-                }
-                catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    var status = new Status
-                    {
-                        id = id,
-                        Name = id // id is also used as partition key
-                    };
+                    id = Guid.NewGuid().ToString(),
+                    Name = statusName,
+                    UserId = userId // Ensure the userId is set
+                };
 
-                    await _container.CreateItemAsync(status, new PartitionKey(status.Name));
-                }
+                await _container.CreateItemAsync(status, new PartitionKey(userId));  // Use UserId as partition key
             }
         }
+
+
+
     }
 }

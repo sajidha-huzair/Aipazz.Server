@@ -9,6 +9,6 @@ using MediatR;
 
 namespace Aipazz.Application.Matters.matter.Queries
 {
-    public record GetMattersByStatusIdQuery(string StatusId) : IRequest<List<Matter>>;
+    public record GetMattersByStatusIdQuery(string StatusId, string UserId) : IRequest<List<Matter>>;
 }
 

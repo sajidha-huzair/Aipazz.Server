@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Aipazz.Application.Matters.Interfaces;
 using Aipazz.Domian;
@@ -20,12 +21,20 @@ namespace Aipazz.Infrastructure.Matters
             _container = db.GetContainer(containerName);
         }
 
-        public async Task<List<Status>> GetAllStatuses()
+        // ✅ Get all statuses for a user using /UserId as partition key
+        public async Task<List<Status>> GetAllStatuses(string userId)
         {
-            var query = new QueryDefinition("SELECT * FROM c");
-            var iterator = _container.GetItemQueryIterator<Status>(query);
-            List<Status> statuses = new();
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.UserId = @userId")
+                .WithParameter("@userId", userId);
 
+            var iterator = _container.GetItemQueryIterator<Status>(
+                query,
+                requestOptions: new QueryRequestOptions
+                {
+                    PartitionKey = new PartitionKey(userId)
+                });
+
+            List<Status> statuses = new();
             while (iterator.HasMoreResults)
             {
                 var response = await iterator.ReadNextAsync();
@@ -35,12 +44,18 @@ namespace Aipazz.Infrastructure.Matters
             return statuses;
         }
 
-        public async Task<Status?> GetStatusById(string id)
+        // ✅ Read with /UserId as partition key
+        public async Task<Status?> GetStatusById(string id, string userId)
         {
             try
             {
-                var response = await _container.ReadItemAsync<Status>(id, new PartitionKey(id));
-                return response.Resource;
+                var response = await _container.ReadItemAsync<Status>(id, new PartitionKey(userId));
+                var status = response.Resource;
+
+                if (status.UserId != userId)
+                    return null;
+
+                return status;
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -48,23 +63,26 @@ namespace Aipazz.Infrastructure.Matters
             }
         }
 
+        // ✅ Write with /UserId as partition key
         public async Task AddStatus(Status status)
         {
             status.id ??= Guid.NewGuid().ToString();
-            await _container.CreateItemAsync(status, new PartitionKey(status.id));
+            await _container.CreateItemAsync(status, new PartitionKey(status.UserId));
         }
 
+        // ✅ Upsert with /UserId as partition key
         public async Task UpdateStatus(Status status)
         {
-            await _container.UpsertItemAsync(status, new PartitionKey(status.id));
+            await _container.UpsertItemAsync(status, new PartitionKey(status.UserId));
         }
 
-        public async Task DeleteStatus(string id)
+        // ✅ Delete with /UserId as partition key
+        public async Task DeleteStatus(string id, string userId)
         {
-            var status = await GetStatusById(id);
+            var status = await GetStatusById(id, userId);
             if (status is not null)
             {
-                await _container.DeleteItemAsync<Status>(id, new PartitionKey(status.id));
+                await _container.DeleteItemAsync<Status>(id, new PartitionKey(userId));
             }
         }
 
@@ -77,7 +95,5 @@ namespace Aipazz.Infrastructure.Matters
 
             return query;
         }
-
-
     }
 }

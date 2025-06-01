@@ -25,7 +25,7 @@ namespace Aipazz.Application.Billing.TimeEntries.Handlers
         public async Task<List<TimeEntryDto>> Handle(GetAllTimeEntriesQuery request, CancellationToken cancellationToken)
         {
             var entries = await _repository.GetAllTimeEntries(request.UserId);
-            var matters = await _matterRepository.GetAllMatters();
+            var matters = await _matterRepository.GetAllMatters(request.UserId);
 
             return entries.Select(e => new TimeEntryDto
             {

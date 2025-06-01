@@ -3,5 +3,10 @@ using MediatR;
 
 namespace Aipazz.Application.Matters.matterStatus.Commands
 {
-    public record CreateStatusCommand(string Name) : IRequest<Status>;
+    public class CreateStatusCommand : IRequest<Status>
+    {
+        public string Name { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty; 
+    }
+
 }

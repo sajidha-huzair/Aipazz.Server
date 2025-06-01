@@ -6,12 +6,14 @@ namespace Aipazz.Application.Matters.matter.Queries
     public class GetMatterByIdQuery : IRequest<Matter>
     {
         public string Id { get; set; }
-        public string clientNic { get; set; } // Partition Key
+        public string ClientNic { get; set; }
+        public string UserId { get; set; } // 👈 Add this
 
-        public GetMatterByIdQuery(string id, string ClientNic)
+        public GetMatterByIdQuery(string id, string clientNic, string userId)
         {
             Id = id;
-            clientNic = ClientNic;
+            ClientNic = clientNic;
+            UserId = userId;
         }
     }
 }

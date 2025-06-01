@@ -21,7 +21,7 @@ namespace Aipazz.Application.Matters.matter.Handlers
 
         public async Task<List<Matter>> Handle(GetMattersByStatusIdQuery request, CancellationToken cancellationToken)
         {
-            var allMatters = await _repository.GetAllMatters();
+            var allMatters = await _repository.GetAllMatters(request.UserId);
             return allMatters.Where(m => m.StatusId == request.StatusId).ToList();
         }
     }

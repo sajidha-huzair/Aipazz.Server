@@ -23,7 +23,7 @@ namespace Aipazz.Application.Matters.matter.Commands
         public async Task<Matter> Handle(CreateMatterCommand request, CancellationToken cancellationToken)
         {
             // Get "To Do" status from DB
-            var toDoStatus = await _statusRepository.GetStatusByName("to-do");
+            var toDoStatus = await _statusRepository.GetStatusByName("To Do");
             if (toDoStatus == null)
             {
                 throw new Exception("Default status 'To Do' not found.");
@@ -38,8 +38,9 @@ namespace Aipazz.Application.Matters.matter.Commands
                 Date = request.Date,
                 Description = request.Description,
                 ClientNic = request.ClientNic,
-                StatusId = toDoStatus.id, // 👈 Default assignment
+                StatusId = toDoStatus.Name, // 👈 Default assignment
                 TeamMembers = request.TeamMembers,
+                UserId = request.UserId,
                 CourtType = request.CourtType
             };
 
