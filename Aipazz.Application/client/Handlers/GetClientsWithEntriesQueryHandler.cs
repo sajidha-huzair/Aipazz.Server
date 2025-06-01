@@ -40,8 +40,8 @@ namespace Aipazz.Application.client.Handlers
 
             foreach (var matter in allMatters)
             {
-                var timeEntries = await _timeRepo.GetTimeEntriesByMatterIdAsync(matter.id!, request.UserId); 
-                var expenseEntries = await _expenseRepo.GetExpenseEntriesByMatterIdAsync(matter.id!,request.UserId);
+                var timeEntries = await _timeRepo.GetTimeEntriesByMatterIdAsync(matter.id!, request.UserId);
+                var expenseEntries = await _expenseRepo.GetExpenseEntriesByMatterIdAsync(matter.id!, request.UserId);
 
                 if (!timeEntries.Any() && !expenseEntries.Any())
                     continue;
@@ -87,7 +87,7 @@ namespace Aipazz.Application.client.Handlers
                 result.Add(new ClientWithMattersDto
                 {
                     Id = client.id!,
-                    Name = client.name!,
+                    Name = $"{client.FirstName} {client.LastName}".Trim(),
                     Nic = client.nic!,
                     Matters = matters
                 });
@@ -97,4 +97,4 @@ namespace Aipazz.Application.client.Handlers
         }
     }
 
-    }
+}

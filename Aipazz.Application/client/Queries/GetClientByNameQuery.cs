@@ -6,8 +6,7 @@ namespace Aipazz.Application.client.Queries
 {
     public class GetClientByNameQuery : IRequest<Client?>
     {
-        public string? Name { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
     }
-
-    
 }

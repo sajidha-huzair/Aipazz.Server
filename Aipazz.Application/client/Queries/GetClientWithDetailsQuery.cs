@@ -11,7 +11,7 @@ namespace Aipazz.Application.client.Queries
     public class GetClientWithDetailsQuery : IRequest<ClientWithMattersDto>
     {
         public string ClientNic { get; set; }
-        public string UserId { get; set; } 
+        public string UserId { get; set; }
 
         public GetClientWithDetailsQuery(string clientNic, string userId)
         {
