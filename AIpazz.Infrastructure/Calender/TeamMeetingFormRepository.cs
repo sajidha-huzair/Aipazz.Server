@@ -59,6 +59,15 @@ namespace AIpazz.Infrastructure.Calender
             return Task.FromResult(existing);
         }
 
+        // public Task<bool> Delete(Guid id)
+        // {
+        //     var form = _forms.FirstOrDefault(f => f.Id == id);
+        //     if (form == null) return Task.FromResult(false);
+        //
+        //     _forms.Remove(form);
+        //     return Task.FromResult(true);
+        // }
+        
         public Task<bool> Delete(Guid id)
         {
             var existing = _forms.FirstOrDefault(f => f.Id == id);
@@ -67,9 +76,6 @@ namespace AIpazz.Infrastructure.Calender
             _forms.Remove(existing);
             return Task.FromResult(true);
         }
-
-        
-       
 
     }
 }

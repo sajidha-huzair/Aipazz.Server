@@ -55,7 +55,6 @@ namespace Aipazz.API.Controllers.Calender
             return Ok(result);
         }
         
-        
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -64,7 +63,7 @@ namespace Aipazz.API.Controllers.Calender
             return NoContent();
         }
 
-        
+
 
 
 
