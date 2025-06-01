@@ -20,5 +20,10 @@ namespace Aipazz.Domian.Matters
         public string ClientNic { get; set; } = string.Empty;// Partition Key
 
         public List<string> TeamMembers { get; set; } = new();
+        public required string StatusId { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public CourtType CourtType { get; set; }
+
     }
 }

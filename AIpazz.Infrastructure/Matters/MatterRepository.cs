@@ -64,7 +64,9 @@ namespace Aipazz.Infrastructure.Matters
             try
             {
                 await _container.CreateItemAsync(matter, new PartitionKey(matter.ClientNic));
-                Console.WriteLine($"Successfully added matter ID: {matter.id}");
+                Console.WriteLine($"Successfully added matter ID: {matter.id}, CourtType: {matter.CourtType}");
+                // Ensure CourtType is populated at this point
+                
             }
             catch (CosmosException ex)
             {

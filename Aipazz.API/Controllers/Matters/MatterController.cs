@@ -1,4 +1,5 @@
-﻿using Aipazz.Application.Matters.matter.Commands;
+﻿using Aipazz.Application.Matters.DTO;
+using Aipazz.Application.Matters.matter.Commands;
 using Aipazz.Application.Matters.matter.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -67,6 +68,33 @@ namespace Aipazz.API.Controllers.Matters
             var result = await _mediator.Send(new GetAllMatterTitlesQuery());
             return Ok(result);
         }
+
+        // PUT: api/Matter/{id}/status
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(
+        string id,
+        [FromQuery] string clientNic,
+        [FromBody] UpdateMatterStatusDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.NewStatusId))
+                return BadRequest("New status ID must be provided.");
+
+            await _mediator.Send(new UpdateMatterStatusCommand(id, clientNic, dto.NewStatusId));
+            return NoContent();
+        }
+
+        // File: Controllers/MatterController.cs
+        [HttpGet("status/{statusId}")]
+        public async Task<IActionResult> GetMattersByStatusId(string statusId)
+        {
+            var result = await _mediator.Send(new GetMattersByStatusIdQuery(statusId));
+            return Ok(result);
+        }
+
+
+
+
+
 
     }
 }

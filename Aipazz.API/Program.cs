@@ -21,6 +21,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Azure.Storage.Blobs;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Aipazz.Infrastructure.Matters;
+using Aipazz.Application.Matters.Interfaces;
 
 
 
@@ -56,7 +58,10 @@ builder.Services.AddSingleton<CosmosClient>(sp =>
 
 builder.Services.AddBillingServices(builder.Configuration);
 
-builder.Services.AddMatterServices();
+builder.Services.AddMatterServices(builder.Configuration);
+
+
+
 
 
 builder.Services.AddInfrastructureServices();
@@ -92,6 +97,7 @@ builder.Services.AddSingleton<IFilingsDeadlineFormRepository, FilingsDeadlineFor
 builder.Services.AddSingleton<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
 
 
+
 builder.Services.AddSingleton(x =>
     new BlobServiceClient(builder.Configuration["AzureBlob:ConnectionString"])
 );
@@ -117,5 +123,15 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var seeder = scope.ServiceProvider.GetRequiredService<StatusSeeder>();
+        await seeder.SeedDefaultStatusesAsync();
+    }
+}
+
 
 app.Run();
