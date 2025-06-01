@@ -1,3 +1,4 @@
+using Aipazz.Application.Calender.Interface;
 using Aipazz.Application.Calender.Interfaces;
 using Aipazz.Domian.Calender;
 
@@ -60,11 +61,15 @@ namespace AIpazz.Infrastructure.Calender
 
         public Task<bool> Delete(Guid id)
         {
-            var form = _forms.FirstOrDefault(f => f.Id == id);
-            if (form == null) return Task.FromResult(false);
+            var existing = _forms.FirstOrDefault(f => f.Id == id);
+            if (existing == null) return Task.FromResult(false);
 
-            _forms.Remove(form);
+            _forms.Remove(existing);
             return Task.FromResult(true);
         }
+
+        
+       
+
     }
 }

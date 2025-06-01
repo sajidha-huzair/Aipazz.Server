@@ -3,7 +3,7 @@ using Aipazz.Domian.Calender;
 
 namespace AIpazz.Infrastructure.Calender
 {
-    public class clientmeetingrepository : IclientmeetingRepository
+    public class Clientmeetingrepository : IclientmeetingRepository
     {
         private static readonly List<ClientMeeting> _meetings = new()
         {

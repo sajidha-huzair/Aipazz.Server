@@ -1,11 +1,12 @@
 using Aipazz.Application.Calender.TeamMeeting.Commands;
 using Aipazz.Application.Calender.TeamMeeting.Queries;
+using Aipazz.Application.Calender.TeamMeetingForm.Commands;
 using Aipazz.Application.Calender.TeamMeetingForms.Queries;
 using Aipazz.Domian.Calender;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Aipazz.API.Controllers.Calendar
+namespace Aipazz.API.Controllers.Calender
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -53,6 +54,17 @@ namespace Aipazz.API.Controllers.Calendar
 
             return Ok(result);
         }
+        
+        
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var result = await _mediator.Send(new DeleteTeamMeetingFormCommand(id));
+            if (!result) return NotFound();
+            return NoContent();
+        }
+
+        
 
 
 

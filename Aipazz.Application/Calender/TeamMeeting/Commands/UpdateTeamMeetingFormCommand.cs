@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Aipazz.Application.Calender.TeamMeeting.Commands
 {
-    public class UpdateTeamMeetingFormCommand : IRequest<TeamMeetingForm?>
+    public class UpdateTeamMeetingFormCommand : IRequest<Domian.Calender.TeamMeetingForm?>
     {
         public Guid Id { get; set; }
         public string Title { get; set; } = "";
