@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Aipazz.Application.Matters.matter.Commands
 {
-    public record UpdateMatterStatusCommand(string MatterId, string ClientNIC, string NewStatusId) : IRequest<Unit>;
+    public record UpdateMatterStatusCommand(string MatterId, string ClientNIC, string NewStatusId, string UserId) : IRequest<Unit>;
 }

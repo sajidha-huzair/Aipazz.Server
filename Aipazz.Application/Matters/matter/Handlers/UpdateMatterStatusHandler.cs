@@ -20,7 +20,7 @@ namespace Aipazz.Application.Matters.matter.Handlers
 
         public async Task<Unit> Handle(UpdateMatterStatusCommand request, CancellationToken cancellationToken)
         {
-            var matter = await _repository.GetMatterById(request.MatterId, request.ClientNIC);
+            var matter = await _repository.GetMatterById(request.MatterId, request.ClientNIC, request.UserId);
             if (matter == null)
                 throw new KeyNotFoundException("Matter not found");
 

@@ -124,14 +124,9 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-if (app.Environment.IsDevelopment())
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var seeder = scope.ServiceProvider.GetRequiredService<StatusSeeder>();
-        await seeder.SeedDefaultStatusesAsync();
-    }
-}
+
+
+
 
 
 app.Run();

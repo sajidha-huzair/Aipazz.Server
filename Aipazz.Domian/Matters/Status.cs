@@ -10,5 +10,6 @@ namespace Aipazz.Domian.Matters
     {
         public required string id { get; set; }  // Partition Key
         public string Name { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
     }
 }
