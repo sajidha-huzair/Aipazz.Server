@@ -9,5 +9,14 @@ using MediatR;
 
 namespace Aipazz.Application.Matters.matterStatus.Queries
 {
-    public record GetAllStatusesQuery : IRequest<List<Status>>;
+    public class GetAllStatusesQuery : IRequest<List<Status>>
+    {
+        public string UserId { get; set; }
+
+        public GetAllStatusesQuery(string userId)
+        {
+            UserId = userId;
+        }
+    }
+
 }

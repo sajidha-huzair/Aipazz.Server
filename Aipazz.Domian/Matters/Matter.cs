@@ -8,6 +8,7 @@ namespace Aipazz.Domian.Matters
     {
         
         public required string id { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         public string title { get; set; } = string.Empty; 
 

@@ -2,9 +2,11 @@
 using Aipazz.Domian;
 using Aipazz.Domian.Matters;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Aipazz.Infrastructure.Matters
@@ -20,53 +22,47 @@ namespace Aipazz.Infrastructure.Matters
             _container = db.GetContainer(containerName);
         }
 
-        public async Task<List<Matter>> GetAllMatters()
+        // ✅ 1. Implements: GetAllMatters(string userId)
+        public async Task<List<Matter>> GetAllMatters(string userId)
         {
-            var query = new QueryDefinition("SELECT * FROM c");
-            var iterator = _container.GetItemQueryIterator<Matter>(query);
-            List<Matter> matters = new List<Matter>();
+            var query = _container.GetItemLinqQueryable<Matter>()
+                .Where(m => m.UserId == userId)
+                .ToFeedIterator();
 
-            while (iterator.HasMoreResults)
+            List<Matter> results = new();
+            while (query.HasMoreResults)
             {
-                try
-                {
-                    var response = await iterator.ReadNextAsync();
-                    matters.AddRange(response);
-                }
-                catch (CosmosException ex)
-                {
-                    Console.WriteLine($"Error fetching matters: {ex.Message}");
-                }
+                var response = await query.ReadNextAsync();
+                results.AddRange(response);
             }
 
-            return matters;
+            return results;
         }
 
-        public async Task<Matter> GetMatterById(string id, string ClientNic)
+        // ✅ 2. Already implemented: GetMatterById with UserId
+        public async Task<Matter?> GetMatterById(string id, string clientNic, string userId)
         {
-            try
+            var query = _container
+                .GetItemLinqQueryable<Matter>()
+                .Where(m => m.id == id && m.ClientNic == clientNic && m.UserId == userId)
+                .ToFeedIterator();
+
+            while (query.HasMoreResults)
             {
-                var response = await _container.ReadItemAsync<Matter>(
-                    id,
-                    new PartitionKey(ClientNic)
-                );
-                return response.Resource;
+                var response = await query.ReadNextAsync();
+                return response.FirstOrDefault();
             }
-            catch (CosmosException ex)
-            {
-                Console.WriteLine($"Error fetching matter: {ex.Message}");
-                return null;
-            }
+
+            return null;
         }
 
+        // ✅ 3. AddMatter
         public async Task AddMatter(Matter matter)
         {
             try
             {
                 await _container.CreateItemAsync(matter, new PartitionKey(matter.ClientNic));
                 Console.WriteLine($"Successfully added matter ID: {matter.id}, CourtType: {matter.CourtType}");
-                // Ensure CourtType is populated at this point
-                
             }
             catch (CosmosException ex)
             {
@@ -74,6 +70,7 @@ namespace Aipazz.Infrastructure.Matters
             }
         }
 
+        // ✅ 4. UpdateMatter
         public async Task UpdateMatter(Matter matter)
         {
             try
@@ -86,40 +83,31 @@ namespace Aipazz.Infrastructure.Matters
             }
         }
 
-        public async Task DeleteMatter(string id, string ClientNic)
+        // ✅ 5. DeleteMatter with user check
+        public async Task DeleteMatter(string id, string clientNic, string userId)
         {
-            try
+            var matter = await GetMatterById(id, clientNic, userId);
+            if (matter is not null)
             {
-                await _container.DeleteItemAsync<Matter>(id, new PartitionKey(ClientNic));
-            }
-            catch (CosmosException ex)
-            {
-                Console.WriteLine($"Error deleting matter: {ex.Message}");
+                await _container.DeleteItemAsync<Matter>(id, new PartitionKey(clientNic));
             }
         }
-        public async Task<List<Matter>> GetMattersByClientNicAsync(string ClientNic)
+
+        // ✅ 6. Updated GetMattersByClientNicAsync to use userId
+        public async Task<List<Matter>> GetMattersByClientNicAsync(string clientNic, string userId)
         {
-            var query = new QueryDefinition("SELECT * FROM c WHERE c.ClientNic = @ClientNic")
-                .WithParameter("@ClientNic", ClientNic);
+            var query = _container.GetItemLinqQueryable<Matter>()
+                .Where(m => m.ClientNic == clientNic && m.UserId == userId)
+                .ToFeedIterator();
 
-            var iterator = _container.GetItemQueryIterator<Matter>(
-                query,
-                requestOptions: new QueryRequestOptions
-                {
-                    PartitionKey = new PartitionKey(ClientNic) // only if ClientNic is the partition key
-                });
-
-            List<Matter> matters = new();
-
-            while (iterator.HasMoreResults)
+            List<Matter> results = new();
+            while (query.HasMoreResults)
             {
-                var response = await iterator.ReadNextAsync();
-                matters.AddRange(response);
+                var response = await query.ReadNextAsync();
+                results.AddRange(response);
             }
 
-            return matters;
+            return results;
         }
-
-
     }
 }

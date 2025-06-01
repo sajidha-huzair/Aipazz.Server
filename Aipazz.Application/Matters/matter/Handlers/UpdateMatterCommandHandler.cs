@@ -19,13 +19,15 @@ namespace Aipazz.Application.Matters.matter.Handlers
 
         public async Task<Matter> Handle(UpdateMatterCommand request, CancellationToken cancellationToken)
         {
-            var matter = await _repository.GetMatterById(request.Id, request.ClientNic);
+            // Fetch the matter by ID, partition key (ClientNic), and UserId
+            var matter = await _repository.GetMatterById(request.Id, request.ClientNic, request.UserId);
+
             if (matter == null)
             {
-                throw new KeyNotFoundException($"Matter with Id {request.Id} and Title {request.ClientNic} not found.");
+                throw new KeyNotFoundException($"Matter with Id '{request.Id}' and ClientNic '{request.ClientNic}' not found or does not belong to the user.");
             }
 
-            // Update properties
+            // Update allowed properties
             matter.CaseNumber = request.CaseNumber;
             matter.Date = request.Date;
             matter.Description = request.Description;
@@ -34,7 +36,9 @@ namespace Aipazz.Application.Matters.matter.Handlers
             matter.CourtType = request.CourtType;
             matter.StatusId = request.StatusId;
 
+            // Persist the changes
             await _repository.UpdateMatter(matter);
+
             return matter;
         }
     }

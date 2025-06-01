@@ -19,7 +19,8 @@ namespace Aipazz.Application.Matters.matterStatus.Handlers
             var status = new Status
             {
                 id = Guid.NewGuid().ToString(),
-                Name = request.Name
+                Name = request.Name,
+                UserId = request.UserId 
             };
 
             await _repository.AddStatus(status);

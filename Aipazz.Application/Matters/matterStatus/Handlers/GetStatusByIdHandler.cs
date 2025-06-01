@@ -18,7 +18,7 @@ namespace Aipazz.Application.Matters.matterStatus.Handlers
 
         public async Task<Status> Handle(GetStatusByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetStatusById(request.Id);
+            return await _repository.GetStatusById(request.Id, request.UserId);
         }
     }
 }

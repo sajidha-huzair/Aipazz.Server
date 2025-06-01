@@ -9,5 +9,6 @@ namespace Aipazz.Application.Matters.DTO
     public class UpdateMatterStatusDto
     {
         public string NewStatusId { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
     }
 }
