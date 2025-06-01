@@ -1,3 +1,4 @@
+using Aipazz.Application.Calender.Interface;
 using Aipazz.Application.Calender.Interfaces;
 using Aipazz.Application.Calender.TeamMeeting.Commands;
 using Aipazz.Domian.Calender;
@@ -5,7 +6,7 @@ using MediatR;
 
 namespace Aipazz.Application.Calender.TeamMeeting.Handlers
 {
-    public class AddTeamMeetingFormCommandHandler : IRequestHandler<AddTeamMeetingFormCommand, TeamMeetingForm>
+    public class AddTeamMeetingFormCommandHandler : IRequestHandler<AddTeamMeetingFormCommand, Domian.Calender.TeamMeetingForm>
     {
         private readonly ITeamMeetingFormRepository _repository;
 
@@ -14,9 +15,9 @@ namespace Aipazz.Application.Calender.TeamMeeting.Handlers
             _repository = repository;
         }
 
-        public Task<TeamMeetingForm> Handle(AddTeamMeetingFormCommand request, CancellationToken cancellationToken)
+        public Task<Domian.Calender.TeamMeetingForm> Handle(AddTeamMeetingFormCommand request, CancellationToken cancellationToken)
         {
-            var form = new TeamMeetingForm
+            var form = new Domian.Calender.TeamMeetingForm
             {
                 Id = Guid.NewGuid(),
                 Title = request.Title,

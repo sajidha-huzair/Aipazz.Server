@@ -1,6 +1,6 @@
 using Aipazz.Domian.Calender;
 
-namespace Aipazz.Application.Calender.Interfaces
+namespace Aipazz.Application.Calender.Interface
 {
     public interface ITeamMeetingFormRepository
     {
@@ -9,5 +9,8 @@ namespace Aipazz.Application.Calender.Interfaces
         void Add(Domian.Calender.TeamMeetingForm form);
         Task<Domian.Calender.TeamMeetingForm?> Update(Guid id, Domian.Calender.TeamMeetingForm form);
         Task<bool> Delete(Guid id);
+
+
+        
     }
 }
