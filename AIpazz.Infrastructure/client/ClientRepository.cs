@@ -45,7 +45,7 @@ namespace Aipazz.Infrastructure.client
             return clients;
         }
 
-        public async Task<Client?> GetByIdAsync(string id, string nic)
+        public async Task<Client> GetByIdAsync(string id, string nic)
         {
             try
             {

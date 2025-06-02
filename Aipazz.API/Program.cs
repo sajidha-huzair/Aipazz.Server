@@ -9,6 +9,7 @@ using Aipazz.Application.DocumentMGT.Interfaces;
 using AIpazz.Infrastructure.Calender;
 using AIpazz.Infrastructure.Documentmgt;
 using Aipazz.Infrastructure.Matters;
+using Aipazz.Infrastructure.Billing;
 using Aipazz.Application.DocumentMGT.documentmgt.Queries;
 using Aipazz.Infrastructure.Calendar;
 using AIpazz.Infrastructure.Calendar;
