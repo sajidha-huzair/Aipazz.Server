@@ -9,8 +9,7 @@ using Aipazz.Application.DocumentMGT.Interfaces;
 using AIpazz.Infrastructure.Calender;
 using AIpazz.Infrastructure.Documentmgt;
 using Aipazz.Infrastructure.Matters;
-
-using Aipazz.Application.DocumentMGT.documentmgt.Queries;
+using Aipazz.Infrastructure.Billing;
 using Aipazz.Infrastructure.Calendar;
 using AIpazz.Infrastructure.Calendar;
 using AIpazz.Infrastructure.Documentmgt.Services;
@@ -21,7 +20,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Azure.Storage.Blobs;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using Aipazz.Infrastructure.Matters;
 using Aipazz.Application.Matters.Interfaces;
 
 
