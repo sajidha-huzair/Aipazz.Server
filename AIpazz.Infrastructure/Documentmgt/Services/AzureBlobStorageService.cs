@@ -74,6 +74,49 @@ namespace AIpazz.Infrastructure.Documentmgt.Services
 
             return blobClient.Uri.ToString();
         }
+        public async Task<string> DeleteDocumentAsync(string wordUrl, string htmlUrl)
+        {
+            Console.WriteLine(htmlUrl);
+            Console.WriteLine(wordUrl);
+            var blobContainer = _blobServiceClient.GetBlobContainerClient(_containerName);
+            await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
+
+            string GetBlobNameFromUrl(string url)
+            {
+                var uri = new Uri(url);
+                var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                return string.Join('/', segments.Skip(1)); // Skip container name
+            }
+
+            var wordBlobName = GetBlobNameFromUrl(wordUrl);
+            var htmlBlobName = GetBlobNameFromUrl(htmlUrl);
+
+            var wordBlobClient = blobContainer.GetBlobClient(wordBlobName);
+            var htmlBlobClient = blobContainer.GetBlobClient(htmlBlobName);
+
+            bool wordDeleted = await wordBlobClient.DeleteIfExistsAsync();
+            bool htmlDeleted = await htmlBlobClient.DeleteIfExistsAsync();
+
+            if (wordDeleted && htmlDeleted)
+            {
+                return "Both Word and HTML documents were successfully deleted.";
+            }
+            else if (wordDeleted && !htmlDeleted)
+            {
+                return "Word document deleted. HTML document not found.";
+            }
+            else if (!wordDeleted && htmlDeleted)
+            {
+                return "HTML document deleted. Word document not found.";
+            }
+            else
+            {
+                return "No documents found to delete.";
+            }
+        }
+
+
+
 
     }
 }
