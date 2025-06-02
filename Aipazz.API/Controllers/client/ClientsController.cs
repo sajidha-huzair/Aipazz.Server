@@ -54,6 +54,25 @@ namespace Aipazz.API.Controllers.client
             return Ok(client);
         }
 
+        [HttpGet("by-id/{id}")]
+        public async Task<ActionResult<Client>> GetClientById(string id, [FromQuery] string nic)
+        {
+            if (string.IsNullOrWhiteSpace(nic))
+            {
+                return BadRequest("NIC is required as a partition key.");
+            }
+
+            var query = new GetClientByIdQuery(id, nic);
+            var client = await _mediator.Send(query);
+
+            if (client == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(client);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
