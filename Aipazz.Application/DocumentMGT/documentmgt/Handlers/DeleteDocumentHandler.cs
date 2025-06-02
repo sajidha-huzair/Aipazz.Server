@@ -28,11 +28,14 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
             var document = await _repo.GetByIdAsync(request.DocumentId, request.UserId);
             if (document == null)
                 return false;
-            var filename = document.FileName;
-            var response = await _fileStorageService.DeleteDocumentAsync(request.UserId, request.DocumentId, filename);
+
+            var response = await _fileStorageService.DeleteDocumentAsync(document.Url, document.HtmlUrl);
             Console.WriteLine(response);
-            await _repo.DeleteAsync(request.DocumentId , request.UserId);
+
+            await _repo.DeleteAsync(request.DocumentId, request.UserId);
             return true;
+
+            
         }
     }
 }

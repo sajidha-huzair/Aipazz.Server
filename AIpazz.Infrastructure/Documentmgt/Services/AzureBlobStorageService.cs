@@ -74,13 +74,22 @@ namespace AIpazz.Infrastructure.Documentmgt.Services
 
             return blobClient.Uri.ToString();
         }
-        public async Task<string> DeleteDocumentAsync(string userId, string documentId, string fileName)
+        public async Task<string> DeleteDocumentAsync(string wordUrl, string htmlUrl)
         {
+            Console.WriteLine(htmlUrl);
+            Console.WriteLine(wordUrl);
             var blobContainer = _blobServiceClient.GetBlobContainerClient(_containerName);
             await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
 
-            var wordBlobName = $"{userId}/{documentId}_{fileName}.docx";
-            var htmlBlobName = $"{userId}/{documentId}_{fileName}.html";
+            string GetBlobNameFromUrl(string url)
+            {
+                var uri = new Uri(url);
+                var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                return string.Join('/', segments.Skip(1)); // Skip container name
+            }
+
+            var wordBlobName = GetBlobNameFromUrl(wordUrl);
+            var htmlBlobName = GetBlobNameFromUrl(htmlUrl);
 
             var wordBlobClient = blobContainer.GetBlobClient(wordBlobName);
             var htmlBlobClient = blobContainer.GetBlobClient(htmlBlobName);
@@ -105,6 +114,8 @@ namespace AIpazz.Infrastructure.Documentmgt.Services
                 return "No documents found to delete.";
             }
         }
+
+
 
 
     }
