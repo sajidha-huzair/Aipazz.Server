@@ -10,6 +10,7 @@ using AIpazz.Infrastructure.Calender;
 using AIpazz.Infrastructure.Documentmgt;
 using Aipazz.Infrastructure.Matters;
 using Aipazz.Infrastructure.Billing;
+using Aipazz.Application.DocumentMGT.documentmgt.Queries;
 using Aipazz.Infrastructure.Calendar;
 using AIpazz.Infrastructure.Calendar;
 using AIpazz.Infrastructure.Documentmgt.Services;
@@ -21,6 +22,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Azure.Storage.Blobs;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Aipazz.Application.Matters.Interfaces;
+using System.Text.Json;
 
 
 
@@ -82,7 +84,12 @@ builder.Services.AddCors(options =>
 
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -93,17 +100,11 @@ builder.Services.AddScoped<IclientmeetingRepository, Clientmeetingrepository>();
 builder.Services.AddSingleton<ICourtDateFormRepository, CourtDateFormRepository>();
 builder.Services.AddSingleton<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
 builder.Services.AddSingleton<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
-
-
-
+    
 builder.Services.AddSingleton(x =>
     new BlobServiceClient(builder.Configuration["AzureBlob:ConnectionString"])
 );
 builder.Services.AddScoped<IFileStorageService, AzureBlobStorageService>();
-
-
-
-
 
 var app = builder.Build();
 
