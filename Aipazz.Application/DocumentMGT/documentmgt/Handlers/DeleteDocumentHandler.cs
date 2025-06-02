@@ -14,12 +14,13 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
     {
         private readonly IdocumentRepository _repo;
         private readonly IWebHostEnvironment _env;
+        private readonly IFileStorageService _fileStorageService;
 
-        public DeleteDocumentHandler(IdocumentRepository repo,IWebHostEnvironment env)
+        public DeleteDocumentHandler(IdocumentRepository repo,IWebHostEnvironment env, IFileStorageService fileStorageService)
         {
             _repo = repo;
             _env = env;
-            
+            _fileStorageService = fileStorageService;
         }
 
         public async Task<bool> Handle(DeleteDocumentCommand request, CancellationToken cancellationToken)
@@ -27,10 +28,9 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
             var document = await _repo.GetByIdAsync(request.DocumentId, request.UserId);
             if (document == null)
                 return false;
-            var filepath = Path.Combine("UserDocuments", request.UserId, $"{document.FileName}.docx");
-            if (File.Exists(filepath))
-                File.Delete(filepath);
-
+            var filename = document.FileName;
+            var response = await _fileStorageService.DeleteDocumentAsync(request.UserId, request.DocumentId, filename);
+            Console.WriteLine(response);
             await _repo.DeleteAsync(request.DocumentId , request.UserId);
             return true;
         }

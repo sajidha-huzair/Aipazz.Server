@@ -13,5 +13,7 @@ namespace Aipazz.Application.DocumentMGT.Interfaces
         Task<string> UpdateWordDocumentAsync(string userId, string documentId, string fileName, byte[] content);
         Task<string> UpdateHtmlContentAsync(string userId, string documentId, string fileName, string htmlContent);
 
+        Task<string> DeleteDocumentAsync(string userId, string documentId, string fileName);
+
     }
 }

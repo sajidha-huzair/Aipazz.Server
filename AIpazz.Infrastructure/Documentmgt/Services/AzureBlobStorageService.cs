@@ -74,6 +74,38 @@ namespace AIpazz.Infrastructure.Documentmgt.Services
 
             return blobClient.Uri.ToString();
         }
+        public async Task<string> DeleteDocumentAsync(string userId, string documentId, string fileName)
+        {
+            var blobContainer = _blobServiceClient.GetBlobContainerClient(_containerName);
+            await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
+
+            var wordBlobName = $"{userId}/{documentId}_{fileName}.docx";
+            var htmlBlobName = $"{userId}/{documentId}_{fileName}.html";
+
+            var wordBlobClient = blobContainer.GetBlobClient(wordBlobName);
+            var htmlBlobClient = blobContainer.GetBlobClient(htmlBlobName);
+
+            bool wordDeleted = await wordBlobClient.DeleteIfExistsAsync();
+            bool htmlDeleted = await htmlBlobClient.DeleteIfExistsAsync();
+
+            if (wordDeleted && htmlDeleted)
+            {
+                return "Both Word and HTML documents were successfully deleted.";
+            }
+            else if (wordDeleted && !htmlDeleted)
+            {
+                return "Word document deleted. HTML document not found.";
+            }
+            else if (!wordDeleted && htmlDeleted)
+            {
+                return "HTML document deleted. Word document not found.";
+            }
+            else
+            {
+                return "No documents found to delete.";
+            }
+        }
+
 
     }
 }
