@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Aipazz.Application.client.Commands;
 using Aipazz.Application.client.Queries;
-using System.Threading.Tasks;
-using Aipazz.Application.Billing.TimeEntries.Queries;
+using Aipazz.Domian.client;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Aipazz.API.Controllers.client
 {
@@ -23,7 +23,7 @@ namespace Aipazz.API.Controllers.client
         public async Task<IActionResult> AddClient([FromBody] AddClientCommand command)
         {
             var client = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetClientByName), new { client.name }, client);
+            return CreatedAtAction(nameof(GetClientByName), new { firstName = client.FirstName, lastName = client.LastName }, client);
         }
 
         [HttpPut("{id}")]
@@ -37,20 +37,39 @@ namespace Aipazz.API.Controllers.client
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteClient(string id)
+        public async Task<IActionResult> DeleteClient(string id, [FromQuery] string nic)
         {
-            var command = new DeleteClientCommand { id = id };
+            var command = new DeleteClientCommand { id = id, Nic = nic };
             await _mediator.Send(command);
             return NoContent();
         }
 
-        [HttpGet("{name}")]
-        public async Task<IActionResult> GetClientByName(string name)
+        [HttpGet("by-name")]
+        public async Task<IActionResult> GetClientByName([FromQuery] string firstName, [FromQuery] string lastName)
         {
-            var query = new GetClientByNameQuery { Name = name };
+            var query = new GetClientByNameQuery { FirstName = firstName, LastName = lastName };
             var client = await _mediator.Send(query);
             if (client == null)
                 return NotFound();
+            return Ok(client);
+        }
+
+        [HttpGet("by-id/{id}")]
+        public async Task<ActionResult<Client>> GetClientById(string id, [FromQuery] string nic)
+        {
+            if (string.IsNullOrWhiteSpace(nic))
+            {
+                return BadRequest("NIC is required as a partition key.");
+            }
+
+            var query = new GetClientByIdQuery(id, nic);
+            var client = await _mediator.Send(query);
+
+            if (client == null)
+            {
+                return NotFound();
+            }
+
             return Ok(client);
         }
 
@@ -64,20 +83,19 @@ namespace Aipazz.API.Controllers.client
         [HttpGet("{nic}/details")]
         public async Task<IActionResult> GetClientWithDetails(string nic)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // from JWT / Azure AD
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
             var result = await _mediator.Send(new GetClientWithDetailsQuery(nic, userId));
+            if (result == null)
+                return NotFound();
             return Ok(result);
         }
 
         [HttpGet("with-entries")]
         public async Task<IActionResult> GetClientsWithEntries()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
             var result = await _mediator.Send(new GetClientsWithEntriesQuery(userId));
             return Ok(result);
         }
-
-
-
     }
 }

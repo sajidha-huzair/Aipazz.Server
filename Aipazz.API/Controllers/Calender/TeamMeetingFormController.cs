@@ -1,11 +1,12 @@
 using Aipazz.Application.Calender.TeamMeeting.Commands;
 using Aipazz.Application.Calender.TeamMeeting.Queries;
+
 using Aipazz.Application.Calender.TeamMeetingForms.Queries;
 using Aipazz.Domian.Calender;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Aipazz.API.Controllers.Calendar
+namespace Aipazz.API.Controllers.Calender
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -61,6 +62,7 @@ namespace Aipazz.API.Controllers.Calendar
             if (!result) return NotFound();
             return NoContent();
         }
+
 
 
 

@@ -45,11 +45,11 @@ namespace Aipazz.Infrastructure.client
             return clients;
         }
 
-        public async Task<Client?> GetByIdAsync(string id)
+        public async Task<Client> GetByIdAsync(string id, string nic)
         {
             try
             {
-                var response = await _container.ReadItemAsync<Client>(id, new PartitionKey(id));
+                var response = await _container.ReadItemAsync<Client>(id, new PartitionKey(nic));
                 return response.Resource;
             }
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
@@ -58,10 +58,11 @@ namespace Aipazz.Infrastructure.client
             }
         }
 
-        public async Task<Client?> GetByNameAsync(string name)
+        public async Task<Client?> GetByNameAsync(string firstName, string lastName)
         {
-            var query = new QueryDefinition("SELECT * FROM c WHERE c.name = @name")
-                .WithParameter("@name", name);
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.FirstName = @firstName OR c.LastName = @lastName")
+                .WithParameter("@firstName", firstName)
+                .WithParameter("@lastName", lastName);
             var iterator = _container.GetItemQueryIterator<Client>(query);
 
             while (iterator.HasMoreResults)
@@ -78,7 +79,7 @@ namespace Aipazz.Infrastructure.client
         public async Task<Client?> GetByNicAsync(string nic)
         {
             var query = new QueryDefinition("SELECT * FROM c WHERE c.nic = @nic")
-                            .WithParameter("@nic", nic);
+                .WithParameter("@nic", nic);
 
             using var iterator = _container.GetItemQueryIterator<Client>(
                 query,
@@ -98,7 +99,6 @@ namespace Aipazz.Infrastructure.client
             return null;
         }
 
-
         public async Task CreateAsync(Client client)
         {
             await _container.CreateItemAsync(client, new PartitionKey(client.nic));
@@ -109,13 +109,9 @@ namespace Aipazz.Infrastructure.client
             await _container.ReplaceItemAsync(client, client.id, new PartitionKey(client.nic));
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task DeleteAsync(string id, string nic)
         {
-            var client = await GetByIdAsync(id);
-            if (client != null)
-            {
-                await _container.DeleteItemAsync<Client>(id, new PartitionKey(client.nic));
-            }
+            await _container.DeleteItemAsync<Client>(id, new PartitionKey(nic));
         }
     }
 }

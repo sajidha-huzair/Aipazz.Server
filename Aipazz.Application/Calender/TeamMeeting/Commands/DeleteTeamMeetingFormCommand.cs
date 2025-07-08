@@ -1,6 +1,6 @@
 using MediatR;
-
 namespace Aipazz.Application.Calender.TeamMeeting.Commands
+
 {
     public class DeleteTeamMeetingFormCommand : IRequest<bool>
     {
