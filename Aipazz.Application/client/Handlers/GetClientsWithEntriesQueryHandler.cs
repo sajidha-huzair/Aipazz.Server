@@ -81,7 +81,7 @@ namespace Aipazz.Application.client.Handlers
 
             foreach (var (clientNic, matters) in clientNicToMattersWithEntries)
             {
-                var client = await _clientRepo.GetByNicAsync(clientNic);
+                var client = await _clientRepo.GetByNicAsync(clientNic, request.UserId);
                 if (client == null) continue;
 
                 result.Add(new ClientWithMattersDto

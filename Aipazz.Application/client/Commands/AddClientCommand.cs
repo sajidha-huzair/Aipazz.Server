@@ -15,5 +15,6 @@ namespace Aipazz.Application.client.Commands
         public string? Address { get; set; }
         public string? CaseNumber { get; set; }
         public string? CaseName { get; set; }
+        public string UserId { get; set; } = string.Empty;
     }
 }

@@ -1,12 +1,20 @@
 ﻿using MediatR;
+using System.Collections.Generic;
 using Aipazz.Domian.client;
-using System.Threading.Tasks;
 
 namespace Aipazz.Application.client.Queries
 {
-    public class GetClientByNameQuery : IRequest<Client?>
+    public class GetClientByNameQuery : IRequest<Client>
     {
-        public string? FirstName { get; set; }
-        public string? LastName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string UserId { get; set; }
+
+        public GetClientByNameQuery(string firstName, string lastName, string userId)
+        {
+            FirstName = firstName;
+            LastName = lastName;
+            UserId = userId;
+        }
     }
 }

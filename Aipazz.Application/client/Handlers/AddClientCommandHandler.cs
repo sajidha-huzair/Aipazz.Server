@@ -31,7 +31,8 @@ namespace Aipazz.Application.client.Handlers
                 email = request.Email,
                 Address = request.Address,
                 CaseNumber = request.CaseNumber,
-                CaseName = request.CaseName
+                CaseName = request.CaseName,
+                UserId = request.UserId
             };
             await _clientRepository.CreateAsync(client);
             return client;

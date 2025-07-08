@@ -6,6 +6,7 @@ namespace Aipazz.Application.client.Commands
     public class UpdateClientCommand : IRequest<Client>
     {
         public string? id { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Type { get; set; }
