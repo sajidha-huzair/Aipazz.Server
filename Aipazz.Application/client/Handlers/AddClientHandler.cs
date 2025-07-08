@@ -26,8 +26,16 @@ namespace Aipazz.Application.client.Handlers
                 id = Guid.NewGuid().ToString(),
                 name = request.Name,
                 nic = request.Nic,
+<<<<<<< Updated upstream:Aipazz.Application/client/Handlers/AddClientHandler.cs
                 phone = request.Phone,
                 email = request.Email
+=======
+                email = request.Email,
+                Address = request.Address,
+                CaseNumber = request.CaseNumber,
+                CaseName = request.CaseName,
+                UserId = request.UserId
+>>>>>>> Stashed changes:Aipazz.Application/client/Handlers/AddClientCommandHandler.cs
             };
             await _clientRepository.CreateAsync(client);
             return client;

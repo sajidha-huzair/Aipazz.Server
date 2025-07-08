@@ -20,9 +20,15 @@ namespace Aipazz.Application.client.Handlers
 
         public async Task<Unit> Handle(DeleteClientCommand request, CancellationToken cancellationToken)
         {
+<<<<<<< Updated upstream:Aipazz.Application/client/Handlers/DeleteClientHandler.cs
             if (request.id != null)
             {
                 await _clientRepository.DeleteAsync(request.id);
+=======
+            if (!string.IsNullOrEmpty(request.id) && !string.IsNullOrEmpty(request.nic))
+            {
+                await _clientRepository.DeleteAsync(request.id, request.nic,request.UserId);
+>>>>>>> Stashed changes:Aipazz.Application/client/Handlers/DeleteClientCommandHandler.cs
             }
             return Unit.Value;
         }
