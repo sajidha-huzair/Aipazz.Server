@@ -52,14 +52,13 @@ namespace Aipazz.API.Controllers.Matters
         {
             if (command == null) return BadRequest("Invalid request.");
 
-            // Attach the current user's ID to the command
             command.UserId = GetUserId();
 
             var result = await _mediator.Send(command);
 
-            // Returns 201 Created with location header pointing to the new Matter
-            return CreatedAtAction(nameof(GetById), new { Id = result.id, clientNic = result.ClientNic }, result);
+            return CreatedAtAction(nameof(GetById), new { id = result.id, clientNic = command.ClientNic }, result);
         }
+
 
         // PUT: api/Matter/{id}
         // Updates an existing Matter that belongs to the authenticated user
