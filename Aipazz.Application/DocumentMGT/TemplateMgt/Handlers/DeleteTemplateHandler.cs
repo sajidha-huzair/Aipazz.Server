@@ -9,17 +9,33 @@ using MediatR;
 
 namespace Aipazz.Application.DocumentMGT.TemplateMgt.Handlers
 {
-    public class DeleteTemplateHandler : IRequestHandler<DeleteTemplateCommand,Unit>
+    public class DeleteTemplateHandler : IRequestHandler<DeleteTemplateCommand, Unit>
     {
         private readonly ITemplateRepository _repository;
-        public DeleteTemplateHandler(ITemplateRepository repository)
+        private readonly IFileStorageService _fileStorage;
+
+        public DeleteTemplateHandler(ITemplateRepository repository, IFileStorageService fileStorage)
         {
             _repository = repository;
-
+            _fileStorage = fileStorage;
         }
 
         public async Task<Unit> Handle(DeleteTemplateCommand request, CancellationToken cancellationToken)
         {
+            // First, get the template to retrieve the file URL
+            var template = await _repository.GetTemplateById(request.Id);
+            if (template == null)
+            {
+                throw new KeyNotFoundException($"Template with ID {request.Id} not found.");
+            }
+
+            // Delete the HTML file from storage
+            if (!string.IsNullOrEmpty(template.Url))
+            {
+                await _fileStorage.DeleteTemplateAsync(template.Url);
+            }
+
+            // Delete the database record
             await _repository.DeleteTemplate(request.Id);
             return Unit.Value;
         }
