@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <Folder Include="Billing\Invoices\Commands\" />
-    <Folder Include="DocumentMGT\UdTemplateMgt\Queries\" />
   </ItemGroup>
 
 </Project>
