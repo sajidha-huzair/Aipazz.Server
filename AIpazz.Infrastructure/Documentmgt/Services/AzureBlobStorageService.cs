@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Aipazz.Application.DocumentMGT.Interfaces;
-using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using DocumentFormat.OpenXml.Office2010.Word;
 
 namespace AIpazz.Infrastructure.Documentmgt.Services
 {
@@ -13,7 +14,8 @@ namespace AIpazz.Infrastructure.Documentmgt.Services
     {
         private readonly BlobServiceClient _blobServiceClient;
         private readonly string _containerName = "documents";
-        public readonly string _templateContainerName = "templates";
+        private readonly string _templateContainerName = "templates";
+        private readonly string _UdtemplatesContaienrName = "udtemplates";
 
         public AzureBlobStorageService(BlobServiceClient blobServiceClient)
         {
@@ -144,6 +146,34 @@ namespace AIpazz.Infrastructure.Documentmgt.Services
             var blobName = GetBlobNameFromUrl(templateUrl);
             var blobClient = blobContainer.GetBlobClient(blobName);
 
+            return await blobClient.DeleteIfExistsAsync();
+        }
+
+        public async Task<string> SaveUdTemplate(string userId, string id, string fileName, string htmlContent)
+        {
+            var blobContainer = _blobServiceClient.GetBlobContainerClient(_UdtemplatesContaienrName);
+            await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
+
+            var blobName = $"{userId}/{id}_{fileName}.html";
+            var blobClient = blobContainer.GetBlobClient(blobName);
+            using var stream = new MemoryStream(Encoding.UTF8.GetBytes(htmlContent));
+            await blobClient.UploadAsync(stream, overwrite: true);
+            return blobClient.Uri.ToString();
+           
+        }
+
+        public async Task<bool> DeleteUdTemplateAsync(string HtmlUrl)
+        {
+            var blobContainer = _blobServiceClient.GetBlobContainerClient(_UdtemplatesContaienrName);
+            await blobContainer.CreateIfNotExistsAsync(PublicAccessType.None);
+            string GetBlobNameFromUrl(string url)
+            {
+                var uri = new Uri(url);
+                var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                return string.Join('/', segments.Skip(1)); // Skip container name
+            }
+            var blobName = GetBlobNameFromUrl(HtmlUrl);
+            var blobClient = blobContainer.GetBlobClient(blobName);
             return await blobClient.DeleteIfExistsAsync();
         }
     }
