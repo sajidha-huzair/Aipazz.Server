@@ -86,7 +86,7 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
             // 3. Map clients
             foreach (var (nic, matterDtos) in clientNicToMatters)
             {
-                var client = await _clientRepo.GetByNicAsync(nic);
+                var client = await _clientRepo.GetByNicAsync(nic, request.UserId);
                 if (client == null) continue;
 
                 result.Add(new ClientWithMattersDto

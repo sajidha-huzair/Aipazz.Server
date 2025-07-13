@@ -53,7 +53,7 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
             var result = new List<ClientWithMattersDto>();
             foreach (var (nic, mtDtos) in map)
             {
-                var client = await _clientRepo.GetByNicAsync(nic);
+                var client = await _clientRepo.GetByNicAsync(nic, request.UserId);
                 if (client == null) continue;
                 result.Add(new ClientWithMattersDto
                 {
