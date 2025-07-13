@@ -33,7 +33,7 @@ namespace Aipazz.Application.client.Handlers
 
         public async Task<ClientWithMattersDto?> Handle(GetClientWithDetailsQuery request, CancellationToken cancellationToken)
         {
-            var client = await _clientRepo.GetByNicAsync(request.ClientNic);
+            var client = await _clientRepo.GetByNicAsync(request.ClientNic,request.UserId);
             if (client == null) return null;
 
             var matters = await _matterRepo.GetMattersByClientNicAsync(request.ClientNic, request.UserId);

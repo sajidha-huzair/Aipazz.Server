@@ -23,10 +23,16 @@ using Azure.Storage.Blobs;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using Aipazz.Application.Matters.Interfaces;
 using System.Text.Json;
+using Aipazz.Application.Common.Aipazz.Application.Common;
+using Aipazz.Application.Billing.Interfaces;
+using AIpazz.Infrastructure.Billing.Aipazz.Application.Common;
+using QuestPDF.Infrastructure;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
@@ -65,6 +71,11 @@ builder.Services.AddMatterServices(builder.Configuration);
 
 
 builder.Services.AddInfrastructureServices();
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<IUserContext, UserContext>();
+
 
 
 
@@ -105,6 +116,13 @@ builder.Services.AddSingleton(x =>
     new BlobServiceClient(builder.Configuration["AzureBlob:ConnectionString"])
 );
 builder.Services.AddScoped<IFileStorageService, AzureBlobStorageService>();
+builder.Services.AddScoped<IInvoicePdfGenerator, InvoicePdfGenerator>();
+builder.Services.Configure<InvoiceBlobOptions>(
+    builder.Configuration.GetSection("InvoiceBlob"));
+
+builder.Services.AddScoped<IInvoiceBlobService, AzureInvoiceBlobService>();
+
+
 
 var app = builder.Build();
 

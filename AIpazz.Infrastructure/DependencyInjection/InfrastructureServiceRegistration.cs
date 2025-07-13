@@ -1,10 +1,13 @@
-﻿using Aipazz.Application.client.Interfaces;
+﻿using Aipazz.Application.Admin.Handler;
+using Aipazz.Application.Admin.Interface;
+using Aipazz.Application.client.Interfaces;
 using Aipazz.Application.DocumentMGT.documentmgt.Commands;
 using Aipazz.Application.DocumentMGT.Interfaces;
 using Aipazz.Application.Matters.Interfaces;
 using Aipazz.Domian;
 using Aipazz.Infrastructure.client;
 using Aipazz.Infrastructure.Matters.Tasks;
+using AIpazz.Infrastructure.Documentmgt;
 using AIpazz.Infrastructure.Documentmgt.Services;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +22,8 @@ namespace AIpazz.Infrastructure.DependencyInjection
         {
             services.AddScoped<IWordGenerator, WordGenerator>();
             services.AddScoped<IDocumentStorageService, DocumentStorageService>();
+            services.AddScoped<IAdminService, AdminService>();
+            services.AddScoped<IUdtemplateRepository,UdtemplateRepository>();
             services.AddSingleton<IClientRepository>(sp =>
                 new ClientRepository(
                     sp.GetRequiredService<CosmosClient>(),
