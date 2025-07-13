@@ -45,7 +45,7 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
                                          CancellationToken ct)
         {
             // 1. Verify client
-            var client = await _clientRepo.GetByNicAsync(request.ClientNic)
+            var client = await _clientRepo.GetByNicAsync(request.ClientNic,request.UserId)
                          ?? throw new Exception("Client not found");
 
             // 2. Load entries
