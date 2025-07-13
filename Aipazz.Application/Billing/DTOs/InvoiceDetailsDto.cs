@@ -34,5 +34,9 @@
         public DateTime CreatedAt { get; set; }
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTime? UpdatedAt { get; set; }
+        public string Currency { get; set; } = "Rs.";
+        public string Subject { get; set; } = string.Empty;
+        public decimal DiscountValue { get; set; }
+        public string DiscountType { get; set; } = "%";
     }
 }

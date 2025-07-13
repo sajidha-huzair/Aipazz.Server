@@ -15,5 +15,10 @@ namespace Aipazz.Application.Billing.Interfaces
         Task UpdateTimeEntry(TimeEntry timeEntry);
         Task DeleteTimeEntry(string id, string matterId, string userId);
         Task<List<TimeEntry>> GetTimeEntriesByMatterIdAsync(string matterId, string userId);
+        Task<List<TimeEntry>> GetAllEntriesByIdsAsync(List<string> entryIds, string userId);
+        Task<List<TimeEntry>> GetUnbilledByMatterIdAsync(string matterId, string userId);
+        Task MarkEntriesInvoicedAsync(IEnumerable<string> ids, string invoiceId, string userId);
+        Task<List<TimeEntry>> GetBilledByMatterIdAsync(string matterId, string userId);
+
     }
 }

@@ -8,13 +8,16 @@ using System.Threading.Tasks;
 
 namespace Aipazz.Application.Billing.Invoices.Queries
 {
-    public class GetAllInvoicesByUserIdQuery : IRequest<List<InvoiceListDto>>
+    public class GetInvoiceByIdQuery : IRequest<InvoiceDetailsDto>
     {
-        public string UserId { get; }
+        public string InvoiceId { get; set; }
+        public string UserId { get; set; }
 
-        public GetAllInvoicesByUserIdQuery(string userId)
+        public GetInvoiceByIdQuery(string invoiceId, string userId)
         {
+            InvoiceId = invoiceId;
             UserId = userId;
         }
     }
+
 }
