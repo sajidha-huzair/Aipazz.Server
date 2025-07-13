@@ -9,6 +9,14 @@ namespace Aipazz.Application.Billing.Interfaces
 {
     public interface IInvoiceRepository
     {
-        Task<List<Invoice>> GetAllInvoicesByUserId(string userId);
+        Task CreateAsync(Invoice invoice);
+        Task<Invoice?> GetLastInvoiceAsync(string userId);
+        Task<Invoice?> GetByIdAsync(string id, string userId);
+        Task<List<Invoice>> GetAllForUserAsync(string userId);
+        Task UpdateAsync(Invoice invoice);
+        Task DeleteAsync(string id, string userId);
+
+
+
     }
 }

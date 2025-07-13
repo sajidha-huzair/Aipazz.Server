@@ -93,6 +93,23 @@ namespace Aipazz.Infrastructure.Matters
             }
         }
 
+        public async Task<List<Matter>> GetMattersByIdsAsync(List<string> matterIds, string userId)
+        {
+            var query = _container.GetItemLinqQueryable<Matter>(true)
+                .Where(m => matterIds.Contains(m.id) && m.UserId == userId)
+                .ToFeedIterator();
+
+            var results = new List<Matter>();
+            while (query.HasMoreResults)
+            {
+                var response = await query.ReadNextAsync();
+                results.AddRange(response);
+            }
+
+            return results;
+        }
+
+
         // ✅ 6. Updated GetMattersByClientNicAsync to use userId
         public async Task<List<Matter>> GetMattersByClientNicAsync(string clientNic, string userId)
         {
