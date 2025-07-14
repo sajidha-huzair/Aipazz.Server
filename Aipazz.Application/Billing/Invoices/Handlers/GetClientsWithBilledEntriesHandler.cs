@@ -75,8 +75,22 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
                 CaseNumber = m.CaseNumber,
                 Date = m.Date ?? DateTime.Today,
                 Description = m.Description,
-                TimeEntries = time.Select(t => new TimeEntryDto { /* map fields */ }).ToList(),
-                ExpenseEntries = exp.Select(e => new ExpenseEntryDto { /* map fields */ }).ToList()
+                TimeEntries = time.Select(t => new TimeEntryDto {
+                    Id = t.id!,
+                    Description = t.Description,
+                    Date = t.Date,
+                    Duration = t.Duration,
+                    RatePerHour = t.RatePerHour,  
+                    Amount = t.Amount
+                }).ToList(),
+                ExpenseEntries = exp.Select(e => new ExpenseEntryDto {
+                    Id = e.id!,
+                    Category = e.Category,
+                    Rate = e.Rate,          
+                    Quantity = e.Quantity,
+                    Amount = e.Amount,          
+                    Date = e.Date
+                }).ToList()
             };
     }
 
