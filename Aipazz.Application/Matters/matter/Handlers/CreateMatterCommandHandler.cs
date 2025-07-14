@@ -27,49 +27,64 @@ namespace Aipazz.Application.Matters.matter.Commands
 
         public async Task<MatterDto> Handle(CreateMatterCommand request, CancellationToken cancellationToken)
         {
-            // Get "To Do" status from DB
-            var toDoStatus = await _statusRepository.GetStatusByName("To Do");
-            if (toDoStatus == null)
+            try
             {
-                throw new Exception("Default status 'To Do' not found.");
+                Console.WriteLine($"Creating matter for user: {request.UserId}");
+                Console.WriteLine($"Client NIC: {request.ClientNic}");
+
+                // Get "To Do" status from DB
+                var toDoStatus = await _statusRepository.GetStatusByName("To Do");
+                if (toDoStatus == null)
+                {
+                    throw new Exception("Default status 'To Do' not found.");
+                }
+
+                // Verify client exists
+                var client = await _clientRepository.GetByNicAsync(request.ClientNic);
+                if (client == null)
+                {
+                    throw new Exception($"Client with NIC '{request.ClientNic}' not found.");
+                }
+
+                // Create new Matter
+                var matter = new Matter
+                {
+                    id = Guid.NewGuid().ToString(),
+                    title = request.Title,
+                    CaseNumber = request.CaseNumber,
+                    Date = request.Date,
+                    Description = request.Description,
+                    ClientNic = request.ClientNic,
+                    StatusId = string.IsNullOrEmpty(request.StatusId) ? toDoStatus.Name : request.StatusId,
+                    TeamMembers = request.TeamMembers,
+                    UserId = request.UserId,
+                    CourtType = request.CourtType
+                };
+
+                await _matterRepository.AddMatter(matter);
+
+                // Map to DTO - return actual database values
+                var matterDto = new MatterDto
+                {
+                    id = matter.id, // ✅ Return actual database ID
+                    title = matter.title,
+                    CaseNumber = matter.CaseNumber,
+                    Date = matter.Date,
+                    Description = matter.Description,
+                    ClientNic = matter.ClientNic, // ✅ Keep as NIC for consistency
+                    StatusId = string.IsNullOrEmpty(request.StatusId) ? toDoStatus.Name : request.StatusId,
+                    TeamMembers = matter.TeamMembers,
+                    CourtType = matter.CourtType
+                };
+
+                Console.WriteLine($"✅ Matter created successfully: {matter.id}");
+                return matterDto;
             }
-
-            // Create new Matter
-            var matter = new Matter
+            catch (Exception ex)
             {
-                id = Guid.NewGuid().ToString(),
-                title = request.Title,
-                CaseNumber = request.CaseNumber,
-                Date = request.Date,
-                Description = request.Description,
-                ClientNic = request.ClientNic,
-                StatusId = toDoStatus.Name,
-                TeamMembers = request.TeamMembers,
-                UserId = request.UserId,
-                CourtType = request.CourtType
-            };
-
-            await _matterRepository.AddMatter(matter);
-
-            // Get client name by NIC
-            var client = await _clientRepository.GetByNicAsync(matter.ClientNic);
-            var clientName = client?.name ?? "Unknown";
-
-            // Map to DTO
-            var matterDto = new MatterDto
-            {
-                id = matter.CaseNumber, // You want to show CaseNumber as ID
-                title = matter.title,
-                CaseNumber = matter.CaseNumber,
-                Date = matter.Date,
-                Description = matter.Description,
-                ClientNic = clientName, // Use name instead of NIC
-                StatusId = toDoStatus.Name,
-                TeamMembers = matter.TeamMembers,
-                CourtType = matter.CourtType
-            };
-
-            return matterDto;
+                Console.WriteLine($"❌ Error in CreateMatterCommandHandler: {ex.Message}");
+                throw;
+            }
         }
     }
 }
