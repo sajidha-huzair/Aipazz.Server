@@ -41,9 +41,8 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
             var invoice = await _repo.GetByIdAsync(cmd.InvoiceId, cmd.UserId)
                          ?? throw new Exception("Invoice not found");
 
-            // merge discount/footer logic
-            invoice.FooterNotes = MergeFooter(cmd.FooterNotes,
-                $"Please make all amounts payable to: Law Office of {_user.FullName}");
+            // ─── Replace the footer outright ───
+            invoice.FooterNotes = cmd.FooterNotes?.Trim() ?? string.Empty;
 
             invoice.PaymentProfileNotes = cmd.PaymentProfileNotes;
             invoice.UpdatedBy = cmd.UserId;
@@ -63,18 +62,9 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
 
             await _repo.UpdateAsync(invoice);
 
-            return invoice.PdfFileUrl;          // frontend can refresh iframe
+            return invoice.PdfFileUrl;
         }
 
-        private static string MergeFooter(string note, string defaultFooter)
-        {
-            if (string.IsNullOrWhiteSpace(note))
-                return defaultFooter;
-
-            note = note.Trim();
-            if (!note.EndsWith(".")) note += ".";
-            return $"{note}\n{defaultFooter}";
-        }
     }
 
 }
