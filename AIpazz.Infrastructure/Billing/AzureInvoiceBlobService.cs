@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using Aipazz.Application.Billing.Interfaces;
 using Aipazz.Application.Common;
 using AIpazz.Infrastructure.Billing.Aipazz.Application.Common;
-using Aipazz.Domian.client;
 
 namespace AIpazz.Infrastructure.Billing
 {
@@ -19,7 +18,7 @@ namespace AIpazz.Infrastructure.Billing
         {
             var client = new BlobServiceClient(opts.Value.ConnectionString);
             _container = client.GetBlobContainerClient(opts.Value.ContainerName);
-            _container.CreateIfNotExists(PublicAccessType.None);
+            _container.CreateIfNotExists(PublicAccessType.None); // Keep access controlled
         }
 
         public async Task<string> SavePdfAsync(string userId, string invoiceId, byte[] pdfBytes)
@@ -27,7 +26,18 @@ namespace AIpazz.Infrastructure.Billing
             var blobName = $"{userId}/invoice_{invoiceId}.pdf";
             var blob = _container.GetBlobClient(blobName);
 
-            await blob.UploadAsync(new MemoryStream(pdfBytes), overwrite: true);
+            var headers = new BlobHttpHeaders
+            {
+                ContentType = "application/pdf",
+                ContentDisposition = $"inline; filename=\"invoice_{invoiceId}.pdf\""
+            };
+
+            using var stream = new MemoryStream(pdfBytes);
+            await blob.UploadAsync(stream, new BlobUploadOptions
+            {
+                HttpHeaders = headers
+            });
+
             return blob.Uri.ToString();
         }
 
