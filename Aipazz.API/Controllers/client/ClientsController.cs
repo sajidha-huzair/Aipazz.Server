@@ -84,5 +84,14 @@ namespace Aipazz.API.Controllers.client
             var result = await _mediator.Send(new GetClientByIdQuery(id, nic, GetUserId()));
             return result == null ? NotFound() : Ok(result);
         }
+
+        // GET api/clients/with-entries
+        [HttpGet("with-entries")]
+        public async Task<IActionResult> GetClientsWithEntries()
+        {
+            var list = await _mediator.Send(new GetClientsWithEntriesQuery(GetUserId()));
+            return Ok(list);      // 200 + full client‑matter‑entry tree
+        }
+
     }
 }

@@ -58,10 +58,11 @@ namespace Aipazz.Infrastructure.client
         public async Task<Client?> GetByNameAsync(string firstName, string lastName, string userId)
         {
             var query = new QueryDefinition(
-                "SELECT * FROM c WHERE (c.FirstName = @firstName OR c.LastName = @lastName) AND c.userId = @userId")
-                .WithParameter("@firstName", firstName)
-                .WithParameter("@lastName", lastName)
-                .WithParameter("@userId", userId);
+    "SELECT * FROM c WHERE (c.FirstName = @firstName OR c.LastName = @lastName) AND c.UserId = @userId")
+    .WithParameter("@firstName", firstName)
+    .WithParameter("@lastName", lastName)
+    .WithParameter("@userId", userId);
+
 
             var iterator = _container.GetItemQueryIterator<Client>(query);
 
@@ -78,28 +79,19 @@ namespace Aipazz.Infrastructure.client
 
         public async Task<Client?> GetByNicAsync(string nic, string userId)
         {
-            var query = new QueryDefinition(
-                "SELECT * FROM c WHERE c.nic = @nic AND c.userId = @userId")
-                .WithParameter("@nic", nic)
-                .WithParameter("@userId", userId);
+            var iterator = _container.GetItemLinqQueryable<Client>()
+                .Where(c => c.nic == nic && c.UserId == userId)
+                .Take(1)
+                .ToFeedIterator();
 
-            using var iterator = _container.GetItemQueryIterator<Client>(
-                query,
-                requestOptions: new QueryRequestOptions
-                {
-                    PartitionKey = new PartitionKey(nic)
-                });
-
-            while (iterator.HasMoreResults)
+            if (iterator.HasMoreResults)
             {
                 var response = await iterator.ReadNextAsync();
-                var client = response.FirstOrDefault();
-                if (client != null)
-                    return client;
+                return response.FirstOrDefault();
             }
-
             return null;
         }
+
 
         public async Task CreateAsync(Client client)
         {
