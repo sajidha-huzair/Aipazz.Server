@@ -4,6 +4,7 @@ using Aipazz.Application.Billing.Invoices.Queries;
 using Aipazz.Application.client.Interfaces;
 using Aipazz.Application.Matters.Interfaces;
 using MediatR;
+using OpenXmlPowerTools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,16 +38,18 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
             CancellationToken ct)
         {
             // 1. Load all matters (could filter by user up front)
+            Console.WriteLine($"UserId = {request.UserId}");
             var matters = await _matterRepo.GetAllMatters(request.UserId);
             var result = new List<ClientWithMattersDto>();
 
             // 2. Build dictionary keyed by clientNic
             var clientNicToMatters = new Dictionary<string, List<MatterWithEntriesDto>>();
-
+            Console.WriteLine($"Matters found: {matters.Count}");
             foreach (var matter in matters)
             {
                 var time = await _timeRepo.GetUnbilledByMatterIdAsync(matter.id!, request.UserId);
                 var expense = await _expenseRepo.GetUnbilledByMatterIdAsync(matter.id!, request.UserId);
+                Console.WriteLine($"Matter {matter.id} → time: {time.Count}, expense: {expense.Count}");
 
                 if (!time.Any() && !expense.Any()) continue;   // Skip if nothing to bill
 

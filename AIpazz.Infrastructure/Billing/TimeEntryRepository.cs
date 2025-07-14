@@ -124,30 +124,24 @@ namespace AIpazz.Infrastructure.Billing
             return results;
         }
         //Fetch only unbilled entries (for UI list)
-        public async Task<List<TimeEntry>> GetUnbilledByMatterIdAsync(string matterId,
-                                                                 string userId)
+        public async Task<List<TimeEntry>> GetUnbilledByMatterIdAsync(string matterId, string userId)
         {
             var query = _container.GetItemLinqQueryable<TimeEntry>(
-                allowSynchronousQueryExecution: true,      // or false
-                continuationToken: null,
-                requestOptions: new QueryRequestOptions
-                {
-                    PartitionKey = new PartitionKey(userId)
-                })
-             .Where(e => e.matterId == matterId &&
-                         e.UserId == userId &&
-                         e.InvoiceId == null)
-             .ToFeedIterator();
-
+                            requestOptions: new QueryRequestOptions
+                            {
+                                PartitionKey = new PartitionKey(matterId)   // ← FIX HERE
+                            })
+                        .Where(e => e.matterId == matterId &&
+                                    e.UserId == userId &&
+                                    e.InvoiceId == null)
+                        .ToFeedIterator();
 
             var results = new List<TimeEntry>();
             while (query.HasMoreResults)
-            {
-                var page = await query.ReadNextAsync();
-                results.AddRange(page);
-            }
+                results.AddRange(await query.ReadNextAsync());
             return results;
         }
+
 
         public async Task MarkEntriesInvoicedAsync(IEnumerable<string> entryIds,
                                            string invoiceId,
@@ -176,23 +170,22 @@ namespace AIpazz.Infrastructure.Billing
         public async Task<List<TimeEntry>> GetBilledByMatterIdAsync(string matterId,
                                                             string userId)
         {
-            var query = _container.GetItemLinqQueryable<TimeEntry>(
-                            allowSynchronousQueryExecution: true,
-                            continuationToken: null,
-                            requestOptions: new QueryRequestOptions
-                            {
-                                PartitionKey = new PartitionKey(userId)
-                            })
-                        .Where(e => e.matterId == matterId &&
-                                    e.UserId == userId &&
-                                    e.InvoiceId != null)     // billed
-                        .ToFeedIterator();
+            var iterator = _container.GetItemLinqQueryable<TimeEntry>(
+                                requestOptions: new QueryRequestOptions
+                                {
+                                    PartitionKey = new PartitionKey(matterId)   // ← use matterId PK
+                                })
+                            .Where(e => e.UserId == userId          // still scoped to owner
+                                     && e.InvoiceId != null)        // billed only
+                            .ToFeedIterator();
 
-            var list = new List<TimeEntry>();
-            while (query.HasMoreResults)
-                list.AddRange(await query.ReadNextAsync());
-            return list;
+            var results = new List<TimeEntry>();
+            while (iterator.HasMoreResults)
+                results.AddRange(await iterator.ReadNextAsync());
+
+            return results;
         }
+
 
 
 
