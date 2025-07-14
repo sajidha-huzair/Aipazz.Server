@@ -10,6 +10,7 @@ namespace Aipazz.API.Controllers.Team
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // Add authorization back
     public class TeamController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -22,8 +23,13 @@ namespace Aipazz.API.Controllers.Team
         [HttpGet]
         public async Task<IActionResult> GetAllTeams()
         {
-            // Using a test user ID for now
-            var userId = "test-user-id";
+            // Extract the user ID from the claim
+            string userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
 
             var result = await _mediator.Send(new GetAllTeamsQuery(userId));
             return Ok(result);
@@ -32,8 +38,13 @@ namespace Aipazz.API.Controllers.Team
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTeamById(string id)
         {
-            // Using a test user ID for now
-            var userId = "test-user-id";
+            // Extract the user ID from the claim
+            string userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
 
             var result = await _mediator.Send(new GetTeamByIdQuery(id, userId));
             if (result == null) return NotFound();
@@ -43,9 +54,14 @@ namespace Aipazz.API.Controllers.Team
         [HttpPost]
         public async Task<IActionResult> CreateTeam([FromBody] CreateTeamCommand command)
         {
-            var userId = "test-user-id";
+            // Extract the user ID from the claim
+            string userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
             
-            // Pass userId to the command
             var members = command.Members ?? new List<TeamMember>();
             var result = await _mediator.Send(new CreateTeamCommand(command.Name, command.Description, userId, members));
             return Ok(new { Message = "Team created successfully", TeamId = result });
@@ -54,8 +70,13 @@ namespace Aipazz.API.Controllers.Team
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTeam(string id, [FromBody] UpdateTeamCommand command)
         {
-            // Using a test user ID for now
-            var userId = "test-user-id";
+            // Extract the user ID from the claim
+            string userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
 
             if (id != command.Team.id)
                 return BadRequest("ID mismatch");
@@ -68,8 +89,13 @@ namespace Aipazz.API.Controllers.Team
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTeam(string id)
         {
-            // Using a test user ID for now
-            var userId = "test-user-id";
+            // Extract the user ID from the claim
+            string userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
 
             await _mediator.Send(new DeleteTeamCommand(id, userId));
             return NoContent();
