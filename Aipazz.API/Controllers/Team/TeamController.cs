@@ -28,10 +28,17 @@ namespace Aipazz.API.Controllers.Team
                 .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
                 ?.Value;
 
+            // Extract the email from the claim
+            string userEmail = User.Claims
+                .FirstOrDefault(c => c.Type == "emails")?.Value;
+
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized("User ID not found in token.");
 
-            var result = await _mediator.Send(new GetAllTeamsQuery(userId));
+            if (string.IsNullOrWhiteSpace(userEmail))
+                return Unauthorized("User email not found in token.");
+
+            var result = await _mediator.Send(new GetAllTeamsQuery(userId, userEmail));
             return Ok(result);
         }
         

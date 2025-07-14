@@ -3,5 +3,5 @@ using MediatR;
 
 namespace Aipazz.Application.Team.Queries
 {
-    public record GetAllTeamsQuery(string UserId) : IRequest<List<Aipazz.Domian.Team.Team>>;
+    public record GetAllTeamsQuery(string UserId, string UserEmail) : IRequest<List<Aipazz.Domian.Team.Team>>;
 }
