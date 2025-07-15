@@ -92,9 +92,15 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
         private static string MergeFooter(string discountNote, string defaultFooter)
         {
             if (string.IsNullOrWhiteSpace(discountNote))
-                return defaultFooter;                       // nothing typed -> keep original
+                return defaultFooter;
 
             discountNote = discountNote.Trim();
+
+            // Check if the discountNote already contains the default footer to avoid duplication
+            if (discountNote.Contains("Please make all amounts payable to:"))
+            {
+                return discountNote; // Return as-is if it already contains the default footer
+            }
 
             // add a period if user did not supply one
             if (!discountNote.EndsWith("."))
