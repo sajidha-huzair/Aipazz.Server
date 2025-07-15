@@ -33,7 +33,8 @@ namespace Aipazz.Application.Matters.matter.Commands
                 Console.WriteLine($"Client NIC: {request.ClientNic}");
 
                 // Get "To Do" status from DB
-                var toDoStatus = await _statusRepository.GetStatusByName("To Do");
+                var toDoStatus = await _statusRepository.GetStatusByName("To Do", request.UserId);
+
                 if (toDoStatus == null)
                 {
                     throw new Exception("Default status 'To Do' not found.");
