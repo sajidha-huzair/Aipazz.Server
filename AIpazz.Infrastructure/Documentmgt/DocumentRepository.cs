@@ -114,6 +114,30 @@ namespace AIpazz.Infrastructure.Documentmgt
             return documents;
         }
 
+        public async Task<List<Document>> GetDocumentsByTeamIdAsync(string teamId)
+        {
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.TeamId = @teamId")
+                .WithParameter("@teamId", teamId);
+
+            var iterator = _container.GetItemQueryIterator<Document>(query);
+            var documents = new List<Document>();
+
+            while (iterator.HasMoreResults)
+            {
+                try
+                {
+                    var response = await iterator.ReadNextAsync();
+                    documents.AddRange(response);
+                }
+                catch (CosmosException ex)
+                {
+                    Console.WriteLine($"Error fetching documents for team {teamId}: {ex.Message}");
+                }
+            }
+
+            return documents;
+        }
+
         public async Task DeleteAsync(string documentId, string userId)
         {
             await _container.DeleteItemAsync<Document>(documentId, new PartitionKey(userId));

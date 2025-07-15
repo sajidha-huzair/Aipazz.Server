@@ -58,6 +58,15 @@ namespace Aipazz.API.Controllers.Team
             return Ok(result);
         }
 
+        [HttpGet("{teamId}/documents")]
+        [Authorize]
+        public async Task<IActionResult> GetTeamDocuments(string teamId)
+        {
+            // Just get documents by team ID - no user checking needed for document fetching
+            var result = await _mediator.Send(new GetTeamDocumentsQuery(teamId));
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateTeam([FromBody] CreateTeamCommand command)
         {
