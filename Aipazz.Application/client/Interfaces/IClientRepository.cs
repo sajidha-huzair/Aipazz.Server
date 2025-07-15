@@ -14,5 +14,7 @@ namespace Aipazz.Application.client.Interfaces
         Task CreateAsync(Client client);
         Task UpdateAsync(Client client);
         Task DeleteAsync(string id, string nic, string userId);
+        Task<bool> DoesClientExistByNIC(string nic, string userId);
+
     }
 }
