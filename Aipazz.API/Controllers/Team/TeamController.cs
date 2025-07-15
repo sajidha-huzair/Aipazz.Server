@@ -28,10 +28,17 @@ namespace Aipazz.API.Controllers.Team
                 .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
                 ?.Value;
 
+            // Extract the email from the claim
+            string userEmail = User.Claims
+                .FirstOrDefault(c => c.Type == "emails")?.Value;
+
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized("User ID not found in token.");
 
-            var result = await _mediator.Send(new GetAllTeamsQuery(userId));
+            if (string.IsNullOrWhiteSpace(userEmail))
+                return Unauthorized("User email not found in token.");
+
+            var result = await _mediator.Send(new GetAllTeamsQuery(userId, userEmail));
             return Ok(result);
         }
         
@@ -48,6 +55,15 @@ namespace Aipazz.API.Controllers.Team
 
             var result = await _mediator.Send(new GetTeamByIdQuery(id, userId));
             if (result == null) return NotFound();
+            return Ok(result);
+        }
+
+        [HttpGet("{teamId}/documents")]
+        [Authorize]
+        public async Task<IActionResult> GetTeamDocuments(string teamId)
+        {
+            // Just get documents by team ID - no user checking needed for document fetching
+            var result = await _mediator.Send(new GetTeamDocumentsQuery(teamId));
             return Ok(result);
         }
 
