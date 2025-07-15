@@ -41,7 +41,7 @@ namespace Aipazz.Application.Matters.matter.Commands
                 }
 
                 // Verify client exists
-                var client = await _clientRepository.GetByNicAsync(request.ClientNic);
+                var client = await _clientRepository.GetByNicAsync(request.ClientNic,request.UserId);
                 if (client == null)
                 {
                     throw new Exception($"Client with NIC '{request.ClientNic}' not found.");

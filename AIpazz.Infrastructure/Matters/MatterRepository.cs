@@ -114,6 +114,21 @@ namespace Aipazz.Infrastructure.Matters
                 Console.WriteLine($"✅ Successfully deleted matter ID: {id}");
             }
         }
+        public async Task<List<Matter>> GetMattersByIdsAsync(List<string> matterIds, string userId)
+        {
+            var query = _container.GetItemLinqQueryable<Matter>(true)
+                .Where(m => matterIds.Contains(m.id) && m.UserId == userId)
+                .ToFeedIterator();
+
+            var results = new List<Matter>();
+            while (query.HasMoreResults)
+            {
+                var response = await query.ReadNextAsync();
+                results.AddRange(response);
+            }
+
+            return results;
+        }
 
         // 6. GetMattersByClientNicAsync
         public async Task<List<Matter>> GetMattersByClientNicAsync(string clientNic, string userId)
