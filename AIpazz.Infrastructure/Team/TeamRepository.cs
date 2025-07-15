@@ -97,6 +97,28 @@ namespace AIpazz.Infrastructure.Team
             return teams;
         }
 
+        public async Task<List<Aipazz.Domian.Team.Team>> GetTeamsByUserEmailAsync(string userEmail, string userId)
+        {
+            // Get teams where user is owner OR member (by email)
+            var query = new QueryDefinition(@"
+                SELECT * FROM c 
+                WHERE c.IsActive = true 
+                AND (c.OwnerId = @userId OR ARRAY_CONTAINS(c.Members, {'Email': @userEmail, 'IsActive': true}, true))")
+                .WithParameter("@userId", userId)
+                .WithParameter("@userEmail", userEmail);
+
+            var iterator = _container.GetItemQueryIterator<Aipazz.Domian.Team.Team>(query);
+            var teams = new List<Aipazz.Domian.Team.Team>();
+
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                teams.AddRange(response);
+            }
+
+            return teams;
+        }
+
         public async Task<bool> IsTeamMemberAsync(string teamId, string userId)
         {
             var query = new QueryDefinition(@"

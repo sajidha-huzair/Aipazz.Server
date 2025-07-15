@@ -14,6 +14,7 @@ namespace Aipazz.Application.Team.Interfaces
         Task DeleteTeamAsync(string teamId, string ownerId);
         Task<bool> IsTeamMemberAsync(string teamId, string userId);
         Task<List<Aipazz.Domian.Team.Team>> GetTeamsByUserIdAsync(string userId);
+        Task<List<Aipazz.Domian.Team.Team>> GetTeamsByUserEmailAsync(string userEmail, string userId);
         
         // Team member specific methods
         Task<List<TeamMember>> GetTeamMembersAsync(string teamId, string userId);
