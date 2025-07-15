@@ -115,7 +115,7 @@ namespace Aipazz.Infrastructure.Matters
             }
         }
 
-        // 6. GetMattersByClientNicAsync
+
         public async Task<List<Matter>> GetMattersByClientNicAsync(string clientNic, string userId)
         {
             var query = _container.GetItemLinqQueryable<Matter>()

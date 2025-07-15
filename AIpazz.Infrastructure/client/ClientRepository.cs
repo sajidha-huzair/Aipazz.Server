@@ -1,20 +1,20 @@
-﻿using Microsoft.Azure.Cosmos;
+﻿using Aipazz.Application.client.Interfaces;
+using Aipazz.Domian;
+using Aipazz.Domian.client;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Aipazz.Application.client.Interfaces;
-using Aipazz.Domian.client;
-using Aipazz.Domian;
-using Microsoft.Extensions.Options;
-using Aipazz.Domian.Billing;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Aipazz.Infrastructure.client
 {
     public class ClientRepository : IClientRepository
     {
-        private readonly Microsoft.Azure.Cosmos.Container _container;
+        private readonly Container _container;
 
         public ClientRepository(CosmosClient client, IOptions<CosmosDbOptions> options)
         {
@@ -23,34 +23,31 @@ namespace Aipazz.Infrastructure.client
             _container = db.GetContainer(containerName);
         }
 
-        public async Task<List<Client>> GetAllClients()
+        public async Task<List<Client>> GetAllClients(string userId)
         {
-            var query = new QueryDefinition("SELECT * FROM c");
-            var iterator = _container.GetItemQueryIterator<Client>(query);
-            List<Client> clients = new List<Client>();
+            var iterator = _container.GetItemLinqQueryable<Client>()
+                .Where(c => c.UserId == userId)
+                .ToFeedIterator();
 
+            var clients = new List<Client>();
             while (iterator.HasMoreResults)
             {
-                try
-                {
-                    var response = await iterator.ReadNextAsync();
-                    clients.AddRange(response);
-                }
-                catch (CosmosException ex)
-                {
-                    Console.WriteLine($"Error fetching clients: {ex.Message}");
-                }
+                var response = await iterator.ReadNextAsync();
+                clients.AddRange(response);
             }
 
             return clients;
         }
 
-        public async Task<Client> GetByIdAsync(string id, string nic)
+        public async Task<Client?> GetByIdAsync(string id, string nic, string userId)
         {
             try
             {
-                var response = await _container.ReadItemAsync<Client>(id, new PartitionKey(nic));
-                return response.Resource;
+                var response = await _container.ReadItemAsync<Client>(
+                    id,
+                    new PartitionKey(nic));
+
+                return response.Resource?.UserId == userId ? response.Resource : null;
             }
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
@@ -58,11 +55,15 @@ namespace Aipazz.Infrastructure.client
             }
         }
 
-        public async Task<Client?> GetByNameAsync(string firstName, string lastName)
+        public async Task<Client?> GetByNameAsync(string firstName, string lastName, string userId)
         {
-            var query = new QueryDefinition("SELECT * FROM c WHERE c.FirstName = @firstName OR c.LastName = @lastName")
-                .WithParameter("@firstName", firstName)
-                .WithParameter("@lastName", lastName);
+            var query = new QueryDefinition(
+    "SELECT * FROM c WHERE (c.FirstName = @firstName OR c.LastName = @lastName) AND c.UserId = @userId")
+    .WithParameter("@firstName", firstName)
+    .WithParameter("@lastName", lastName)
+    .WithParameter("@userId", userId);
+
+
             var iterator = _container.GetItemQueryIterator<Client>(query);
 
             while (iterator.HasMoreResults)
@@ -76,28 +77,21 @@ namespace Aipazz.Infrastructure.client
             return null;
         }
 
-        public async Task<Client?> GetByNicAsync(string nic)
+        public async Task<Client?> GetByNicAsync(string nic, string userId)
         {
-            var query = new QueryDefinition("SELECT * FROM c WHERE c.nic = @nic")
-                .WithParameter("@nic", nic);
+            var iterator = _container.GetItemLinqQueryable<Client>()
+                .Where(c => c.nic == nic && c.UserId == userId)
+                .Take(1)
+                .ToFeedIterator();
 
-            using var iterator = _container.GetItemQueryIterator<Client>(
-                query,
-                requestOptions: new QueryRequestOptions
-                {
-                    PartitionKey = new PartitionKey(nic)
-                });
-
-            while (iterator.HasMoreResults)
+            if (iterator.HasMoreResults)
             {
                 var response = await iterator.ReadNextAsync();
-                var client = response.FirstOrDefault();
-                if (client != null)
-                    return client;
+                return response.FirstOrDefault();
             }
-
             return null;
         }
+
 
         public async Task CreateAsync(Client client)
         {
@@ -109,9 +103,39 @@ namespace Aipazz.Infrastructure.client
             await _container.ReplaceItemAsync(client, client.id, new PartitionKey(client.nic));
         }
 
-        public async Task DeleteAsync(string id, string nic)
+        public async Task DeleteAsync(string id, string nic, string userId)
         {
-            await _container.DeleteItemAsync<Client>(id, new PartitionKey(nic));
+            // Optional: Check if the client belongs to the userId before deleting
+            var client = await GetByIdAsync(id, nic, userId);
+            if (client != null)
+            {
+                await _container.DeleteItemAsync<Client>(id, new PartitionKey(nic));
+            }
+        }
+
+        // ✅ NEW METHOD: Check if a client exists by NIC and belongs to the user
+        public async Task<bool> DoesClientExistByNIC(string nic, string userId)
+        {
+            var query = new QueryDefinition(
+                "SELECT VALUE COUNT(1) FROM c WHERE c.nic = @nic AND c.userId = @userId")
+                .WithParameter("@nic", nic)
+                .WithParameter("@userId", userId);
+
+            using var iterator = _container.GetItemQueryIterator<int>(
+                query,
+                requestOptions: new QueryRequestOptions
+                {
+                    PartitionKey = new PartitionKey(nic)
+                });
+
+            if (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                var count = response.FirstOrDefault();
+                return count > 0;
+            }
+
+            return false;
         }
     }
 }

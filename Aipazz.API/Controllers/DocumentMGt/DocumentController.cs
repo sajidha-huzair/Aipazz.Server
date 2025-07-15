@@ -1,9 +1,9 @@
-﻿
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Aipazz.Application.DocumentMgt.Queries;
 using Aipazz.Application.DocumentMGT.documentmgt.Commands;
 using Aipazz.Application.DocumentMGT.documentmgt.Queries;
 using Aipazz.Application.DocumentMGT.DTO;
+using Aipazz.Application.DocumentMGT.DTOs;
 using Aipazz.Application.DocumentMGT.Interfaces;
 using Aipazz.Domian.DocumentMgt;
 using MediatR;
@@ -70,13 +70,43 @@ namespace Aipazz.API.Controllers.DocumentMGt
             return result ? Ok("Updated") : NotFound("Document not found");
         }
 
+        [HttpPut("{id}/share-to-team")]
+        [Authorize]
+        public async Task<IActionResult> ShareDocumentToTeam(string id, [FromBody] ShareDocumentToTeamDto shareDto)
+        {
+            // Extract the user ID from the claim
+            string userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
 
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
+
+            await _mediatR.Send(new ShareDocumentToTeamCommand(id, shareDto.TeamId, userId));
+            return Ok(new { Message = "Document shared to team successfully" });
+        }
+
+        [HttpGet("team-shared")]
+        [Authorize]
+        public async Task<IActionResult> GetTeamSharedDocuments()
+        {
+            // Extract the user ID from the claim
+            string userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
+
+            var result = await _mediatR.Send(new GetTeamSharedDocumentsQuery(userId));
+            return Ok(result);
+        }
 
         [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> GetDocumentById(string id)
         {
-            
+
             // Extract the user ID from the claim
             string userId = User.Claims
                 .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
@@ -146,17 +176,5 @@ namespace Aipazz.API.Controllers.DocumentMGt
 
             return NoContent();
         }
-
-
-
-
-
-
-
-
-
-
-
     }
 }
-    

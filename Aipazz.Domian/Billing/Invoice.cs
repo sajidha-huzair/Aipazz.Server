@@ -8,7 +8,7 @@ namespace Aipazz.Domian.Billing
 {
     public class Invoice
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string id { get; set; } = Guid.NewGuid().ToString();
 
         // Authorization
         public string UserId { get; set; } = string.Empty;
@@ -38,7 +38,7 @@ namespace Aipazz.Domian.Billing
 
         // Status & Notes
         public string Status { get; set; } = "Draft";
-        public string FooterNotes { get; set; } = "Please make all amounts payable to: Law Office of {ClientName}";
+        public string FooterNotes { get; set; } = "Please make all amounts payable to: Law Office of {UserName}";
         public string PaymentProfileNotes { get; set; } = "Please pay within 30 days.";
 
         // PDF
@@ -49,6 +49,13 @@ namespace Aipazz.Domian.Billing
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTime? UpdatedAt { get; set; }
+
+        public string Currency { get; set; } = "Rs.";      // or "LKR (Rs)"
+        public string Subject { get; set; } = string.Empty;
+
+        /// <summary> If DiscountType is "%", treat value as percentage; if "Rs", treat as fixed amount. </summary>
+        public decimal DiscountValue { get; set; } = 0m;
+        public string DiscountType { get; set; } = "%";
     }
 
 
