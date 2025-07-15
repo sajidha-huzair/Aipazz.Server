@@ -85,7 +85,34 @@ namespace AIpazz.Infrastructure.Documentmgt
             return results;
         }
 
-      
+        public async Task<List<Document>> GetDocumentsByTeamIdsAsync(List<string> teamIds)
+        {
+            if (!teamIds.Any()) return new List<Document>();
+
+            var query = new QueryDefinition(@"
+                SELECT * FROM c 
+                WHERE c.TeamId != null 
+                AND ARRAY_CONTAINS(@teamIds, c.TeamId)")
+                .WithParameter("@teamIds", teamIds);
+
+            var iterator = _container.GetItemQueryIterator<Document>(query);
+            var documents = new List<Document>();
+
+            while (iterator.HasMoreResults)
+            {
+                try
+                {
+                    var response = await iterator.ReadNextAsync();
+                    documents.AddRange(response);
+                }
+                catch (CosmosException ex)
+                {
+                    Console.WriteLine($"Error fetching team shared documents: {ex.Message}");
+                }
+            }
+
+            return documents;
+        }
 
         public async Task DeleteAsync(string documentId, string userId)
         {

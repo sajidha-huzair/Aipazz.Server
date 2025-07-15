@@ -26,28 +26,93 @@ namespace AIpazz.Infrastructure.Billing
             _container = db.GetContainer(containerName);
         }
 
-        public async Task<List<Invoice>> GetAllInvoicesByUserId(string userId)
+        // ───────────── GET ALL FOR USER  ─────────────
+        public async Task<List<Invoice>> GetAllForUserAsync(string userId)
         {
-            // Build a LINQ query to filter invoices by UserId
-            // Use partition key to optimize performance and RU consumption
+            // Same implementation as GetAllInvoicesByUserId
             var query = _container.GetItemLinqQueryable<Invoice>(
                             requestOptions: new QueryRequestOptions
                             {
-                                PartitionKey = new PartitionKey(userId) 
+                                PartitionKey = new PartitionKey(userId)
                             },
                             allowSynchronousQueryExecution: false)
                         .Where(i => i.UserId == userId)
                         .ToFeedIterator();
 
-            var invoices = new List<Invoice>();
+            var results = new List<Invoice>();
             while (query.HasMoreResults)
             {
-                var response = await query.ReadNextAsync();
-                invoices.AddRange(response);
+                var page = await query.ReadNextAsync();
+                results.AddRange(page);
+            }
+            return results;
+        }
+        public async Task CreateAsync(Invoice invoice)
+        {
+            await _container.CreateItemAsync(invoice, new PartitionKey(invoice.UserId));
+        }
+
+        public async Task<Invoice?> GetLastInvoiceAsync(string userId)
+        {
+            var query = _container.GetItemLinqQueryable<Invoice>(true)
+                                  .Where(i => i.UserId == userId)
+                                  .OrderByDescending(i => i.CreatedAt)
+                                  .ToFeedIterator();
+
+            while (query.HasMoreResults)
+            {
+                var page = await query.ReadNextAsync();
+                var first = page.FirstOrDefault();
+                if (first != null) return first;
             }
 
-            return invoices;
+            return null;
         }
+
+        // ────────────────────── GET SINGLE BY ID ──────────────────────
+        public async Task<Invoice?> GetByIdAsync(string id, string userId)
+        {
+            try
+            {
+                var response = await _container.ReadItemAsync<Invoice>(
+                                   id,
+                                   new PartitionKey(userId));   // partition key = UserId
+                return response.Resource;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return null; 
+            }
+        }
+
+        // UPDATE
+        public async Task UpdateAsync(Invoice invoice)
+        {
+            // ReplaceItemAsync keeps same id & partition key, enforces “replace” semantics.
+            // If you prefer upsert, swap to UpsertItemAsync.
+            await _container.ReplaceItemAsync(
+                item: invoice,
+                id: invoice.id,
+                partitionKey: new PartitionKey(invoice.UserId));
+        }
+
+        // DELETE
+        public async Task DeleteAsync(string id, string userId)
+        {
+            try
+            {
+                await _container.DeleteItemAsync<Invoice>(
+                    id: id,
+                    partitionKey: new PartitionKey(userId));
+            }
+            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                // swallow  -idempotent delete
+            }
+        }
+
+
+
 
     }
 

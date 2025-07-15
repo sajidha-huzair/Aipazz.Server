@@ -8,18 +8,18 @@ using Aipazz.Application.client.Interfaces;
 
 namespace Aipazz.Application.client.Handlers
 {
-    public class GetAllClientsHandler : IRequestHandler<GetAllClientsQuery, List<Client>>
+    public class GetAllClientsQueryHandler : IRequestHandler<GetAllClientsQuery, List<Client>>
     {
         private readonly IClientRepository _repository;
 
-        public GetAllClientsHandler(IClientRepository repository)
+        public GetAllClientsQueryHandler(IClientRepository repository)
         {
             _repository = repository;
         }
 
         public async Task<List<Client>> Handle(GetAllClientsQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetAllClients();
+            return await _repository.GetAllClients(request.UserId);
         }
     }
 }
