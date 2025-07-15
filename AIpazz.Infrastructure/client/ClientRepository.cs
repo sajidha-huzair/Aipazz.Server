@@ -120,5 +120,30 @@ namespace Aipazz.Infrastructure.client
                 await _container.DeleteItemAsync<Client>(id, new PartitionKey(nic));
             }
         }
+
+        // ✅ NEW METHOD: Check if a client exists by NIC and belongs to the user
+        public async Task<bool> DoesClientExistByNIC(string nic, string userId)
+        {
+            var query = new QueryDefinition(
+                "SELECT VALUE COUNT(1) FROM c WHERE c.nic = @nic AND c.userId = @userId")
+                .WithParameter("@nic", nic)
+                .WithParameter("@userId", userId);
+
+            using var iterator = _container.GetItemQueryIterator<int>(
+                query,
+                requestOptions: new QueryRequestOptions
+                {
+                    PartitionKey = new PartitionKey(nic)
+                });
+
+            if (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                var count = response.FirstOrDefault();
+                return count > 0;
+            }
+
+            return false;
+        }
     }
 }
