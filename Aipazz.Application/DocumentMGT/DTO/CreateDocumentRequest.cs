@@ -10,6 +10,7 @@ namespace Aipazz.Application.DocumentMGT.DTO
     {
         public string FileName { get; set; } = string.Empty;
         public string UserId { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty; // Add this property
         public string ContentHtml { get; set; } = string.Empty;
     }
 }

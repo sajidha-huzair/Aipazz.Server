@@ -7,6 +7,7 @@ namespace Aipazz.Domian.DocumentMgt
         public string id { get; set; }
         public string FileName { get; set; } = string.Empty;
         public string Userid { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty; // Add this property
         public string Url { get; set; } = string.Empty;
         public string HtmlUrl { get; set; } = string.Empty;
         public string? TeamId { get; set; } = null; // Added nullable TeamId

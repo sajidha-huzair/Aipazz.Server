@@ -63,6 +63,7 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                 id = documentId,
                 FileName = request.FileName,
                 Userid = request.UserId,
+                UserName = request.UserName, // Add this line
                 Url = wordUrl,
                 HtmlUrl = htmlUrl,
             };
