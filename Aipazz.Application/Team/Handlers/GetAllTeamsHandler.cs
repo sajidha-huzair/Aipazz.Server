@@ -18,7 +18,8 @@ namespace Aipazz.Application.Team.Handlers
 
         public async Task<List<Aipazz.Domian.Team.Team>> Handle(GetAllTeamsQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetTeamsByUserIdAsync(request.UserId);
+            // Use both userId and userEmail to find teams
+            return await _repository.GetTeamsByUserEmailAsync(request.UserEmail, request.UserId);
         }
     }
 }

@@ -19,5 +19,6 @@ namespace Aipazz.Application.DocumentMGT.Interfaces
         Task DeleteAsync(string documentId, string userId);
 
         Task<List<Document>> GetDocumentsByTeamIdsAsync(List<string> teamIds);
+        Task<List<Document>> GetDocumentsByTeamIdAsync(string teamId);
     }
 }

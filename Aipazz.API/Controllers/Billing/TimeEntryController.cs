@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Aipazz.Application.Billing.DTOs;
 
 namespace Aipazz.API.Controllers.Billing
 {
@@ -82,5 +83,20 @@ namespace Aipazz.API.Controllers.Billing
             var result = await _timeRepo.GetAllEntriesByIdsAsync(entryIds, userId);
             return Ok(result);
         }
+        [HttpPatch("{id}/unlink")]
+        public async Task<IActionResult> UnlinkFromInvoice(string id, [FromBody] UnlinkEntryRequest request)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var result = await _timeRepo.UnlinkFromInvoiceAsync(id, userId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
     }
 }
