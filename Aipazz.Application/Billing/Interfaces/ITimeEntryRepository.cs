@@ -1,4 +1,6 @@
 ﻿using Aipazz.Domian.Billing;
+using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +21,7 @@ namespace Aipazz.Application.Billing.Interfaces
         Task<List<TimeEntry>> GetUnbilledByMatterIdAsync(string matterId, string userId);
         Task MarkEntriesInvoicedAsync(IEnumerable<string> ids, string invoiceId, string userId);
         Task<List<TimeEntry>> GetBilledByMatterIdAsync(string matterId, string userId);
+        Task<TimeEntry> UnlinkFromInvoiceAsync(string entryId, string userId);
 
     }
 }
