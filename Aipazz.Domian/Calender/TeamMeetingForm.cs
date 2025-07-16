@@ -1,8 +1,18 @@
+using Newtonsoft.Json;
+
 namespace Aipazz.Domian.Calender
 {
     public class TeamMeetingForm
     {
-        public Guid Id { get; set; }
+        [JsonProperty("id")]
+        public string id { get; set; } = Guid.NewGuid().ToString();
+        
+        public Guid Id 
+        {
+            get => Guid.Parse(id);
+            set => id = value.ToString();
+        }
+        
         public string Title { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public string Time { get; set; } = string.Empty;
@@ -12,5 +22,8 @@ namespace Aipazz.Domian.Calender
         public string VideoConferencingLink { get; set; } = string.Empty;
         public string LocationLink { get; set; } = string.Empty;
         public List<string> TeamMembers { get; set; } = new(); // e.g., ["Alice", "Bob"]
+        
+        // Partition key for Cosmos DB
+        public string PartitionKey => Title;
     }
 }

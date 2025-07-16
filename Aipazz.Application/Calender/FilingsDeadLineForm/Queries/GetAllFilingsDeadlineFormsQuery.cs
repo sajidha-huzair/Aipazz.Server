@@ -15,10 +15,10 @@ namespace Aipazz.Application.Calender.FilingsDeadlineForm.Queries
             _repository = repository;
         }
 
-        public Task<List<Domian.Calender.FilingsDeadlineForm>> Handle(GetAllFilingsDeadlineFormsQuery request, CancellationToken cancellationToken)
+        public async Task<List<Aipazz.Domian.Calender.FilingsDeadlineForm>> Handle(GetAllFilingsDeadlineFormsQuery request, CancellationToken cancellationToken)
         {
-            var forms = _repository.GetAll();
-            return Task.FromResult(forms);
+            var forms = await _repository.GetAll();
+            return forms;
         }
     }
 }

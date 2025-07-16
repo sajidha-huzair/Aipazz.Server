@@ -87,9 +87,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
 builder.Services.AddScoped<IclientmeetingRepository, Clientmeetingrepository>();
-builder.Services.AddSingleton<ICourtDateFormRepository, CourtDateFormRepository>();
-builder.Services.AddSingleton<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
-builder.Services.AddSingleton<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
+builder.Services.AddScoped<ICourtDateFormRepository, CourtDateFormRepository>();
+builder.Services.AddScoped<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
+builder.Services.AddScoped<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
 
 
 builder.Services.AddSingleton(x =>

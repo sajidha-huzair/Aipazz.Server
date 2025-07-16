@@ -14,10 +14,10 @@ namespace Aipazz.Application.Calendar.CourtDateForms.Handlers
             _repository = repository;
         }
 
-        public Task<List<CourtDateForm>> Handle(GetCourtDateFormListQuery request, CancellationToken cancellationToken)
+        public async Task<List<CourtDateForm>> Handle(GetCourtDateFormListQuery request, CancellationToken cancellationToken)
         {
-            var data = _repository.GetAll();
-            return Task.FromResult(data);
+            var data = await _repository.GetAll();
+            return data;
         }
     }
 }

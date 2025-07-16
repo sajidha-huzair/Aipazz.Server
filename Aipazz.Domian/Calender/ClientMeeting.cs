@@ -1,8 +1,18 @@
+using Newtonsoft.Json;
+
 namespace Aipazz.Domian.Calender;
 
 public class ClientMeeting
 {
-    public Guid Id { get; private set; }
+    [JsonProperty("id")]
+    public string id { get; set; } = Guid.NewGuid().ToString();
+    
+    public Guid Id 
+    {
+        get => Guid.Parse(id);
+        set => id = value.ToString();
+    }
+    
     public string Title { get; private set; }
     public DateOnly Date { get; private set; }
     public TimeOnly Time { get; private set; }
@@ -13,6 +23,9 @@ public class ClientMeeting
     public string? Location { get; private set; }
     public List<string> TeamMembers { get; private set; } = new();
     public string ClientEmail { get; private set; }
+
+    // Partition key for Cosmos DB
+    public string PartitionKey => ClientEmail;
 
     private ClientMeeting() { } // For EF Core or serialization
 
@@ -41,7 +54,7 @@ public class ClientMeeting
         TeamMembers = teamMembers ?? new List<string>();
         ClientEmail = clientEmail;
     }
-    
+
     
     public void UpdateDetails(
         string title,
@@ -66,6 +79,4 @@ public class ClientMeeting
         TeamMembers = teamMembers ?? new();
         ClientEmail = clientEmail;
     }
-
-    
 }
