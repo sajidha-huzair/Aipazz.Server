@@ -186,6 +186,31 @@ namespace AIpazz.Infrastructure.Billing
 
             return results;
         }
+        public async Task<ExpenseEntry> UnlinkFromInvoiceAsync(string entryId, string userId)
+        {
+            // First, find the entry by scanning all partitions since we don't know the matterId
+            var query = _container.GetItemLinqQueryable<ExpenseEntry>(true)
+                                  .Where(e => e.id == entryId && e.UserId == userId)
+                                  .ToFeedIterator();
+
+            ExpenseEntry entry = null;
+            while (query.HasMoreResults && entry == null)
+            {
+                var response = await query.ReadNextAsync();
+                entry = response.FirstOrDefault();
+            }
+
+            if (entry == null)
+                throw new Exception($"Expense entry with ID {entryId} not found for user {userId}");
+
+            // Clear the invoice ID to unlink it
+            entry.InvoiceId = null;
+
+            // Update the entry in the database
+            await _container.ReplaceItemAsync(entry, entry.id, new PartitionKey(entry.matterId));
+
+            return entry;
+        }
 
 
 

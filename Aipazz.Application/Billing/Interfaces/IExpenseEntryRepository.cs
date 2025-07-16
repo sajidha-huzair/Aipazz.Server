@@ -19,6 +19,7 @@ namespace Aipazz.Application.Billing.Interfaces
         Task<List<ExpenseEntry>> GetUnbilledByMatterIdAsync(string matterId, string userId);
         Task MarkEntriesInvoicedAsync(IEnumerable<string> ids,string invoiceId,string userId);
         Task<List<ExpenseEntry>> GetBilledByMatterIdAsync(string matterId, string userId);
+        Task<ExpenseEntry> UnlinkFromInvoiceAsync(string entryId, string userId);
 
 
     }
