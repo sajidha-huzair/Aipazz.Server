@@ -41,7 +41,9 @@ namespace Aipazz.API.Controllers.DocumentMGt
         }
 
         [HttpPost("SaveWithUserid")]
-        public async Task<IActionResult> Create([FromBody] CreateDocumentRequest request)
+        [Authorize] // Add authorization
+      
+            public async Task<IActionResult> Create([FromBody] CreateDocumentRequest request)
         {
             var id = await _mediatR.Send(new CreateDocumentCommand(request));
             return Ok(new { DocumentId = id });
