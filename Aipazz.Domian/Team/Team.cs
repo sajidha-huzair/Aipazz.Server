@@ -5,10 +5,11 @@ namespace Aipazz.Domian.Team
 {
     public class Team
     {
-        public string id { get; set; } = string.Empty; // Changed to lowercase
+        public string id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string OwnerId { get; set; } = string.Empty; // User who created the team
+        public string OwnerName { get; set; } = string.Empty; // Add this property
         public List<TeamMember> Members { get; set; } = new();
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime LastModifiedAt { get; set; } = DateTime.UtcNow;
