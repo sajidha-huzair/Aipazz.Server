@@ -201,5 +201,21 @@ namespace Aipazz.API.Controllers.DocumentMGt
 
             return NoContent();
         }
+
+        [HttpGet("matter/{matterId}")]
+        [Authorize]
+        public async Task<IActionResult> GetDocumentsByMatterId(string matterId)
+        {
+            // Extract the user ID from the claim
+            string? userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
+
+            var result = await _mediatR.Send(new GetDocumentsByMatterIdQuery(matterId, userId));
+            return Ok(result);
+        }
     }
 }

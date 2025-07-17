@@ -20,5 +20,6 @@ namespace Aipazz.Application.DocumentMGT.Interfaces
 
         Task<List<Document>> GetDocumentsByTeamIdsAsync(List<string> teamIds);
         Task<List<Document>> GetDocumentsByTeamIdAsync(string teamId);
+        Task<List<Document>> GetDocumentsByMatterIdAsync(string matterId, string userId);
     }
 }
