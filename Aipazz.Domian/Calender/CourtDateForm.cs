@@ -1,12 +1,14 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+//using Newtonsoft.Json;
 
 namespace Aipazz.Domian.Calender
 {
     public class CourtDateForm
     {
-        [JsonProperty("id")]
+        [JsonPropertyName("id")]
         public string id { get; set; } = Guid.NewGuid().ToString();
         
+        [JsonIgnore]
         public Guid Id 
         {
             get => Guid.Parse(id);

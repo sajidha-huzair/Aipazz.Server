@@ -1,9 +1,10 @@
 using Aipazz.Application.Calender.Interfaces;
-using Aipazz.Domian.Calender;
+using Aipazz.Domain.Calender;
 using Aipazz.Domian;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 using System.Net;
+using FilingsDeadlineFormEntity = Aipazz.Domain.Calender.FilingsDeadlineForm;
 
 namespace AIpazz.Infrastructure.Calendar
 {
@@ -18,11 +19,11 @@ namespace AIpazz.Infrastructure.Calendar
             _container = db.GetContainer(containerName);
         }
 
-        public async Task<List<FilingsDeadlineForm>> GetAll()
+        public async Task<List<FilingsDeadlineFormEntity>> GetAll()
         {
             var query = new QueryDefinition("SELECT * FROM c");
-            var iterator = _container.GetItemQueryIterator<FilingsDeadlineForm>(query);
-            var results = new List<FilingsDeadlineForm>();
+            var iterator = _container.GetItemQueryIterator<FilingsDeadlineFormEntity>(query);
+            var results = new List<FilingsDeadlineFormEntity>();
 
             while (iterator.HasMoreResults)
             {
@@ -40,14 +41,14 @@ namespace AIpazz.Infrastructure.Calendar
             return results;
         }
 
-        public async Task<FilingsDeadlineForm?> GetById(Guid id)
+        public async Task<FilingsDeadlineFormEntity?> GetById(Guid id)
         {
             try
             {
                 var query = new QueryDefinition("SELECT * FROM c WHERE c.id = @id")
                     .WithParameter("@id", id.ToString());
 
-                var iterator = _container.GetItemQueryIterator<FilingsDeadlineForm>(query);
+                var iterator = _container.GetItemQueryIterator<FilingsDeadlineFormEntity>(query);
 
                 while (iterator.HasMoreResults)
                 {
@@ -65,11 +66,13 @@ namespace AIpazz.Infrastructure.Calendar
             }
         }
 
-        public async Task Add(FilingsDeadlineForm form)
+        public async Task Add(FilingsDeadlineFormEntity form)
         {
             try
             {
                 await _container.CreateItemAsync(form, new PartitionKey(form.PartitionKey));
+                
+                
                 Console.WriteLine($"Successfully added filing deadline ID: {form.id}");
             }
             catch (CosmosException ex)
@@ -79,7 +82,7 @@ namespace AIpazz.Infrastructure.Calendar
             }
         }
 
-        public async Task<FilingsDeadlineForm?> Update(Guid id, FilingsDeadlineForm updatedForm)
+        public async Task<FilingsDeadlineFormEntity?> Update(Guid id, FilingsDeadlineFormEntity updatedForm)
         {
             try
             {
@@ -114,7 +117,7 @@ namespace AIpazz.Infrastructure.Calendar
                 if (existing == null)
                     return false;
 
-                await _container.DeleteItemAsync<FilingsDeadlineForm>(existing.id, new PartitionKey(existing.PartitionKey));
+                await _container.DeleteItemAsync<FilingsDeadlineFormEntity>(existing.id, new PartitionKey(existing.PartitionKey));
                 return true;
             }
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)

@@ -32,6 +32,9 @@ namespace Aipazz.Application.Calender.clientmeeting.Handlers
                 request.TeamMembers,
                 request.ClientEmail
             );
+            
+            // ✅ Save changes to Cosmos DB
+            await _repository.UpdateClientMeeting(meeting);
 
             return meeting;
         }
