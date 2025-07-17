@@ -31,7 +31,7 @@ namespace Aipazz.Application.Matters.matter.Handlers
             matter.CaseNumber = request.CaseNumber;
             matter.Date = request.Date;
             matter.Description = request.Description;
-            matter.ClientNic = request.ClientNic;
+            //matter.ClientNic = request.ClientNic;
             matter.TeamMembers = request.TeamMembers;
             matter.CourtType = request.CourtType;
             matter.StatusId = request.StatusId;

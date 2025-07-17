@@ -63,14 +63,17 @@ namespace Aipazz.API.Controllers.Matters
         // PUT: api/Matter/{id}
         // Updates an existing Matter that belongs to the authenticated user
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] UpdateMatterCommand command)
+        public async Task<IActionResult> Update(string id, [FromBody] UpdateMatterCommand command)
         {
             if (command == null) return BadRequest("Invalid request.");
 
+            command.Id = id; // ✅ Bind the route param to command
             command.UserId = GetUserId();
+
             var result = await _mediator.Send(command);
             return Ok(result);
         }
+
 
         // DELETE: api/Matter/{id}?clientNic=123
         // Deletes a Matter by Id and ClientNic that belongs to the authenticated user
