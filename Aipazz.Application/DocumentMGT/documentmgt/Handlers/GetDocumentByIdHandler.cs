@@ -37,7 +37,10 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                     HtmlContent = htmlContent,
                     DocumentId = document.id,
                     UserId = document.Userid,
+                    UserName = document.UserName, // Add this
                     FileName = document.FileName,
+                    MatterId = document.MatterId, // Add this
+                    TeamId = document.TeamId, // Add this
                     Url = document.Url,
                     HtmlUrl = document.HtmlUrl,
                     CreatedAt = document.CreatedAt,
@@ -51,6 +54,5 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                 return null;
             }
         }
-
     }
 }

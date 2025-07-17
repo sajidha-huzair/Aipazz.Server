@@ -23,7 +23,6 @@ namespace Aipazz.API.Controllers.DocumentMGt
         public DocumentController(IMediator mediator)
         {
             _mediatR = mediator;
-
         }
 
         [HttpPost("generate")]
@@ -41,12 +40,37 @@ namespace Aipazz.API.Controllers.DocumentMGt
         }
 
         [HttpPost("SaveWithUserid")]
-        [Authorize] // Add authorization
-      
-            public async Task<IActionResult> Create([FromBody] CreateDocumentRequest request)
+        [Authorize]
+        public async Task<IActionResult> Create([FromBody] CreateDocumentRequest request)
         {
+            // Extract the user ID from the claim
+            string? userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
+            // Extract the user name from the claim
+            string? userName = User.Claims
+                .FirstOrDefault(c => c.Type == "name")?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
+
+            if (string.IsNullOrWhiteSpace(userName))
+                return Unauthorized("User name not found in token.");
+
+            // Set the user ID and name from the token to the request
+            request.UserId = userId;
+            request.UserName = userName;
+            // MatterId is already set by the client in the request
+
             var id = await _mediatR.Send(new CreateDocumentCommand(request));
-            return Ok(new { DocumentId = id });
+            
+            return Ok(new { 
+                DocumentId = id, 
+                Message = "Document created successfully", 
+                CreatedBy = userName,
+                MatterId = request.MatterId 
+            });
         }
 
         [HttpPut("{id}")]
@@ -54,7 +78,7 @@ namespace Aipazz.API.Controllers.DocumentMGt
         public async Task<IActionResult> Update(string id, [FromBody] UpdateDocumentRequest request)
         {
             // Extract the user ID from the claim
-            string userId = User.Claims
+            string? userId = User.Claims
                 .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
                 ?.Value;
 
@@ -77,7 +101,7 @@ namespace Aipazz.API.Controllers.DocumentMGt
         public async Task<IActionResult> ShareDocumentToTeam(string id, [FromBody] ShareDocumentToTeamDto shareDto)
         {
             // Extract the user ID from the claim
-            string userId = User.Claims
+            string? userId = User.Claims
                 .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
                 ?.Value;
 
@@ -93,7 +117,7 @@ namespace Aipazz.API.Controllers.DocumentMGt
         public async Task<IActionResult> GetTeamSharedDocuments()
         {
             // Extract the user ID from the claim
-            string userId = User.Claims
+            string? userId = User.Claims
                 .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
                 ?.Value;
 
@@ -104,16 +128,16 @@ namespace Aipazz.API.Controllers.DocumentMGt
             return Ok(result);
         }
 
+     
+
         [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> GetDocumentById(string id)
         {
-
             // Extract the user ID from the claim
-            string userId = User.Claims
+            string? userId = User.Claims
                 .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
                 ?.Value;
-
 
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized("User ID not found in token.");
@@ -124,7 +148,6 @@ namespace Aipazz.API.Controllers.DocumentMGt
                 return NotFound("Document not found.");
 
             return Ok(result);
-
         }
 
         [HttpGet]
@@ -132,7 +155,7 @@ namespace Aipazz.API.Controllers.DocumentMGt
         public async Task<IActionResult> GetAllDocuments()
         {
             // Extract the user ID from the claim
-            string userId = User.Claims
+            string? userId = User.Claims
                 .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
                 ?.Value;
 
@@ -158,11 +181,11 @@ namespace Aipazz.API.Controllers.DocumentMGt
             }
             catch (Exception ex)
             {
-                // Log unexpected errors
+                // Log the error properly
+                Console.WriteLine($"Error fetching documents: {ex.Message}");
                 return StatusCode(500, "An unexpected error occurred.");
             }
         }
-
 
         [Authorize]
         [HttpDelete("{id}")]
@@ -177,6 +200,22 @@ namespace Aipazz.API.Controllers.DocumentMGt
                 return NotFound("Document not found or unauthorized.");
 
             return NoContent();
+        }
+
+        [HttpGet("matter/{matterId}")]
+        [Authorize]
+        public async Task<IActionResult> GetDocumentsByMatterId(string matterId)
+        {
+            // Extract the user ID from the claim
+            string? userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
+
+            var result = await _mediatR.Send(new GetDocumentsByMatterIdQuery(matterId, userId));
+            return Ok(result);
         }
     }
 }
