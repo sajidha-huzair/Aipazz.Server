@@ -12,5 +12,6 @@ namespace Aipazz.Application.DocumentMGT.DTO
         public string UserId { get; set; } = string.Empty;
         public string ContentHtml { get; set; } = string.Empty;
         public string? FileName { get; set; } // optional
+        public string? MatterId { get; set; } = null; // Add this line
     }
 }
