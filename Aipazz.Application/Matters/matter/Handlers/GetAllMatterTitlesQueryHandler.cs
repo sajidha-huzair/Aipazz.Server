@@ -1,10 +1,9 @@
 ﻿using Aipazz.Application.Matters.Interfaces;
 using Aipazz.Application.Matters.matter.Queries;
 using MediatR;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Aipazz.Application.Matters.matter.Handlers
@@ -20,7 +19,7 @@ namespace Aipazz.Application.Matters.matter.Handlers
 
         public async Task<List<MatterLookupDto>> Handle(GetAllMatterTitlesQuery request, CancellationToken cancellationToken)
         {
-            var matters = await _matterRepo.GetAllMatters();
+            var matters = await _matterRepo.GetAllMatters(request.UserId); // ✅ Use UserId
             return matters.Select(m => new MatterLookupDto
             {
                 Id = m.id,
@@ -28,5 +27,4 @@ namespace Aipazz.Application.Matters.matter.Handlers
             }).ToList();
         }
     }
-
 }

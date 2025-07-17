@@ -1,6 +1,5 @@
 ﻿using Aipazz.Application.Matters.matter.Commands;
 using Aipazz.Application.Matters.Interfaces;
-using Aipazz.Domian.Matters;
 using MediatR;
 using System.Collections.Generic;
 using System.Threading;
@@ -19,13 +18,13 @@ namespace Aipazz.Application.Matters.matter.Handlers
 
         public async Task<bool> Handle(DeleteMatterCommand request, CancellationToken cancellationToken)
         {
-            var matter = await _repository.GetMatterById(request.Id, request.ClientNic);
+            var matter = await _repository.GetMatterById(request.Id, request.ClientNic, request.UserId);
             if (matter == null)
             {
-                throw new KeyNotFoundException($"Matter with Id {request.Id} and Title {request.ClientNic} not found.");
+                throw new KeyNotFoundException($"Matter with Id {request.Id} and ClientNic {request.ClientNic} not found or unauthorized.");
             }
 
-            await _repository.DeleteMatter(request.Id, request.ClientNic);
+            await _repository.DeleteMatter(request.Id, request.ClientNic, request.UserId);
             return true;
         }
     }

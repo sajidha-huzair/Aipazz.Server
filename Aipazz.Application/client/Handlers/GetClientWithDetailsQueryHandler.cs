@@ -33,15 +33,15 @@ namespace Aipazz.Application.client.Handlers
 
         public async Task<ClientWithMattersDto?> Handle(GetClientWithDetailsQuery request, CancellationToken cancellationToken)
         {
-            var client = await _clientRepo.GetByNicAsync(request.ClientNic);
+            var client = await _clientRepo.GetByNicAsync(request.ClientNic,request.UserId);
             if (client == null) return null;
 
-            var matters = await _matterRepo.GetMattersByClientNicAsync(request.ClientNic);
+            var matters = await _matterRepo.GetMattersByClientNicAsync(request.ClientNic, request.UserId);
 
             var result = new ClientWithMattersDto
             {
                 Id = client.id!,
-                Name = client.name!,
+                Name = $"{client.FirstName} {client.LastName}".Trim(),
                 Nic = client.nic!,
                 Matters = new()
             };
@@ -61,7 +61,8 @@ namespace Aipazz.Application.client.Handlers
                     TimeEntries = timeEntries.Select(t => new TimeEntryDto
 
 
-                    {   Id = t.id!,
+                    {
+                        Id = t.id!,
                         Description = t.Description,
                         Date = t.Date == default ? DateTime.Today : t.Date,
                         Duration = t.Duration,

@@ -19,7 +19,7 @@ namespace Aipazz.Application.Matters.matter.Handlers
 
         public async Task<List<Matter>> Handle(GetAllMattersQuery request, CancellationToken cancellationToken)
         {
-            return await _repository.GetAllMatters();
+            return await _repository.GetAllMatters(request.UserId); 
         }
     }
 }

@@ -3,9 +3,7 @@ using Aipazz.Domian.client;
 using Aipazz.Application.client.Interfaces;
 using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Aipazz.Application.client.Handlers
@@ -24,10 +22,17 @@ namespace Aipazz.Application.client.Handlers
             var client = new Client
             {
                 id = Guid.NewGuid().ToString(),
-                name = request.Name,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Type = request.Type,
+                Mobile = request.Mobile,
+                Landphone = request.Landphone,
                 nic = request.Nic,
-                phone = request.Phone,
-                email = request.Email
+                email = request.Email,
+                Address = request.Address,
+                CaseNumber = request.CaseNumber,
+                CaseName = request.CaseName,
+                UserId = request.UserId
             };
             await _clientRepository.CreateAsync(client);
             return client;

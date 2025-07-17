@@ -29,5 +29,6 @@ namespace Aipazz.Domian.Billing
 
         // Auto-calculated amount (Duration in hours * RatePerHour)
         public decimal Amount => (decimal)Duration.TotalHours * RatePerHour;
+        public string? InvoiceId { get; set; }   // null means unbilled
     }
 }

@@ -33,15 +33,15 @@ namespace Aipazz.Application.client.Handlers
 
         public async Task<List<ClientWithMattersDto>> Handle(GetClientsWithEntriesQuery request, CancellationToken cancellationToken)
         {
-            var allMatters = await _matterRepo.GetAllMatters(); // You may want to filter matters by user later
+            var allMatters = await _matterRepo.GetAllMatters(request.UserId); // You may want to filter matters by user later
             var result = new List<ClientWithMattersDto>();
 
             var clientNicToMattersWithEntries = new Dictionary<string, List<MatterWithEntriesDto>>();
 
             foreach (var matter in allMatters)
             {
-                var timeEntries = await _timeRepo.GetTimeEntriesByMatterIdAsync(matter.id!, request.UserId); 
-                var expenseEntries = await _expenseRepo.GetExpenseEntriesByMatterIdAsync(matter.id!,request.UserId);
+                var timeEntries = await _timeRepo.GetTimeEntriesByMatterIdAsync(matter.id!, request.UserId);
+                var expenseEntries = await _expenseRepo.GetExpenseEntriesByMatterIdAsync(matter.id!, request.UserId);
 
                 if (!timeEntries.Any() && !expenseEntries.Any())
                     continue;
@@ -81,13 +81,13 @@ namespace Aipazz.Application.client.Handlers
 
             foreach (var (clientNic, matters) in clientNicToMattersWithEntries)
             {
-                var client = await _clientRepo.GetByNicAsync(clientNic);
+                var client = await _clientRepo.GetByNicAsync(clientNic, request.UserId);
                 if (client == null) continue;
 
                 result.Add(new ClientWithMattersDto
                 {
                     Id = client.id!,
-                    Name = client.name!,
+                    Name = $"{client.FirstName} {client.LastName}".Trim(),
                     Nic = client.nic!,
                     Matters = matters
                 });
@@ -97,4 +97,4 @@ namespace Aipazz.Application.client.Handlers
         }
     }
 
-    }
+}

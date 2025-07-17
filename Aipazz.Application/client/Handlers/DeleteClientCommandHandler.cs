@@ -1,10 +1,7 @@
 ﻿using Aipazz.Application.client.Interfaces;
 using Aipazz.Application.client.Commands;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Aipazz.Application.client.Handlers
@@ -20,9 +17,9 @@ namespace Aipazz.Application.client.Handlers
 
         public async Task<Unit> Handle(DeleteClientCommand request, CancellationToken cancellationToken)
         {
-            if (request.id != null)
+            if (!string.IsNullOrEmpty(request.id) && !string.IsNullOrEmpty(request.nic))
             {
-                await _clientRepository.DeleteAsync(request.id);
+                await _clientRepository.DeleteAsync(request.id, request.nic,request.UserId);
             }
             return Unit.Value;
         }

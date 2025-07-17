@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Aipazz.Application.Billing.DTOs;
 
 namespace Aipazz.API.Controllers.Billing
 {
@@ -17,10 +18,12 @@ namespace Aipazz.API.Controllers.Billing
     public class TimeEntryController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ITimeEntryRepository _timeRepo;
 
-        public TimeEntryController(IMediator mediator)
+        public TimeEntryController(IMediator mediator, ITimeEntryRepository timeRepo)
         {
             _mediator = mediator;
+            _timeRepo = timeRepo;
         }
 
         [HttpGet]
@@ -72,5 +75,28 @@ namespace Aipazz.API.Controllers.Billing
 
             return result ? NoContent() : NotFound();
         }
+
+        [HttpPost("by-ids")]
+        public async Task<IActionResult> GetByIds([FromBody] List<string> entryIds)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _timeRepo.GetAllEntriesByIdsAsync(entryIds, userId);
+            return Ok(result);
+        }
+        [HttpPatch("{id}/unlink")]
+        public async Task<IActionResult> UnlinkFromInvoice(string id, [FromBody] UnlinkEntryRequest request)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var result = await _timeRepo.UnlinkFromInvoiceAsync(id, userId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
     }
 }
