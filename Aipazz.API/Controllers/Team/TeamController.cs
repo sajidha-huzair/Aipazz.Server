@@ -71,16 +71,28 @@ namespace Aipazz.API.Controllers.Team
         public async Task<IActionResult> CreateTeam([FromBody] CreateTeamCommand command)
         {
             // Extract the user ID from the claim
-            string userId = User.Claims
+            string? userId = User.Claims
                 .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
                 ?.Value;
 
+            // Extract the owner name from the claim
+            string? ownerName = User.Claims
+                .FirstOrDefault(c => c.Type == "name")?.Value;
+
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized("User ID not found in token.");
+
+            if (string.IsNullOrWhiteSpace(ownerName))
+                return Unauthorized("User name not found in token.");
             
             var members = command.Members ?? new List<TeamMember>();
-            var result = await _mediator.Send(new CreateTeamCommand(command.Name, command.Description, userId, members));
-            return Ok(new { Message = "Team created successfully", TeamId = result });
+            var result = await _mediator.Send(new CreateTeamCommand(command.Name, command.Description, userId, ownerName, members));
+            
+            return Ok(new { 
+                Message = "Team created successfully", 
+                TeamId = result,
+                CreatedBy = ownerName // Include owner name in response
+            });
         }
 
         [HttpPut("{id}")]

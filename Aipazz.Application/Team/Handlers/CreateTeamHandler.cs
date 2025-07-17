@@ -26,6 +26,7 @@ namespace Aipazz.Application.Team.Handlers
                 Name = request.Name,
                 Description = request.Description,
                 OwnerId = request.UserId,
+                OwnerName = request.OwnerName, // Add this line
                 Members = request.Members ?? new List<TeamMember>(),
                 CreatedAt = DateTime.UtcNow,
                 LastModifiedAt = DateTime.UtcNow,

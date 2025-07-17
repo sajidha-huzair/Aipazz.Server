@@ -20,6 +20,6 @@ namespace Aipazz.Application.Matters.DTO
         public List<string> TeamMembers { get; set; } = new();
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public CourtType CourtType { get; set; }
+        public CourtType? CourtType { get; set; }
     }
 }
