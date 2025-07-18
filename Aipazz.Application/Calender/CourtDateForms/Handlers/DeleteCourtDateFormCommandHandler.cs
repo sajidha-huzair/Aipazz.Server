@@ -15,9 +15,9 @@ namespace Aipazz.Application.Calendar.CourtDateForms.Handlers
             _repository = repository;
         }
 
-        public Task<bool> Handle(DeleteCourtDateFormCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(DeleteCourtDateFormCommand request, CancellationToken cancellationToken)
         {
-            return Task.FromResult(_repository.DeleteCourtDateForm(request.Id));
+            return await _repository.DeleteCourtDateForm(request.Id);
         }
     }
 }

@@ -1,11 +1,12 @@
 using Aipazz.Application.Calender.Commands.FilingsDeadlineForms;
 using Aipazz.Application.Calender.Interfaces;
-using Aipazz.Domian.Calender;
+using Aipazz.Domain.Calender;
 using MediatR;
+using FilingsDeadlineFormEntity = Aipazz.Domain.Calender.FilingsDeadlineForm;
 
 namespace Aipazz.Application.Calender.Handlers.FilingsDeadlineForms
 {
-    public class AddFilingsDeadlineFormCommandHandler : IRequestHandler<AddFilingsDeadlineFormCommand, Domian.Calender.FilingsDeadlineForm>
+    public class AddFilingsDeadlineFormCommandHandler : IRequestHandler<AddFilingsDeadlineFormCommand, FilingsDeadlineFormEntity>
     {
         private readonly IFilingsDeadlineFormRepository _repository;
 
@@ -14,9 +15,9 @@ namespace Aipazz.Application.Calender.Handlers.FilingsDeadlineForms
             _repository = repository;
         }
 
-        public Task<Domian.Calender.FilingsDeadlineForm> Handle(AddFilingsDeadlineFormCommand request, CancellationToken cancellationToken)
+        public async Task<FilingsDeadlineFormEntity> Handle(AddFilingsDeadlineFormCommand request, CancellationToken cancellationToken)
         {
-            var newForm = new Domian.Calender.FilingsDeadlineForm
+            var newForm = new FilingsDeadlineFormEntity
             {
                 Id = Guid.NewGuid(),
                 Title = request.Title,
@@ -24,11 +25,13 @@ namespace Aipazz.Application.Calender.Handlers.FilingsDeadlineForms
                 Time = request.Time,
                 Reminder = request.Reminder,
                 Description = request.Description,
-                AssignedMatter = request.AssignMatter
+                AssignedMatter = request.AssignedMatter
             };
 
-            _repository.Add(newForm);
-            return Task.FromResult(newForm);
+            // ✅ Await the Add call to ensure the item is saved in Cosmos DB
+            await _repository.Add(newForm);
+
+            return newForm;
         }
     }
 }

@@ -86,14 +86,29 @@ namespace Aipazz.Infrastructure.Matters
             }
         }
 
-        public async Task<Status?> GetStatusByName(string name)
+        public async Task<Status?> GetStatusByName(string name, string userId)
         {
-            var query = _container.GetItemLinqQueryable<Status>(allowSynchronousQueryExecution: true)
-                .Where(s => s.Name == name)
-                .AsEnumerable()
-                .FirstOrDefault();
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.UserId = @userId AND c.Name = @name")
+                .WithParameter("@userId", userId)
+                .WithParameter("@name", name);
 
-            return query;
+            var iterator = _container.GetItemQueryIterator<Status>(
+                query,
+                requestOptions: new QueryRequestOptions
+                {
+                    PartitionKey = new PartitionKey(userId)
+                });
+
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                var result = response.FirstOrDefault();
+                if (result != null)
+                    return result;
+            }
+
+            return null;
         }
+
     }
 }

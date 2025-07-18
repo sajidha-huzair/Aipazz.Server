@@ -1,69 +1,129 @@
 using Aipazz.Application.Calender.Interfaces;
 using Aipazz.Domian.Calender;
+using Aipazz.Domian;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Options;
+using System.Net;
 
 namespace Aipazz.Infrastructure.Calendar
 {
     public class CourtDateFormRepository : ICourtDateFormRepository
     {
-        private readonly List<CourtDateForm> _courtDates = new List<CourtDateForm>();
-        public CourtDateFormRepository()
+        private readonly Container _container;
+        
+        public CourtDateFormRepository(CosmosClient client, IOptions<CosmosDbOptions> options)
         {
-            _courtDates.Add(new CourtDateForm
-            {
-                Id = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6"),
-                CaseNumber = "ABC123",
-                CourtName = "Supreme Court",
-                Date = DateTime.UtcNow.AddDays(7),
-                Description = "Hearing for civil case"
-            });
-        }
-        
-
-        public List<CourtDateForm> GetAll()
-        {
-            return _courtDates;
-        }
-        
-        
-        public Task<CourtDateForm?> GetById(Guid id)
-        {
-            var courtDate = _courtDates.FirstOrDefault(cd => cd.Id == id);
-            return Task.FromResult(courtDate);
-        }
-        
-        
-        public void AddCourtDateForm(CourtDateForm courtDateForm) // 👈 Add this method
-        {
-            _courtDates.Add(courtDateForm);
+            var db = client.GetDatabase(options.Value.DatabaseName);
+            var containerName = options.Value.Containers["CourtDateForm"];
+            _container = db.GetContainer(containerName);
         }
 
-        public Task<CourtDateForm?> UpdateCourtDateForm(Guid modelId, CourtDateForm courtDateForm)
+        public async Task<List<CourtDateForm>> GetAll()
         {
-            var existing = _courtDates.FirstOrDefault(cd => cd.Id == modelId);
-    
-            if (existing == null)
+            var query = new QueryDefinition("SELECT * FROM c");
+            var iterator = _container.GetItemQueryIterator<CourtDateForm>(query);
+            var courtDates = new List<CourtDateForm>();
+
+            while (iterator.HasMoreResults)
             {
-                return Task.FromResult<CourtDateForm?>(null);
+                try
+                {
+                    var response = await iterator.ReadNextAsync();
+                    courtDates.AddRange(response);
+                }
+                catch (CosmosException ex)
+                {
+                    Console.WriteLine($"Error fetching court dates: {ex.Message}");
+                }
             }
 
-            existing.CaseNumber = courtDateForm.CaseNumber;
-            existing.CourtName = courtDateForm.CourtName;
-            existing.Date = courtDateForm.Date;
-
-            return Task.FromResult(existing);
+            return courtDates;
         }
-        
-        
-        public bool DeleteCourtDateForm(Guid id)
+
+        public async Task<CourtDateForm?> GetById(Guid id)
         {
-            var courtDate = _courtDates.FirstOrDefault(cd => cd.Id == id);
-            if (courtDate == null)
-                return false;
-
-            _courtDates.Remove(courtDate);
-            return true;
+            try
+            {
+                var query = new QueryDefinition("SELECT * FROM c WHERE c.id = @id")
+                    .WithParameter("@id", id.ToString());
+                
+                var iterator = _container.GetItemQueryIterator<CourtDateForm>(query);
+                
+                while (iterator.HasMoreResults)
+                {
+                    var response = await iterator.ReadNextAsync();
+                    var courtDate = response.FirstOrDefault();
+                    if (courtDate != null)
+                        return courtDate;
+                }
+                
+                return null;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
         }
 
+        public async Task AddCourtDateForm(CourtDateForm courtDateForm)
+        {
+            try
+            {
+                await _container.CreateItemAsync(courtDateForm, new PartitionKey(courtDateForm.PartitionKey));
+                Console.WriteLine($"Successfully added court date ID: {courtDateForm.id}");
+            }
+            catch (CosmosException ex)
+            {
+                Console.WriteLine($"Error adding court date: {ex.Message}");
+                throw;
+            }
+        }
 
+        public async Task<CourtDateForm> UpdateCourtDateForm(Guid modelId, CourtDateForm courtDateForm)
+        {
+            try
+            {
+                var existing = await GetById(modelId);
+                if (existing == null)
+                {
+                    return null;
+                }
+
+                existing.CaseNumber = courtDateForm.CaseNumber;
+                existing.CourtName = courtDateForm.CourtName;
+                existing.Date = courtDateForm.Date;
+                existing.Description = courtDateForm.Description;
+
+                await _container.UpsertItemAsync(existing, new PartitionKey(existing.PartitionKey));
+                return existing;
+            }
+            catch (CosmosException ex)
+            {
+                Console.WriteLine($"Error updating court date: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteCourtDateForm(Guid id)
+        {
+            try
+            {
+                var existing = await GetById(id);
+                if (existing == null)
+                    return false;
+
+                await _container.DeleteItemAsync<CourtDateForm>(existing.id, new PartitionKey(existing.PartitionKey));
+                return true;
+            }
+            catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+            {
+                return false;
+            }
+            catch (CosmosException ex)
+            {
+                Console.WriteLine($"Error deleting court date: {ex.Message}");
+                throw;
+            }
+        }
     }
 }
