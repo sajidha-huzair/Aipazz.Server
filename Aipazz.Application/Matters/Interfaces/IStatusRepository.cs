@@ -12,7 +12,7 @@ namespace Aipazz.Application.Matters.Interfaces
         Task AddStatus(Status status);
         Task UpdateStatus(Status status);
         Task DeleteStatus(string id, string userId);
-        Task<Status?> GetStatusByName(string name);
+        Task<Status?> GetStatusByName(string name, string userId);
 
     }
 }

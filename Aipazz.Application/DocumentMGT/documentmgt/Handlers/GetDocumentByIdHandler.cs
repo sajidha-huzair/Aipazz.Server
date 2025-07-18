@@ -37,12 +37,15 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                     HtmlContent = htmlContent,
                     DocumentId = document.id,
                     UserId = document.Userid,
+                    UserName = document.UserName,
                     FileName = document.FileName,
+                    MatterId = document.MatterId,
+                    MatterName = document.MatterName, // Add this line
+                    TeamId = document.TeamId,
                     Url = document.Url,
                     HtmlUrl = document.HtmlUrl,
                     CreatedAt = document.CreatedAt,
                     LastModifiedAt = document.LastModifiedAt,
-
                 };
             }
             catch (Exception ex)
@@ -51,6 +54,5 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                 return null;
             }
         }
-
     }
 }

@@ -29,6 +29,8 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
 
             var doc = await _repo.GetByIdAsync(request.DocumentId, request.UserId);
             if (doc == null) return false;
+            doc.MatterId = request.MatterId;
+            doc.MatterName = request.MatterName; 
 
             if (!string.IsNullOrWhiteSpace(request.FileName))
                 doc.FileName = request.FileName;

@@ -10,8 +10,6 @@ using DocumentFormat.OpenXml.Packaging;
 using MediatR;
 using HtmlToOpenXml;
 
-
-
 namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
 {
     public class CreateDocumentHandler : IRequestHandler<CreateDocumentCommand, string>
@@ -29,17 +27,12 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
         {
             var request = command.Request;
             byte[] wordContent;
-            //this below id used to save the docuemnt
             var documentId = Guid.NewGuid().ToString();
-            
-
-
 
             using (var ms = new MemoryStream())
             {
                 using (var wordDoc = WordprocessingDocument.Create(ms, DocumentFormat.OpenXml.WordprocessingDocumentType.Document, true))
                 {
-
                     var mainPart = wordDoc.AddMainDocumentPart();
                     mainPart.Document = new Document(new Body());
                     var converter = new HtmlConverter(mainPart);
@@ -63,8 +56,11 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                 id = documentId,
                 FileName = request.FileName,
                 Userid = request.UserId,
+                UserName = request.UserName,
                 Url = wordUrl,
                 HtmlUrl = htmlUrl,
+                MatterId = request.MatterId,
+                MatterName = request.MatterName // Add this line
             };
 
             await _repo.SaveAsync(document);

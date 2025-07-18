@@ -24,7 +24,7 @@ namespace Aipazz.Domian.Matters
         public required string StatusId { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
-        public CourtType CourtType { get; set; }
+        public CourtType? CourtType { get; set; }
 
     }
 }

@@ -1,12 +1,13 @@
-using Aipazz.Domian.Calender;
+using Aipazz.Domain.Calender;
 using Aipazz.Application.Calender.Interfaces;
 using MediatR;
+using FilingsDeadlineFormEntity = Aipazz.Domain.Calender.FilingsDeadlineForm;
 
 namespace Aipazz.Application.Calender.FilingsDeadlineForm.Queries
 {
-    public class GetAllFilingsDeadlineFormsQuery : IRequest<List<Domian.Calender.FilingsDeadlineForm>> { }
+    public class GetAllFilingsDeadlineFormsQuery : IRequest<List<FilingsDeadlineFormEntity>> { }
 
-    public class GetAllFilingsDeadlineFormsHandler : IRequestHandler<GetAllFilingsDeadlineFormsQuery, List<Domian.Calender.FilingsDeadlineForm>>
+    public class GetAllFilingsDeadlineFormsHandler : IRequestHandler<GetAllFilingsDeadlineFormsQuery, List<FilingsDeadlineFormEntity>>
     {
         private readonly IFilingsDeadlineFormRepository _repository;
 
@@ -15,10 +16,10 @@ namespace Aipazz.Application.Calender.FilingsDeadlineForm.Queries
             _repository = repository;
         }
 
-        public Task<List<Domian.Calender.FilingsDeadlineForm>> Handle(GetAllFilingsDeadlineFormsQuery request, CancellationToken cancellationToken)
+        public async Task<List<FilingsDeadlineFormEntity>> Handle(GetAllFilingsDeadlineFormsQuery request, CancellationToken cancellationToken)
         {
-            var forms = _repository.GetAll();
-            return Task.FromResult(forms);
+            var forms = await _repository.GetAll();
+            return forms;
         }
     }
 }

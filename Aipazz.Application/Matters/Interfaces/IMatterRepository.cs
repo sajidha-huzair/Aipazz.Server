@@ -8,7 +8,7 @@ namespace Aipazz.Application.Matters.Interfaces
     public interface IMatterRepository
     {
         Task<List<Matter>> GetAllMatters(string userId);
-        Task<Matter> GetMatterById(string id, string clientNic, string userId); 
+        Task<Matter?> GetMatterById(string id, string clientNic, string userId); 
         Task AddMatter(Matter Matter);
         Task UpdateMatter(Matter Matter);
         Task DeleteMatter(string id, string clientNic, string userId); 

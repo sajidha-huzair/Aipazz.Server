@@ -77,6 +77,16 @@ namespace Aipazz.API.Controllers.client
             ));
             return result == null ? NotFound() : Ok(result);
         }
+       
+        [HttpGet("check-nic/{nic}")]
+        public async Task<IActionResult> CheckNICExists(string nic)
+        {
+            var userId = GetUserId();
+            var exists = await _mediator.Send(new CheckClientNICExistsQuery(nic, userId));
+            return Ok(exists); // true or false
+        }
+
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id, [FromQuery] string nic)
