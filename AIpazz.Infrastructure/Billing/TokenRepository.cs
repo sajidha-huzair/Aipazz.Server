@@ -26,15 +26,13 @@ namespace AIpazz.Infrastructure.Billing
 
         public async Task<InvoiceAccessToken?> GetTokenAsync(string token)
         {
-            var query = new QueryDefinition("SELECT * FROM c WHERE c.token = @token")
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.Token = @token")
                 .WithParameter("@token", token);
 
             using var iterator = _container.GetItemQueryIterator<InvoiceAccessToken>(
-                query,
-                requestOptions: new QueryRequestOptions
-                {
-                    PartitionKey = PartitionKey.None // or use fixed key if required
-                });
+                query
+            // No QueryRequestOptions needed unless you want to set PartitionKey manually
+            );
 
             while (iterator.HasMoreResults)
             {
@@ -44,6 +42,7 @@ namespace AIpazz.Infrastructure.Billing
 
             return null;
         }
+
 
         public async Task InvalidateTokenAsync(string token)
         {

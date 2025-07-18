@@ -43,6 +43,19 @@ namespace Aipazz.API.Controllers.Billing
             return Ok(new { message = "Invoice link sent successfully." });
         }
 
+        [HttpPost("verify-token")]
+        [AllowAnonymous] // so client without login can access this
+        public async Task<IActionResult> VerifyToken([FromBody] VerifyTokenRequest request)
+        {
+            var result = await _mediator.Send(new VerifyTokenCommand(request.Token));
+
+            if (!result.Success)
+                return BadRequest(new { message = result.Message });
+
+            return Ok(new { message = "Token verified", invoiceId = result.InvoiceId });
+        }
+
+
     }
 
 }
