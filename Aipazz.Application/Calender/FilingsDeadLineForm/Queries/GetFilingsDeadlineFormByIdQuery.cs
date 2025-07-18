@@ -1,9 +1,10 @@
-using Aipazz.Domian.Calender;
+using Aipazz.Domain.Calender;
 using MediatR;
+using FilingsDeadlineFormEntity = Aipazz.Domain.Calender.FilingsDeadlineForm;
 
 namespace Aipazz.Application.Calender.Queries.FilingsDeadlineForms
 {
-    public class GetFilingsDeadlineFormByIdQuery : IRequest<Domian.Calender.FilingsDeadlineForm?>
+    public class GetFilingsDeadlineFormByIdQuery : IRequest<FilingsDeadlineFormEntity?>
     {
         public Guid Id { get; set; }
 

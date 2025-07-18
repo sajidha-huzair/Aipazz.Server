@@ -20,46 +20,119 @@ namespace Aipazz.API.Controllers.Calendar
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _mediator.Send(new GetAllFilingsDeadlineFormsQuery());
-            return Ok(result);
+            try
+            {
+                var result = await _mediator.Send(new GetAllFilingsDeadlineFormsQuery());
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
-        
         
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var result = await _mediator.Send(new GetFilingsDeadlineFormByIdQuery(id));
-            if (result == null)
-                return NotFound();
+            try
+            {
+                if (id == Guid.Empty)
+                    return BadRequest("Invalid ID provided");
+                    
+                var result = await _mediator.Send(new GetFilingsDeadlineFormByIdQuery(id));
+                if (result == null)
+                    return NotFound($"Filing deadline with ID {id} not found");
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
         
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] AddFilingsDeadlineFormCommand command)
         {
-            var result = await _mediator.Send(command);
-            return Ok(result);
+            try
+            {
+                // Basic validation
+                if (command == null)
+                    return BadRequest("Command cannot be null");
+                    
+                if (string.IsNullOrWhiteSpace(command.Title))
+                    return BadRequest("Title is required");
+                    
+                
+                    
+                if (command.Date == default(DateTime))
+                    return BadRequest("Valid date is required");
+
+                var result = await _mediator.Send(command);
+                return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
         
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(Guid id, [FromBody] UpdateFilingsDeadlineFormCommand command)
         {
-            if (id != command.Id) return BadRequest("ID mismatch");
+            try
+            {
+                if (id == Guid.Empty)
+                    return BadRequest("Invalid ID provided");
+                    
+                if (command == null)
+                    return BadRequest("Command cannot be null");
+                    
+                if (id != command.Id) 
+                    return BadRequest("ID mismatch between URL and request body");
+                    
+                // Basic validation
+                if (string.IsNullOrWhiteSpace(command.Title))
+                    return BadRequest("Title is required");
+                    
+                if (string.IsNullOrWhiteSpace(command.AssignedMatter))
+                    return BadRequest("AssignedMatter is required");
+                    
+                if (command.Date == default(DateTime))
+                    return BadRequest("Valid date is required");
 
-            var result = await _mediator.Send(command);
+                var result = await _mediator.Send(command);
 
-            if (result == null) return NotFound();
-            return Ok(result);
+                if (result == null) 
+                    return NotFound($"Filing deadline with ID {id} not found");
+                    
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
         
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _mediator.Send(new DeleteFilingsDeadlineFormCommand(id));
+            try
+            {
+                if (id == Guid.Empty)
+                    return BadRequest("Invalid ID provided");
+                    
+                var result = await _mediator.Send(new DeleteFilingsDeadlineFormCommand(id));
 
-            if (!result) return NotFound();
-            return NoContent(); // 204 No Content
+                if (!result) 
+                    return NotFound($"Filing deadline with ID {id} not found");
+                    
+                return NoContent(); // 204 No Content
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
 

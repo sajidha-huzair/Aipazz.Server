@@ -15,10 +15,10 @@ namespace Aipazz.Application.Calender.TeamMeeting.Handlers
             _repository = repository;
         }
 
-        public Task<List<Domian.Calender.TeamMeetingForm>> Handle(GetAllTeamMeetingFormsQuery request, CancellationToken cancellationToken)
+        public async Task<List<Aipazz.Domian.Calender.TeamMeetingForm>> Handle(GetAllTeamMeetingFormsQuery request, CancellationToken cancellationToken)
         {
-            var data = _repository.GetAll();
-            return Task.FromResult(data);
+            var data = await _repository.GetAll();
+            return data;
         }
     }
 }

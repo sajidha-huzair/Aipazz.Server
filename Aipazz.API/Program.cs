@@ -1,4 +1,4 @@
-﻿using AIpazz.Infrastructure.Billing;
+using AIpazz.Infrastructure.Billing;
 using Aipazz.Application.Billing.TimeEntries.Queries;
 using Aipazz.Application.Calender.Interface;
 using Aipazz.Application.Calender.Interfaces;
@@ -27,6 +27,7 @@ using Aipazz.Application.Common.Aipazz.Application.Common;
 using Aipazz.Application.Billing.Interfaces;
 using AIpazz.Infrastructure.Billing.Aipazz.Application.Common;
 using QuestPDF.Infrastructure;
+using Aipazz.Infrastructure.Billing;
 
 
 
@@ -108,10 +109,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IdocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<ITemplateRepository, TemplateRepository>();
 builder.Services.AddScoped<IclientmeetingRepository, Clientmeetingrepository>();
+builder.Services.AddScoped<ICourtDateFormRepository, CourtDateFormRepository>();
+builder.Services.AddScoped<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
+builder.Services.AddScoped<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
+
+
 builder.Services.AddSingleton<ICourtDateFormRepository, CourtDateFormRepository>();
 builder.Services.AddSingleton<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
 builder.Services.AddSingleton<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
     
+
 builder.Services.AddSingleton(x =>
     new BlobServiceClient(builder.Configuration["AzureBlob:ConnectionString"])
 );
@@ -121,6 +128,8 @@ builder.Services.Configure<InvoiceBlobOptions>(
     builder.Configuration.GetSection("InvoiceBlob"));
 
 builder.Services.AddScoped<IInvoiceBlobService, AzureInvoiceBlobService>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 
 

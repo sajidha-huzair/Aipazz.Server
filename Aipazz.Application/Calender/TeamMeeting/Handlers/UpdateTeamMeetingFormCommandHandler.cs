@@ -1,7 +1,6 @@
 using Aipazz.Application.Calender.Interface;
-using Aipazz.Application.Calender.Interfaces;
 using Aipazz.Application.Calender.TeamMeeting.Commands;
-using Aipazz.Domian.Calender;
+
 using MediatR;
 
 namespace Aipazz.Application.Calender.TeamMeeting.Handlers
