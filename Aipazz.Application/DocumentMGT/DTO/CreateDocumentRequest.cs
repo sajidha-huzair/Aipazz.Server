@@ -12,6 +12,7 @@ namespace Aipazz.Application.DocumentMGT.DTO
         public string UserId { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
         public string ContentHtml { get; set; } = string.Empty;
-        public string? MatterId { get; set; } = null; // Add this property (nullable)
+        public string? MatterId { get; set; } = null;
+        public string? MatterName { get; set; } = null; // Add this property
     }
 }
