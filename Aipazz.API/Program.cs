@@ -27,6 +27,7 @@ using Aipazz.Application.Common.Aipazz.Application.Common;
 using Aipazz.Application.Billing.Interfaces;
 using AIpazz.Infrastructure.Billing.Aipazz.Application.Common;
 using QuestPDF.Infrastructure;
+using Aipazz.Infrastructure.Billing;
 
 
 
@@ -127,6 +128,8 @@ builder.Services.Configure<InvoiceBlobOptions>(
     builder.Configuration.GetSection("InvoiceBlob"));
 
 builder.Services.AddScoped<IInvoiceBlobService, AzureInvoiceBlobService>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 
 
