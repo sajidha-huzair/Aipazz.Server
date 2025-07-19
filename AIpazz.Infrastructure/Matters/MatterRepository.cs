@@ -146,5 +146,30 @@ namespace Aipazz.Infrastructure.Matters
 
             return results;
         }
+
+        // 7. GetMattersByTeamIdAsync
+        public async Task<List<Matter>> GetMattersByTeamIdAsync(string teamId)
+        {
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.TeamId = @teamId")
+                .WithParameter("@teamId", teamId);
+
+            var iterator = _container.GetItemQueryIterator<Matter>(query);
+            var matters = new List<Matter>();
+
+            while (iterator.HasMoreResults)
+            {
+                try
+                {
+                    var response = await iterator.ReadNextAsync();
+                    matters.AddRange(response);
+                }
+                catch (CosmosException ex)
+                {
+                    Console.WriteLine($"Error fetching matters for team {teamId}: {ex.Message}");
+                }
+            }
+
+            return matters;
+        }
     }
 }
