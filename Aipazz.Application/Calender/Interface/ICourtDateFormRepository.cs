@@ -4,13 +4,13 @@ namespace Aipazz.Application.Calender.Interfaces
 {
     public interface ICourtDateFormRepository
     {
-        List<Domian.Calender.CourtDateForm> GetAll();
-        Task<Domian.Calender.CourtDateForm?> GetById(Guid id);
+        Task<List<Aipazz.Domian.Calender.CourtDateForm>> GetAll();
+        Task<Aipazz.Domian.Calender.CourtDateForm?> GetById(Guid id);
         
-        void AddCourtDateForm(Domian.Calender.CourtDateForm courtDateForm);
+        Task AddCourtDateForm(Aipazz.Domian.Calender.CourtDateForm courtDateForm);
         
-        Task<Domian.Calender.CourtDateForm> UpdateCourtDateForm(Guid modelId,Domian.Calender.CourtDateForm courtDateForm);
-        bool DeleteCourtDateForm(Guid id);
+        Task<Aipazz.Domian.Calender.CourtDateForm> UpdateCourtDateForm(Guid modelId,Aipazz.Domian.Calender.CourtDateForm courtDateForm);
+        Task<bool> DeleteCourtDateForm(Guid id);
 
     }
 }

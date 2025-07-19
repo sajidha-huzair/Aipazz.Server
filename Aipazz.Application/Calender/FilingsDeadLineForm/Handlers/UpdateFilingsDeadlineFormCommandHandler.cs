@@ -1,11 +1,12 @@
 using Aipazz.Application.Calender.Commands.FilingsDeadlineForms;
 using Aipazz.Application.Calender.Interfaces;
-using Aipazz.Domian.Calender;
+using Aipazz.Domain.Calender;
 using MediatR;
+using FilingsDeadlineFormEntity = Aipazz.Domain.Calender.FilingsDeadlineForm;
 
 namespace Aipazz.Application.Calender.Handlers.FilingsDeadlineForms
 {
-    public class UpdateFilingsDeadlineFormCommandHandler : IRequestHandler<UpdateFilingsDeadlineFormCommand, Domian.Calender.FilingsDeadlineForm?>
+    public class UpdateFilingsDeadlineFormCommandHandler : IRequestHandler<UpdateFilingsDeadlineFormCommand, FilingsDeadlineFormEntity?>
     {
         private readonly IFilingsDeadlineFormRepository _repository;
 
@@ -14,9 +15,9 @@ namespace Aipazz.Application.Calender.Handlers.FilingsDeadlineForms
             _repository = repository;
         }
 
-        public Task<Domian.Calender.FilingsDeadlineForm?> Handle(UpdateFilingsDeadlineFormCommand request, CancellationToken cancellationToken)
+        public async Task<FilingsDeadlineFormEntity?> Handle(UpdateFilingsDeadlineFormCommand request, CancellationToken cancellationToken)
         {
-            var updatedForm = new Domian.Calender.FilingsDeadlineForm
+            var updatedForm = new FilingsDeadlineFormEntity
             {
                 Id = request.Id,
                 Title = request.Title,
@@ -24,10 +25,10 @@ namespace Aipazz.Application.Calender.Handlers.FilingsDeadlineForms
                 Time = request.Time,
                 Reminder = request.Reminder,
                 Description = request.Description,
-                AssignedMatter = request.AssignMatter
+                AssignedMatter = request.AssignedMatter
             };
 
-            return _repository.Update(request.Id, updatedForm);
+            return await _repository.Update(request.Id, updatedForm);
         }
     }
 }

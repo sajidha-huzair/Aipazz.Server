@@ -7,7 +7,8 @@ namespace Aipazz.Application.Team.Commands
     public record CreateTeamCommand(
         string Name,
         string Description,
-        string UserId, // Add this
+        string UserId,
+        string OwnerName, // Add this parameter
         List<TeamMember> Members
     ) : IRequest<string>;
 }
