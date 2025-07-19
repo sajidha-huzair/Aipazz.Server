@@ -14,5 +14,6 @@
         public string? Address { get; set; }
         public string? CaseNumber { get; set; }
         public string? CaseName { get; set; }
+        public string? TeamId { get; set; } = null; // Add this property for team sharing
     }
 }
