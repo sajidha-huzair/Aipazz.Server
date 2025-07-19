@@ -11,9 +11,9 @@ namespace Aipazz.Domian.Matters
         public string title { get; set; } = string.Empty; 
         public string CaseNumber { get; set; } = string.Empty;
         public DateTime? Date { get; set; }
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; set; } = string.Empty;
         public string ClientNic { get; set; } = string.Empty;// Partition Key
-        public List<string> TeamMembers { get; set; } = new();
+        public List<string>? TeamMembers { get; set; } = new();
         public required string StatusId { get; set; }
         public string? TeamId { get; set; } = null; // Add this property
 

@@ -33,11 +33,11 @@ namespace Aipazz.Application.Matters.matter.Commands
                 Console.WriteLine($"Client NIC: {request.ClientNic}");
 
                 // Get "To Do" status from DB
-                var toDoStatus = await _statusRepository.GetStatusByName("To Do", request.UserId);
+                var openStatus = await _statusRepository.GetStatusByName("Open", request.UserId);
 
-                if (toDoStatus == null)
+                if (openStatus == null)
                 {
-                    throw new Exception("Default status 'To Do' not found.");
+                    throw new Exception("Default status 'Open' not found.");
                 }
 
                 // Verify client exists
@@ -56,7 +56,7 @@ namespace Aipazz.Application.Matters.matter.Commands
                     Date = request.Date,
                     Description = request.Description,
                     ClientNic = request.ClientNic,
-                    StatusId = string.IsNullOrEmpty(request.StatusId) ? toDoStatus.Name : request.StatusId,
+                    StatusId = string.IsNullOrEmpty(request.StatusId) ? openStatus.Name : request.StatusId,
                     TeamMembers = request.TeamMembers,
                     UserId = request.UserId,
                     CourtType = request.CourtType
@@ -73,7 +73,7 @@ namespace Aipazz.Application.Matters.matter.Commands
                     Date = matter.Date,
                     Description = matter.Description,
                     ClientNic = matter.ClientNic, // ✅ Keep as NIC for consistency
-                    StatusId = string.IsNullOrEmpty(request.StatusId) ? toDoStatus.Name : request.StatusId,
+                    StatusId = string.IsNullOrEmpty(request.StatusId) ? openStatus.Name : request.StatusId,
                     TeamMembers = matter.TeamMembers,
                     CourtType = matter.CourtType
                 };
