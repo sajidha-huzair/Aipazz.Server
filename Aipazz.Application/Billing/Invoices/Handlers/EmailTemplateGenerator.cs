@@ -14,7 +14,7 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
         {
             string senderName = userContext.FullName;
 
-            var link = $"https://witty-field-0e9483e0f.6.azurestaticapps.net/view-invoice?token={token}";
+            var link = $"http://localhost:5173/view-invoice?token={token}";
 
             return $@"
         <html>
