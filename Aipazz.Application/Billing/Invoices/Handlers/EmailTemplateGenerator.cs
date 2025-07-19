@@ -1,4 +1,5 @@
-﻿using Aipazz.Domian.Billing;
+﻿using Aipazz.Application.Common.Aipazz.Application.Common;
+using Aipazz.Domian.Billing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,31 +10,46 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
 {
     public static class EmailTemplateGenerator
     {
-        public static string GenerateInvoiceLinkEmail(Invoice invoice, string token,string SenderEmail)
+        public static string GenerateInvoiceLinkEmail(Invoice invoice, string token, IUserContext userContext)
         {
-            // You can customize this base URL to your frontend view page
+            string senderName = userContext.FullName;
+
             var link = $"https://witty-field-0e9483e0f.6.azurestaticapps.net/view-invoice?token={token}";
 
             return $@"
-                <html>
-                <body style='font-family: Arial, sans-serif; color: #333;'>
-                    <h2>Hello,</h2>
-                    <p>You have received a new invoice from <strong>Aipazz Legal</strong>.</p>
+        <html>
+        <body style='font-family: Arial, sans-serif; color: #333; line-height: 1.6;'>
+            <h2 style='color: #2c3e50;'>Dear {invoice.ClientName},</h2>
 
-                    <strong>Client:</strong> {invoice.ClientName}<br/>
-                    <strong>Matter:</strong> {string.Join(", ", invoice.MatterTitles)}<br/>
-                    <strong>Total Amount:</strong> Rs. {invoice.TotalAmount:N2}</p>
+            <p>You have received an invoice from <strong>{senderName}</strong>.</p>
 
-                    <p>You can view and download your invoice securely by clicking the link below:</p>
+            <table style='margin: 10px 0;'>
+                <tr><td><strong>Client:</strong></td><td>{invoice.ClientName}</td></tr>
+                <tr><td><strong>Matter:</strong></td><td>{string.Join(", ", invoice.MatterTitles)}</td></tr>
+                <tr><td><strong>Total Amount:</strong></td><td>Rs. {invoice.TotalAmount:N2}</td></tr>
+            </table>
 
-                    <p><a href='{link}' style='background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>View Invoice</a></p>
+            <p>Click the button below to view and download your invoice securely:</p>
 
-                    <p>This link will expire in 1 hour. If you did not request this invoice, please ignore this email.</p>
+            <p style='margin: 20px 0;'>
+                <a href='{link}' style='background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;'>
+                    View Invoice
+                </a>
+            </p>
 
-                    <br/>
-                    <p>Best regards,<br/>The Aipazz Team</p>
-                </body>
-                </html>";
+            <p style='font-size: 0.9em; color: #888;'>
+                This link will expire in 30 days. If you did not expect this invoice, you may safely ignore this message.
+            </p>
+
+            <br/>
+            <p>
+                Regards,<br/>
+                <strong>{senderName}</strong><br/>
+                <em>Law Office of {senderName}</em>
+            </p>
+        </body>
+        </html>";
         }
+
     }
 }
