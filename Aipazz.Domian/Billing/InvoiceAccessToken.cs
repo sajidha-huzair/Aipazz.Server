@@ -16,6 +16,8 @@ namespace Aipazz.Domian.Billing
         public bool OtpVerified { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ExpiresAt { get; set; }
+        public string Otp { get; set; } = string.Empty; // ✅ Add this
+        public bool IsUsed { get; set; } = false;
     }
 
 }

@@ -21,7 +21,7 @@ namespace AIpazz.Infrastructure.Billing
 
         public async Task SaveTokenAsync(InvoiceAccessToken record)
         {
-            await _container.CreateItemAsync(record, new PartitionKey(record.UserId));
+            await _container.UpsertItemAsync(record, new PartitionKey(record.id));
         }
 
         public async Task<InvoiceAccessToken?> GetTokenAsync(string token)
@@ -31,7 +31,7 @@ namespace AIpazz.Infrastructure.Billing
 
             using var iterator = _container.GetItemQueryIterator<InvoiceAccessToken>(
                 query
-            // No QueryRequestOptions needed unless you want to set PartitionKey manually
+            // Cross-partition query required since 'Token' ≠ 'id'
             );
 
             while (iterator.HasMoreResults)
@@ -43,6 +43,10 @@ namespace AIpazz.Infrastructure.Billing
             return null;
         }
 
+        public async Task UpdateTokenAsync(InvoiceAccessToken token)
+        {
+            await _container.UpsertItemAsync(token, new PartitionKey(token.id));
+        }
 
         public async Task InvalidateTokenAsync(string token)
         {
@@ -52,7 +56,7 @@ namespace AIpazz.Infrastructure.Billing
 
             await _container.DeleteItemAsync<InvoiceAccessToken>(
                 existing.id,
-                new PartitionKey(existing.UserId));
+                new PartitionKey(existing.id));
         }
     }
 }
