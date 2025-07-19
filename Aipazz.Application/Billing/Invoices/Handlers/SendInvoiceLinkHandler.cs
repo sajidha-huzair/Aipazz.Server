@@ -1,5 +1,6 @@
 ﻿using Aipazz.Application.Billing.Interfaces;
 using Aipazz.Application.Billing.Invoices.Commands;
+using Aipazz.Application.Common.Aipazz.Application.Common;
 using Aipazz.Application.Matters.matter.Commands.Aipazz.Application.Billing.Invoices.Commands;
 using Aipazz.Domian.Billing;
 using MediatR;
@@ -16,15 +17,17 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
         private readonly IInvoiceRepository _invoiceRepo;
         private readonly ITokenRepository _tokenRepo;
         private readonly IEmailService _emailService;
-
+        private readonly IUserContext _userContext;
         public SendInvoiceLinkHandler(
             IInvoiceRepository invoiceRepo,
             ITokenRepository tokenRepo,
-            IEmailService emailService)
+            IEmailService emailService,
+            IUserContext userContext)
         {
             _invoiceRepo = invoiceRepo;
             _tokenRepo = tokenRepo;
             _emailService = emailService;
+            _userContext = userContext;
         }
 
         public async Task<SendLinkResult> Handle(SendInvoiceLinkCommand request, CancellationToken cancellationToken)
@@ -51,7 +54,7 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
 
             await _tokenRepo.SaveTokenAsync(accessRecord);
 
-            var emailBody = EmailTemplateGenerator.GenerateInvoiceLinkEmail(invoice, token,request.SenderEmail);
+            var emailBody = EmailTemplateGenerator.GenerateInvoiceLinkEmail(invoice, token, _userContext);
             await _emailService.SendInvoiceAccessEmailAsync(request.RecipientEmail, "View Your Invoice", emailBody,request.SenderEmail);
 
             return new SendLinkResult(true, "Email sent.");
