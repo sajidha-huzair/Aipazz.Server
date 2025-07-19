@@ -17,6 +17,9 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using AIpazz.Infrastructure.Notification;
+using Aipazz.Application.OtherDocuments.Interfaces;
+using AIpazz.Infrastructure.OtherDocuments.Repository;
+using AIpazz.Infrastructure.OtherDocuments.Services;
 
 
 namespace AIpazz.Infrastructure.DependencyInjection
@@ -43,6 +46,8 @@ namespace AIpazz.Infrastructure.DependencyInjection
             
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IOtherDocumentRepository, OtherDocumentRepository>();
+            services.AddScoped<IOtherDocumentStorageService, OtherDocumentStorageService>();
 
             return services;
         }
