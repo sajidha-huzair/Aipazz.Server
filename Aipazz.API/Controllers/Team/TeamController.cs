@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Aipazz.Application.Team.Commands;
 using Aipazz.Application.Team.Queries;
 using Aipazz.Domian.Team;
@@ -10,7 +10,7 @@ namespace Aipazz.API.Controllers.Team
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize] // Add authorization back
+    [Authorize]
     public class TeamController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -23,6 +23,7 @@ namespace Aipazz.API.Controllers.Team
         [HttpGet]
         public async Task<IActionResult> GetAllTeams()
         {
+            Console.WriteLine("Get All Teams Called");
             // Extract the user ID from the claim
             string userId = User.Claims
                 .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
@@ -41,10 +42,21 @@ namespace Aipazz.API.Controllers.Team
             var result = await _mediator.Send(new GetAllTeamsQuery(userId, userEmail));
             return Ok(result);
         }
-        
+
+        [HttpGet("{teamId}/documents")]
+        [Authorize]
+        public async Task<IActionResult> GetTeamDocuments(string teamId)
+        {
+            Console.WriteLine($"Get Documents by team id called with teamId: {teamId}");
+            var result = await _mediator.Send(new GetTeamDocumentsQuery(teamId));
+            return Ok(result);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTeamById(string id)
         {
+            Console.WriteLine($"Get Team by id called with id: {id}");
+            
             // Extract the user ID from the claim
             string userId = User.Claims
                 .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
@@ -55,24 +67,6 @@ namespace Aipazz.API.Controllers.Team
 
             var result = await _mediator.Send(new GetTeamByIdQuery(id, userId));
             if (result == null) return NotFound();
-            return Ok(result);
-        }
-
-        [HttpGet("{teamId}/documents")]
-        [Authorize]
-        public async Task<IActionResult> GetTeamDocuments(string teamId)
-        {
-            // Just get documents by team ID - no user checking needed for document fetching
-            var result = await _mediator.Send(new GetTeamDocumentsQuery(teamId));
-            return Ok(result);
-        }
-
-        [HttpGet("{teamId}/matters")]
-        [Authorize]
-        public async Task<IActionResult> GetTeamMatters(string teamId)
-        {
-            // Just get matters by team ID - same pattern as documents
-            var result = await _mediator.Send(new GetTeamMattersQuery(teamId));
             return Ok(result);
         }
 
@@ -100,7 +94,7 @@ namespace Aipazz.API.Controllers.Team
             return Ok(new { 
                 Message = "Team created successfully", 
                 TeamId = result,
-                CreatedBy = ownerName // Include owner name in response
+                CreatedBy = ownerName
             });
         }
 
