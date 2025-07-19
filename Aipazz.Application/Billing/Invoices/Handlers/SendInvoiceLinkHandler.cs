@@ -33,7 +33,8 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
             if (invoice == null)
                 return new SendLinkResult(false, "Invoice not found or unauthorized.");
 
-            var token = Guid.NewGuid().ToString(); // for now, no OTP
+            var token = Guid.NewGuid().ToString(); 
+            var otp = new Random().Next(100000, 999999).ToString();
             var accessRecord = new InvoiceAccessToken
             {
                 id = Guid.NewGuid().ToString(),
@@ -41,9 +42,11 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
                 InvoiceId = request.InvoiceId,
                 RecipientEmail = request.RecipientEmail,
                 Token = token,
+                Otp= otp,
                 CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddHours(1),
-                OtpVerified = false
+                ExpiresAt = DateTime.UtcNow.AddMonths(1),
+                OtpVerified = false,
+                IsUsed = false,
             };
 
             await _tokenRepo.SaveTokenAsync(accessRecord);

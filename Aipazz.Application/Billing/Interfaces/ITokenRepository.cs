@@ -9,8 +9,9 @@ namespace Aipazz.Application.Billing.Interfaces
 {
         public interface ITokenRepository
         {
-            Task SaveTokenAsync(InvoiceAccessToken token);
+            Task SaveTokenAsync(InvoiceAccessToken record);
             Task<InvoiceAccessToken?> GetTokenAsync(string token);
+            Task UpdateTokenAsync(InvoiceAccessToken token);
             Task InvalidateTokenAsync(string token);
         }
     }
