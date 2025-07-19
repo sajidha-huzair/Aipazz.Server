@@ -9,7 +9,9 @@ namespace Aipazz.Application.Billing.Interfaces
         public interface IEmailService
         {
             Task SendInvoiceAccessEmailAsync(string toEmail, string subject, string htmlContent, string replyToEmail);
-        }
+            Task SendOtpEmailAsync(string toEmail, string subject, string htmlBody);
+
     }
+}
 
 

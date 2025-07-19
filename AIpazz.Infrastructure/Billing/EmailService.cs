@@ -34,5 +34,29 @@ namespace AIpazz.Infrastructure.Billing
             }
         }
 
+        public async Task SendOtpEmailAsync(string toEmail, string subject, string htmlBody)
+        {
+            var apiKey = "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"; // move to config in prod
+            var client = new SendGridClient(apiKey);
+
+            var msg = new SendGridMessage
+            {
+                From = new EmailAddress("sajidhamhf.22@uom.lk", "Aipazz Legal"),
+                Subject = subject,
+                HtmlContent = htmlBody
+            };
+            msg.AddTo(new EmailAddress(toEmail));
+
+            var response = await client.SendEmailAsync(msg);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Body.ReadAsStringAsync();
+                throw new Exception($"SendGrid failed: {response.StatusCode} - {error}");
+            }
+        }
+
+
+
     }
 }
