@@ -1,9 +1,8 @@
-using Aipazz.Domian.Calender;
 using MediatR;
 
-namespace Aipazz.Application.Calendar.CourtDateForms.queries
+namespace Aipazz.Application.Calender.CourtDateForms.Queries
 {
-    public class GetCourtDateFormByIdQuery : IRequest<CourtDateForm?>
+    public class GetCourtDateFormByIdQuery : IRequest<Domian.Calender.CourtDateForm?>
     {
         public Guid Id { get; set; }
 
