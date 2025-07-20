@@ -26,7 +26,7 @@ namespace Aipazz.Application.Billing.ExpenseEntries.Handlers
         public async Task<List<ExpenseEntryDto>> Handle(GetAllExpenseEntriesQuery request, CancellationToken cancellationToken)
         {
             var entries = await _repository.GetAllExpenseEntries(request.UserId);
-            var matters = await _matterRepository.GetAllMatters();
+            var matters = await _matterRepository.GetAllMatters(request.UserId);
 
             return entries.Select(e => new ExpenseEntryDto
             {

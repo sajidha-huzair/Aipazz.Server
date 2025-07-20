@@ -18,6 +18,7 @@ namespace Aipazz.Domian.Billing
         public string Description { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public string Status { get; set; } = "Draft"; // Optional tabs: Draft, Paid, etc.
+        public string? InvoiceId { get; set; }   // null means unbilled
 
     }
 }

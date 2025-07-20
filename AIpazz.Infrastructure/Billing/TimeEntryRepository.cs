@@ -108,6 +108,113 @@ namespace AIpazz.Infrastructure.Billing
             return timeEntries;
         }
 
+        public async Task<List<TimeEntry>> GetAllEntriesByIdsAsync(List<string> entryIds, string userId)
+        {
+            var query = _container.GetItemLinqQueryable<TimeEntry>(true)
+                .Where(e => entryIds.Contains(e.id) && e.UserId == userId)
+                .ToFeedIterator();
+
+            var results = new List<TimeEntry>();
+            while (query.HasMoreResults)
+            {
+                var response = await query.ReadNextAsync();
+                results.AddRange(response);
+            }
+
+            return results;
+        }
+        //Fetch only unbilled entries (for UI list)
+        public async Task<List<TimeEntry>> GetUnbilledByMatterIdAsync(string matterId, string userId)
+        {
+            var query = _container.GetItemLinqQueryable<TimeEntry>(
+                            requestOptions: new QueryRequestOptions
+                            {
+                                PartitionKey = new PartitionKey(matterId)   // ← FIX HERE
+                            })
+                        .Where(e => e.matterId == matterId &&
+                                    e.UserId == userId &&
+                                    e.InvoiceId == null)
+                        .ToFeedIterator();
+
+            var results = new List<TimeEntry>();
+            while (query.HasMoreResults)
+                results.AddRange(await query.ReadNextAsync());
+            return results;
+        }
+
+
+        public async Task MarkEntriesInvoicedAsync(IEnumerable<string> entryIds,
+                                           string invoiceId,
+                                           string userId)
+        {
+            //  Pull only the entries we need (so we know their matterId)
+            var query = _container.GetItemLinqQueryable<TimeEntry>(true)
+                                  .Where(e => entryIds.Contains(e.id) && e.UserId == userId)
+                                  .ToFeedIterator();
+
+            var entries = new List<TimeEntry>();
+            while (query.HasMoreResults)
+                entries.AddRange(await query.ReadNextAsync());
+
+            //  Update & replace using the partition key (matterId)
+            foreach (var entry in entries)
+            {
+                entry.InvoiceId = invoiceId;
+                await _container.ReplaceItemAsync(entry,
+                                                  entry.id,
+                                                  new PartitionKey(entry.matterId)); 
+            }
+        }
+
+
+        public async Task<List<TimeEntry>> GetBilledByMatterIdAsync(string matterId,
+                                                            string userId)
+        {
+            var iterator = _container.GetItemLinqQueryable<TimeEntry>(
+                                requestOptions: new QueryRequestOptions
+                                {
+                                    PartitionKey = new PartitionKey(matterId)   // ← use matterId PK
+                                })
+                            .Where(e => e.UserId == userId          // still scoped to owner
+                                     && e.InvoiceId != null)        // billed only
+                            .ToFeedIterator();
+
+            var results = new List<TimeEntry>();
+            while (iterator.HasMoreResults)
+                results.AddRange(await iterator.ReadNextAsync());
+
+            return results;
+        }
+
+        // Unlink time entry from invoice (move back to Draft)
+        public async Task<TimeEntry> UnlinkFromInvoiceAsync(string entryId, string userId)
+        {
+            // First, find the entry by scanning all partitions since we don't know the matterId
+            var query = _container.GetItemLinqQueryable<TimeEntry>(true)
+                                  .Where(e => e.id == entryId && e.UserId == userId)
+                                  .ToFeedIterator();
+
+            TimeEntry entry = null;
+            while (query.HasMoreResults && entry == null)
+            {
+                var response = await query.ReadNextAsync();
+                entry = response.FirstOrDefault();
+            }
+
+            if (entry == null)
+                throw new Exception($"Time entry with ID {entryId} not found for user {userId}");
+
+            // Clear the invoice ID to unlink it
+            entry.InvoiceId = null;
+
+            // Update the entry in the database
+            await _container.ReplaceItemAsync(entry, entry.id, new PartitionKey(entry.matterId));
+
+            Console.WriteLine($"Successfully unlinked time entry ID: {entryId} from invoice");
+
+            return entry;
+        }
+
 
 
     }

@@ -1,4 +1,4 @@
-﻿using AIpazz.Infrastructure.Billing;
+using AIpazz.Infrastructure.Billing;
 using Aipazz.Application.Billing.TimeEntries.Queries;
 using Aipazz.Application.Calender.Interface;
 using Aipazz.Application.Calender.Interfaces;
@@ -9,7 +9,7 @@ using Aipazz.Application.DocumentMGT.Interfaces;
 using AIpazz.Infrastructure.Calender;
 using AIpazz.Infrastructure.Documentmgt;
 using Aipazz.Infrastructure.Matters;
-
+using Aipazz.Infrastructure.Billing;
 using Aipazz.Application.DocumentMGT.documentmgt.Queries;
 using Aipazz.Infrastructure.Calendar;
 using AIpazz.Infrastructure.Calendar;
@@ -21,10 +21,18 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Azure.Storage.Blobs;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Aipazz.Application.Matters.Interfaces;
+using System.Text.Json;
+using Aipazz.Application.Common.Aipazz.Application.Common;
+using Aipazz.Application.Billing.Interfaces;
+using AIpazz.Infrastructure.Billing.Aipazz.Application.Common;
+using QuestPDF.Infrastructure;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
@@ -56,10 +64,18 @@ builder.Services.AddSingleton<CosmosClient>(sp =>
 
 builder.Services.AddBillingServices(builder.Configuration);
 
-builder.Services.AddMatterServices();
+builder.Services.AddMatterServices(builder.Configuration);
+
+
+
 
 
 builder.Services.AddInfrastructureServices();
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<IUserContext, UserContext>();
+
 
 
 
@@ -79,7 +95,12 @@ builder.Services.AddCors(options =>
 
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -92,10 +113,18 @@ builder.Services.AddScoped<IFilingsDeadlineFormRepository, FilingsDeadlineFormRe
 builder.Services.AddScoped<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
 
 
+builder.Services.AddSingleton<ICourtDateFormRepository, CourtDateFormRepository>();
+builder.Services.AddSingleton<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
+builder.Services.AddSingleton<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
+    
+
 builder.Services.AddSingleton(x =>
     new BlobServiceClient(builder.Configuration["AzureBlob:ConnectionString"])
 );
 builder.Services.AddScoped<IFileStorageService, AzureBlobStorageService>();
+builder.Services.AddScoped<IInvoicePdfGenerator, InvoicePdfGenerator>();
+builder.Services.Configure<InvoiceBlobOptions>(
+    builder.Configuration.GetSection("InvoiceBlob"));
 
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -109,6 +138,7 @@ builder.Services.AddCors(options =>
                 .AllowAnyHeader();
         });
 });
+builder.Services.AddScoped<IInvoiceBlobService, AzureInvoiceBlobService>();
 
 
 
@@ -130,5 +160,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+
+
+
 
 app.Run();

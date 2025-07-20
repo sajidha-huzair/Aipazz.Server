@@ -1,12 +1,16 @@
-﻿using Aipazz.Application.Matters.matter.Commands;
+﻿using Aipazz.Application.Matters.DTO;
+using Aipazz.Application.Matters.matter.Commands;
 using Aipazz.Application.Matters.matter.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Aipazz.API.Controllers.Matters
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize] // Require user to be authenticated for all actions in this controller
     public class MatterController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -16,57 +20,111 @@ namespace Aipazz.API.Controllers.Matters
             _mediator = mediator;
         }
 
+        // Helper method to extract the UserId from the JWT token
+        private string GetUserId() =>
+            User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? throw new UnauthorizedAccessException("User ID not found");
+
         // GET: api/Matter
+        // Retrieves all Matters belonging to the authenticated user
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _mediator.Send(new GetAllMattersQuery());
+            var userId = GetUserId();
+            var result = await _mediator.Send(new GetAllMattersQuery(userId));
             return Ok(result);
         }
 
-        // GET: api/Matter/5
+        // GET: api/Matter/{id}?clientNic=123
+        // Retrieves a specific Matter by Id and ClientNic for the authenticated user
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(string id, string ClientNic)
+        public async Task<IActionResult> GetById(string id, string clientNic)
         {
-            var result = await _mediator.Send(new GetMatterByIdQuery(id, ClientNic));
-            if (result == null) return NotFound();
-            return Ok(result);
+            var userId = GetUserId();
+            var result = await _mediator.Send(new GetMatterByIdQuery(id, clientNic, userId));
+            return result == null ? NotFound() : Ok(result);
         }
 
         // POST: api/Matter
+        // Creates a new Matter assigned to the authenticated user
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateMatterCommand command)
         {
             if (command == null) return BadRequest("Invalid request.");
+
+            command.UserId = GetUserId();
+
             var result = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetById), new { Id = result.id, clientNic = result.ClientNic }, result);
+
+            return CreatedAtAction(nameof(GetById), new { id = result.id, clientNic = command.ClientNic }, result);
         }
 
-        // PUT: api/Matter/5
+
+        // PUT: api/Matter/{id}
+        // Updates an existing Matter that belongs to the authenticated user
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromBody] UpdateMatterCommand command)
+        public async Task<IActionResult> Update(string id, [FromBody] UpdateMatterCommand command)
         {
             if (command == null) return BadRequest("Invalid request.");
+
+            command.Id = id; // ✅ Bind the route param to command
+            command.UserId = GetUserId();
+
             var result = await _mediator.Send(command);
             return Ok(result);
         }
 
-        // DELETE: api/Matter/5
+
+        // DELETE: api/Matter/{id}?clientNic=123
+        // Deletes a Matter by Id and ClientNic that belongs to the authenticated user
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id, string ClientNic)
+        public async Task<IActionResult> Delete(string id, string clientNic)
         {
-            var result = await _mediator.Send(new DeleteMatterCommand { Id = id, ClientNic = ClientNic });
-            if (!result) return NotFound();
-            return NoContent();
+            var userId = GetUserId();
+            var result = await _mediator.Send(new DeleteMatterCommand
+            {
+                Id = id,
+                ClientNic = clientNic,
+                UserId = userId
+            });
+
+            return result ? NoContent() : NotFound();
         }
 
-        // API/Controllers/MatterController.cs
+        // GET: api/Matter/titles
+        // Retrieves only the titles and Ids of all Matters for the authenticated user
         [HttpGet("titles")]
         public async Task<IActionResult> GetMatterTitles()
         {
-            var result = await _mediator.Send(new GetAllMatterTitlesQuery());
+            var userId = GetUserId();
+            var result = await _mediator.Send(new GetAllMatterTitlesQuery(userId));
             return Ok(result);
         }
 
+        // PUT: api/Matter/{id}/status?clientNic=123
+        // Updates the StatusId of a specific Matter for the authenticated user
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(
+            string id,
+            [FromQuery] string clientNic,
+            [FromBody] UpdateMatterStatusDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.NewStatusId))
+                return BadRequest("New status ID must be provided.");
+
+            var userId = GetUserId();
+            await _mediator.Send(new UpdateMatterStatusCommand(id, clientNic, dto.NewStatusId, userId));
+            return NoContent();
+        }
+
+        // GET: api/Matter/status/{statusId}
+        // Retrieves all Matters associated with a specific StatusId for the authenticated user
+        [HttpGet("status/{statusId}")]
+        public async Task<IActionResult> GetMattersByStatusId(string statusId)
+        {
+            var userId = GetUserId();
+            var result = await _mediator.Send(new GetMattersByStatusIdQuery(statusId, userId));
+            return Ok(result);
+        }
     }
 }

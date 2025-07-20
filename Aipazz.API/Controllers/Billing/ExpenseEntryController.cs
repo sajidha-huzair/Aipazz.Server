@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using Aipazz.Application.Billing.Interfaces;
+using Aipazz.Application.Billing.DTOs;
 
 namespace Aipazz.API.Controllers.Billing
 {
@@ -15,15 +17,18 @@ namespace Aipazz.API.Controllers.Billing
     public class ExpenseEntryController : ControllerBase
     {
 
-        private readonly IMediator _mediator;  //Declare IMediator
+        private readonly IMediator _mediator;
+        private readonly IExpenseEntryRepository _expenseRepo;   
 
-        // Inject MediatR via Constructor
-        public ExpenseEntryController(IMediator mediator)
+        public ExpenseEntryController(
+            IMediator mediator,
+            IExpenseEntryRepository expenseRepo)               
         {
             _mediator = mediator;
+            _expenseRepo = expenseRepo;                      
         }
 
-       
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -75,5 +80,29 @@ namespace Aipazz.API.Controllers.Billing
 
             return result ? NoContent() : NotFound();
         }
+
+        [HttpPost("by-ids")]
+        public async Task<IActionResult> GetByIds([FromBody] List<string> entryIds)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _expenseRepo.GetAllEntriesByIdsAsync(entryIds, userId);
+            return Ok(result);
+        }
+
+        [HttpPatch("{id}/unlink")]
+        public async Task<IActionResult> UnlinkFromInvoice(string id, [FromBody] UnlinkEntryRequest request)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var result = await _expenseRepo.UnlinkFromInvoiceAsync(id, userId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
+
     }
 }

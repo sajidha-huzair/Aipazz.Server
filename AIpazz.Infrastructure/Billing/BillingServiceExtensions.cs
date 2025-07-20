@@ -1,40 +1,37 @@
 ﻿using Aipazz.Application.Billing.Interfaces;
-using Microsoft.Azure.Cosmos;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using System;
-using System.Configuration;
 using Aipazz.Domian;
+using AIpazz.Infrastructure.Billing;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
-namespace AIpazz.Infrastructure.Billing
+namespace Aipazz.Infrastructure.Billing
 {
     public static class BillingServiceExtensions
     {
+        /// <summary>
+        /// Registers all billing-related services and repositories.
+        /// </summary>
         public static IServiceCollection AddBillingServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // Register TimeEntryRepository with Cosmos DB connection
-            services.AddSingleton<ITimeEntryRepository, TimeEntryRepository>(serviceProvider =>
-            {
-                // Get the CosmosClient instance from the DI container
-                var cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
-                var options = serviceProvider.GetRequiredService<IOptions<CosmosDbOptions>>();
+            // Shared factory to register Cosmos-based repositories
+            services.AddSingleton<ITimeEntryRepository>(sp =>
+                new TimeEntryRepository(
+                    sp.GetRequiredService<CosmosClient>(),
+                    sp.GetRequiredService<IOptions<CosmosDbOptions>>()));
 
-                return new TimeEntryRepository(cosmosClient, options);
-            });
+            services.AddSingleton<IExpenseEntryRepository>(sp =>
+                new ExpenseEntryRepository(
+                    sp.GetRequiredService<CosmosClient>(),
+                    sp.GetRequiredService<IOptions<CosmosDbOptions>>()));
 
-            services.AddSingleton<IExpenseEntryRepository, ExpenseEntryRepository>(serviceProvider =>
-            {
-                // Get the CosmosClient instance from the DI container
-                var cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
-                var options = serviceProvider.GetRequiredService<IOptions<CosmosDbOptions>>();
+            services.AddSingleton<IInvoiceRepository>(sp =>
+                new InvoiceRepository(
+                    sp.GetRequiredService<CosmosClient>(),
+                    sp.GetRequiredService<IOptions<CosmosDbOptions>>()));
 
-                return new ExpenseEntryRepository(cosmosClient, options);
-            });
-
-            // add additional repositories or services for Billing here if needed.
-
-            return services;  
+            return services;
         }
     }
 }

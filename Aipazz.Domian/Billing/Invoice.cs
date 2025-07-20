@@ -8,21 +8,27 @@ namespace Aipazz.Domian.Billing
 {
     public class Invoice
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string id { get; set; } = Guid.NewGuid().ToString();
 
-        // Client & Matter Info
-        public string ClientId { get; set; }=string.Empty;
+        // Authorization
+        public string UserId { get; set; } = string.Empty;
+
+        // Client Info (denormalized for fast access)
+        public string ClientId { get; set; } = string.Empty;
+        public string ClientNic { get; set; } = string.Empty; // for cross-joins / filters
         public string ClientName { get; set; } = string.Empty;
         public string ClientAddress { get; set; } = string.Empty;
+
+        
         public List<string> MatterIds { get; set; } = new();
         public List<string> MatterTitles { get; set; } = new();
 
         // Invoice Metadata
-        public int InvoiceNumber { get; set; } // Auto-increment logic can be handled separately
+        public int InvoiceNumber { get; set; }
         public DateTime IssueDate { get; set; } = DateTime.UtcNow;
         public DateTime DueDate { get; set; }
 
-        // Entry linkage (time/expense entries)
+        // Entry linkage (Time/Expense)
         public List<string> EntryIds { get; set; } = new();
 
         // Financials
@@ -31,18 +37,26 @@ namespace Aipazz.Domian.Billing
         public decimal DueAmount => TotalAmount - PaidAmount;
 
         // Status & Notes
-        public string Status { get; set; } = "Draft"; // Draft, Sent, Paid, etc.
-        public string FooterNotes { get; set; } = "Please make all amounts payable to: Law Office of {ClientName}";
+        public string Status { get; set; } = "Draft";
+        public string FooterNotes { get; set; } = "Please make all amounts payable to: Law Office of {UserName}";
         public string PaymentProfileNotes { get; set; } = "Please pay within 30 days.";
 
         // PDF
-        public string PdfFileUrl { get; set; } = string.Empty; // link to Azure Blob or local path
+        public string PdfFileUrl { get; set; } = string.Empty;
 
-        // Timeline / Audit
+        // Audit
         public string CreatedBy { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public string UpdatedBy { get; set; } = string.Empty;
         public DateTime? UpdatedAt { get; set; }
+
+        public string Currency { get; set; } = "Rs.";      // or "LKR (Rs)"
+        public string Subject { get; set; } = string.Empty;
+
+        /// <summary> If DiscountType is "%", treat value as percentage; if "Rs", treat as fixed amount. </summary>
+        public decimal DiscountValue { get; set; } = 0m;
+        public string DiscountType { get; set; } = "%";
     }
+
 
 }

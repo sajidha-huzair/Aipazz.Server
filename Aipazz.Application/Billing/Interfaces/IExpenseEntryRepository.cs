@@ -15,5 +15,12 @@ namespace Aipazz.Application.Billing.Interfaces
         Task UpdateExpenseEntry(ExpenseEntry ExpenseEntry);
         Task DeleteExpenseEntry(string id, string matterId, string userId);
         Task<List<ExpenseEntry>> GetExpenseEntriesByMatterIdAsync(string matterId, string userId);
+        Task<List<ExpenseEntry>> GetAllEntriesByIdsAsync(List<string> entryIds, string userId);
+        Task<List<ExpenseEntry>> GetUnbilledByMatterIdAsync(string matterId, string userId);
+        Task MarkEntriesInvoicedAsync(IEnumerable<string> ids,string invoiceId,string userId);
+        Task<List<ExpenseEntry>> GetBilledByMatterIdAsync(string matterId, string userId);
+        Task<ExpenseEntry> UnlinkFromInvoiceAsync(string entryId, string userId);
+
+
     }
 }
