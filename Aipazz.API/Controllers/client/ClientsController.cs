@@ -117,6 +117,13 @@ namespace Aipazz.API.Controllers.client
             return result == null ? NotFound() : Ok(result);
         }
 
+        [HttpGet("{teamid}/team-shared-clients")]
+        public async Task<IActionResult> GetTeamsharedClients(string teamid) {
+           
+            var result = await _mediator.Send(new GetTeamClientsQuery(teamid));
+            return Ok(result);  // 200 + list of clients shared with the team
+        }
+
         // GET api/clients/with-entries
         [HttpGet("with-entries")]
         public async Task<IActionResult> GetClientsWithEntries()
