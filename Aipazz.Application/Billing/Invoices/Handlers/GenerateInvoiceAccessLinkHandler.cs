@@ -38,7 +38,7 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
             await _tokenRepository.SaveTokenAsync(tokenEntity);
 
             // Log OTP or return it along with the link for debugging/dev purposes
-            return $"http://localhost:5173/view-invoice?token={token}";
+            return $"https://witty-field-0e9483e0f.6.azurestaticapps.net/view-invoice?token={token}";
         }
     }
 
