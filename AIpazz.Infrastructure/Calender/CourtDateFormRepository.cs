@@ -69,7 +69,7 @@ namespace Aipazz.Infrastructure.Calender
         {
             try
             {
-                await _container.CreateItemAsync(courtDateForm, new PartitionKey(courtDateForm.Id.ToString()));
+                await _container.CreateItemAsync(courtDateForm, new PartitionKey(courtDateForm.PartitionKey));
                 Console.WriteLine($"Successfully added court date ID: {courtDateForm.Id}");
                 return courtDateForm;
             }
@@ -98,7 +98,7 @@ namespace Aipazz.Infrastructure.Calender
                 existing.Note = courtDateForm.Note;
                 existing.TeamMembers = courtDateForm.TeamMembers;
                 existing.ClientEmail = courtDateForm.ClientEmail;
-                await _container.UpsertItemAsync(existing, new PartitionKey(existing.Id.ToString()));
+                await _container.UpsertItemAsync(existing, new PartitionKey(existing.PartitionKey));
                 return existing;
             }
             catch (CosmosException ex)
@@ -116,7 +116,7 @@ namespace Aipazz.Infrastructure.Calender
                 if (existing is null)
                     return null;
 
-                await _container.DeleteItemAsync<CourtDateForm>(existing.Id.ToString(), new PartitionKey(existing.Id.ToString()));
+                await _container.DeleteItemAsync<CourtDateForm>(existing.Id.ToString(), new PartitionKey(existing.PartitionKey));
                 return existing;
             }
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)

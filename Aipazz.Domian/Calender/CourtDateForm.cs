@@ -1,10 +1,19 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Aipazz.Domian.Calender
 {
     public class CourtDateForm
     {
-        public Guid Id { get; set; } = Guid.NewGuid();
+        [JsonPropertyName("id")]
+        public string id { get; set; } = Guid.NewGuid().ToString();
+
+        [JsonIgnore] // You can keep Guid-based Id internally if needed
+        public Guid Id
+        {
+            get => Guid.Parse(id);
+            set => id = value.ToString();
+        }
 
         public string? Title { get; set; }
         public string? CourtType { get; set; }
@@ -12,7 +21,7 @@ namespace Aipazz.Domian.Calender
         public List<string>? Clients { get; set; }
         public DateTime CourtDate { get; set; }
 
-        public TimeSpan Reminder { get; set; } // e.g., 2 or 7 days before CourtDate
+        public TimeSpan Reminder { get; set; }
 
         [NotMapped]
         public string DueStatus
@@ -27,5 +36,7 @@ namespace Aipazz.Domian.Calender
         public string? Note { get; set; }
         public List<string>? TeamMembers { get; set; }
         public string? ClientEmail { get; set; }
+
+        public string PartitionKey => id;
     }
 }
