@@ -10,22 +10,17 @@ using AIpazz.Infrastructure.Calender;
 using AIpazz.Infrastructure.Documentmgt;
 using Aipazz.Infrastructure.Matters;
 using Aipazz.Infrastructure.Billing;
-using Aipazz.Application.DocumentMGT.documentmgt.Queries;
-using Aipazz.Infrastructure.Calendar;
 using AIpazz.Infrastructure.Calendar;
 using AIpazz.Infrastructure.Documentmgt.Services;
 using AIpazz.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Azure.Storage.Blobs;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using Aipazz.Application.Matters.Interfaces;
 using System.Text.Json;
 using Aipazz.Application.Common.Aipazz.Application.Common;
 using Aipazz.Application.Billing.Interfaces;
 using AIpazz.Infrastructure.Billing.Aipazz.Application.Common;
+using Aipazz.Infrastructure.Calender;
 using QuestPDF.Infrastructure;
 
 
@@ -111,11 +106,6 @@ builder.Services.AddScoped<IclientmeetingRepository, Clientmeetingrepository>();
 builder.Services.AddScoped<ICourtDateFormRepository, CourtDateFormRepository>();
 builder.Services.AddScoped<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
 builder.Services.AddScoped<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
-
-
-builder.Services.AddSingleton<ICourtDateFormRepository, CourtDateFormRepository>();
-builder.Services.AddSingleton<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
-builder.Services.AddSingleton<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
     
 
 builder.Services.AddSingleton(x =>
@@ -160,9 +150,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-
-
 
 
 

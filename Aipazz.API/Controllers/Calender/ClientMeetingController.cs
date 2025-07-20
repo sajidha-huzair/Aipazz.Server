@@ -31,7 +31,7 @@ namespace Aipazz.API.Controllers.Calendar
             return CreatedAtAction(nameof(GetClientMeetings), new { id = meeting.Id }, meeting);
         }
         
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetMeetingById(Guid id)
         {
             var meeting = await _mediator.Send(new GetClientMeetingByIdQuery(id));

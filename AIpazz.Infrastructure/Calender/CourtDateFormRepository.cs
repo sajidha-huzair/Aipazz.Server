@@ -1,11 +1,11 @@
-using Aipazz.Application.Calender.Interfaces;
 using Aipazz.Domian.Calender;
 using Aipazz.Domian;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 using System.Net;
+using Aipazz.Application.Calender.Interface;
 
-namespace Aipazz.Infrastructure.Calendar
+namespace Aipazz.Infrastructure.Calender
 {
     public class CourtDateFormRepository : ICourtDateFormRepository
     {
@@ -65,12 +65,13 @@ namespace Aipazz.Infrastructure.Calendar
             }
         }
 
-        public async Task AddCourtDateForm(CourtDateForm courtDateForm)
+        public async Task<CourtDateForm> AddCourtDateForm(CourtDateForm courtDateForm)
         {
             try
             {
-                await _container.CreateItemAsync(courtDateForm, new PartitionKey(courtDateForm.PartitionKey));
-                Console.WriteLine($"Successfully added court date ID: {courtDateForm.id}");
+                await _container.CreateItemAsync(courtDateForm, new PartitionKey(courtDateForm.Id.ToString()));
+                Console.WriteLine($"Successfully added court date ID: {courtDateForm.Id}");
+                return courtDateForm;
             }
             catch (CosmosException ex)
             {
@@ -79,22 +80,25 @@ namespace Aipazz.Infrastructure.Calendar
             }
         }
 
-        public async Task<CourtDateForm> UpdateCourtDateForm(Guid modelId, CourtDateForm courtDateForm)
+        public async Task<CourtDateForm?> UpdateCourtDateForm(Guid id, CourtDateForm courtDateForm)
         {
             try
             {
-                var existing = await GetById(modelId);
+                var existing = await GetById(id);
                 if (existing == null)
                 {
                     return null;
                 }
-
-                existing.CaseNumber = courtDateForm.CaseNumber;
-                existing.CourtName = courtDateForm.CourtName;
-                existing.Date = courtDateForm.Date;
-                existing.Description = courtDateForm.Description;
-
-                await _container.UpsertItemAsync(existing, new PartitionKey(existing.PartitionKey));
+                existing.Title = courtDateForm.Title;
+                existing.CourtType = courtDateForm.CourtType;
+                existing.Stage = courtDateForm.Stage;
+                existing.Clients = courtDateForm.Clients;
+                existing.CourtDate = courtDateForm.CourtDate;
+                existing.Reminder = courtDateForm.Reminder;
+                existing.Note = courtDateForm.Note;
+                existing.TeamMembers = courtDateForm.TeamMembers;
+                existing.ClientEmail = courtDateForm.ClientEmail;
+                await _container.UpsertItemAsync(existing, new PartitionKey(existing.Id.ToString()));
                 return existing;
             }
             catch (CosmosException ex)
@@ -104,20 +108,20 @@ namespace Aipazz.Infrastructure.Calendar
             }
         }
 
-        public async Task<bool> DeleteCourtDateForm(Guid id)
+        public async Task<CourtDateForm?> DeleteCourtDateForm(Guid id)
         {
             try
             {
                 var existing = await GetById(id);
-                if (existing == null)
-                    return false;
+                if (existing is null)
+                    return null;
 
-                await _container.DeleteItemAsync<CourtDateForm>(existing.id, new PartitionKey(existing.PartitionKey));
-                return true;
+                await _container.DeleteItemAsync<CourtDateForm>(existing.Id.ToString(), new PartitionKey(existing.Id.ToString()));
+                return existing;
             }
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
             {
-                return false;
+                return null;
             }
             catch (CosmosException ex)
             {

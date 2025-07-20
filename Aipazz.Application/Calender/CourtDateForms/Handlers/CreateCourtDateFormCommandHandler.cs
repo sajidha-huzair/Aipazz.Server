@@ -1,9 +1,8 @@
-using Aipazz.Application.Calender.CourtDateForm.Commands;
-using Aipazz.Application.Calender.Interfaces;
-using Aipazz.Domian.Calender;
+using Aipazz.Application.Calender.CourtDateForms.Commands;
+using Aipazz.Application.Calender.Interface;
 using MediatR;
 
-namespace Aipazz.Application.Calender.CourtDateForm.Handlers
+namespace Aipazz.Application.Calender.CourtDateForms.Handlers
 {
     public class CreateCourtDateFormCommandHandler : IRequestHandler<CreateCourtDateFormCommand, Domian.Calender.CourtDateForm>
     {
@@ -19,9 +18,15 @@ namespace Aipazz.Application.Calender.CourtDateForm.Handlers
             var newCourtDate = new Domian.Calender.CourtDateForm
             {
                 Id = Guid.NewGuid(),
-                CaseNumber = request.CaseNumber,
-                CourtName = request.CourtName,
-                Date = request.Date
+                Title = request.Title,
+                CourtDate = request.CourtDate,
+                Stage = request.Stage,
+                Clients = request.Clients,
+                CourtType = request.CourtType,
+                Reminder = request.Reminder,
+                Note = request.Note,
+                TeamMembers = request.TeamMembers,
+                ClientEmail = request.ClientEmail
             };
 
             _repository.AddCourtDateForm(newCourtDate);
