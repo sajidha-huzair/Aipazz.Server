@@ -89,7 +89,7 @@ namespace AIpazz.Infrastructure.Calender
                     return null;
                 }
 
-                await _container.UpsertItemAsync(meeting, new PartitionKey(meeting.PartitionKey));
+                await _container.UpsertItemAsync(meeting, new PartitionKey(existing.PartitionKey));
                 return meeting;
             }
             catch (CosmosException ex)

@@ -98,10 +98,23 @@ builder.Services.AddSingleton(x =>
 builder.Services.AddScoped<IFileStorageService, AzureBlobStorageService>();
 
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // Allow frontend URL
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
 
 
 
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())

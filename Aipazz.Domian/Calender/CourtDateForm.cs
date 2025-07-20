@@ -20,7 +20,9 @@ namespace Aipazz.Domian.Calender
         public DateTime Date { get; set; }
         public string Description { get; set; }
         
+        public string matterId { get; set; } = string.Empty;
         // Partition key for Cosmos DB
-        public string PartitionKey => CaseNumber;
+        //public string PartitionKey => CaseNumber;
+        public string PartitionKey => matterId;
     }
 }

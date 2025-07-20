@@ -24,10 +24,11 @@ public class ClientMeeting
     public string? Location { get; private set; }
     public List<string> TeamMembers { get; private set; } = new();
     public string ClientEmail { get; private set; }
-    //public string matterId { get; set; } = string.Empty;
+    
+    public string matterId { get; set; } = string.Empty;
 
-    public string PartitionKey => ClientEmail;
-    //public string PartitionKey => matterId;;
+    //public string PartitionKey => ClientEmail;
+    public string PartitionKey => matterId;
     private ClientMeeting() { }
 
     public ClientMeeting(

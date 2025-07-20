@@ -20,7 +20,9 @@ namespace Aipazz.Domain.Calender
         public string Reminder { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string AssignedMatter { get; set; } = string.Empty;
-
-        public string PartitionKey => AssignedMatter;
+        
+        public string matterId { get; set; } = string.Empty;
+        //public string PartitionKey => AssignedMatter;
+        public string PartitionKey => matterId;
     }
 }

@@ -26,8 +26,10 @@ namespace Aipazz.Domian.Calender
         public string LocationLink { get; set; } = string.Empty;
         public List<string> TeamMembers { get; set; } = new(); // e.g., ["Alice", "Bob"]
         
+        public string matterId { get; set; } = string.Empty;
         
         // Partition key for Cosmos DB
         public string PartitionKey => Title;
+        //public string PartitionKey => matterId;
     }
 }
