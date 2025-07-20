@@ -56,6 +56,8 @@ namespace Aipazz.Domian.Billing
         /// <summary> If DiscountType is "%", treat value as percentage; if "Rs", treat as fixed amount. </summary>
         public decimal DiscountValue { get; set; } = 0m;
         public string DiscountType { get; set; } = "%";
+        public DateTime? PaymentDate { get; set; }
+        public string? TransactionId { get; set; }
     }
 
 

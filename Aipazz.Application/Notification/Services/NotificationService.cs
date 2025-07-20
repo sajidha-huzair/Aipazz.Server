@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Aipazz.Application.Notification.Interfaces;
 using Aipazz.Application.Notification.Services;
+using Aipazz.Domian.Billing;
 using Aipazz.Domian.Notification;
 
 namespace Aipazz.Application.Notification.Services
@@ -72,5 +73,27 @@ namespace Aipazz.Application.Notification.Services
             // Implementation for future use
             throw new NotImplementedException("Document shared notifications will be implemented next");
         }
+
+        public async Task NotifyLawyerPaymentReceived(Invoice invoice)
+        {
+            var notification = new Aipazz.Domian.Notification.Notification
+            {
+                id = Guid.NewGuid().ToString(),
+                UserId = invoice.UserId, // or however you're storing the lawyer's user ID
+                Type = "InvoicePaid",
+                Title = "Invoice Paid",
+                Message = $"Client has paid invoice #{invoice.InvoiceNumber}.",
+                RelatedEntityId = invoice.id,
+                RelatedEntityType = "Invoice",
+                CreatedBy = "System",
+                ActionUrl = $"/invoices/view/{invoice.id}"
+            };
+
+            await _notificationRepository.CreateNotificationAsync(notification);
+
+            // Optional: Send email notification
+            // await _emailService.SendPaymentReceivedEmail(invoice); // if you have such a service
+        }
+
     }
 }
