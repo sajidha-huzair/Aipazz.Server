@@ -1,12 +1,11 @@
-using Aipazz.Application.Calender.Interfaces;
-using Aipazz.Application.Calendar.CourtDateForms.Commands;
+using Aipazz.Application.Calender.CourtDateForms.Commands;
+using Aipazz.Application.Calender.Interface;
+using Aipazz.Domian.Calender;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Aipazz.Application.Calendar.CourtDateForms.Handlers
+namespace Aipazz.Application.Calender.CourtDateForms.Handlers
 {
-    public class DeleteCourtDateFormCommandHandler : IRequestHandler<DeleteCourtDateFormCommand, bool>
+    public class DeleteCourtDateFormCommandHandler : IRequestHandler<DeleteCourtDateFormCommand, CourtDateForm?>
     {
         private readonly ICourtDateFormRepository _repository;
 
@@ -15,7 +14,7 @@ namespace Aipazz.Application.Calendar.CourtDateForms.Handlers
             _repository = repository;
         }
 
-        public async Task<bool> Handle(DeleteCourtDateFormCommand request, CancellationToken cancellationToken)
+        public async Task<CourtDateForm?> Handle(DeleteCourtDateFormCommand request, CancellationToken cancellationToken)
         {
             return await _repository.DeleteCourtDateForm(request.Id);
         }
