@@ -1,4 +1,5 @@
 ﻿using Aipazz.Application.Billing.DTOs;
+using Aipazz.Application.Billing.Interfaces;
 using Aipazz.Application.Billing.Invoices.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace Aipazz.API.Controllers.Billing
     public class PaymentController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly IPaymentService _paymentService;
 
-        public PaymentController(IMediator mediator)
+        public PaymentController(IMediator mediator, IPaymentService paymentService)
         {
             _mediator = mediator;
+            _paymentService = paymentService;
         }
 
         [HttpPost("payhere-notify")]
@@ -33,6 +36,13 @@ namespace Aipazz.API.Controllers.Billing
             }
 
             return Ok(); // PayHere requires this
+        }
+
+        [HttpPost("start")]
+        public async Task<ActionResult<StartPaymentResponse>> StartPayment([FromBody] StartPaymentRequest request)
+        {
+            var url = await _paymentService.GeneratePaymentRedirectUrlAsync(request);
+            return Ok(new StartPaymentResponse { RedirectUrl = url });
         }
     }
 
