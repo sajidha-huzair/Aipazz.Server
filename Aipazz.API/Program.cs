@@ -115,10 +115,6 @@ builder.Services.AddScoped<ITeamMeetingFormRepository, TeamMeetingFormRepository
 builder.Services.AddScoped<IPaymentService, PayHerePaymentService>();
 
 
-builder.Services.AddSingleton<ICourtDateFormRepository, CourtDateFormRepository>();
-builder.Services.AddSingleton<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
-builder.Services.AddSingleton<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
-    
 
 builder.Services.AddSingleton(x =>
     new BlobServiceClient(builder.Configuration["AzureBlob:ConnectionString"])
