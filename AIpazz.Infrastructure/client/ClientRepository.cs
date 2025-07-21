@@ -92,7 +92,6 @@ namespace Aipazz.Infrastructure.client
             return null;
         }
 
-
         public async Task CreateAsync(Client client)
         {
             await _container.CreateItemAsync(client, new PartitionKey(client.nic));
@@ -136,6 +135,22 @@ namespace Aipazz.Infrastructure.client
             }
 
             return false;
+        }
+
+        public async Task<List<Client>> GetClientsByTeamIdAsync(string teamId)
+        {
+            var iterator = _container.GetItemLinqQueryable<Client>()
+                .Where(c => c.TeamId == teamId)
+                .ToFeedIterator();
+
+            var clients = new List<Client>();
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                clients.AddRange(response);
+            }
+
+            return clients;
         }
     }
 }

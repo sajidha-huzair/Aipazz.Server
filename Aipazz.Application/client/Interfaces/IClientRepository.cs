@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Aipazz.Domian.client;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Aipazz.Domian.Billing;
-using Aipazz.Domian.client;
 
 namespace Aipazz.Application.client.Interfaces
 {
@@ -15,6 +14,6 @@ namespace Aipazz.Application.client.Interfaces
         Task UpdateAsync(Client client);
         Task DeleteAsync(string id, string nic, string userId);
         Task<bool> DoesClientExistByNIC(string nic, string userId);
-
+        Task<List<Client>> GetClientsByTeamIdAsync(string teamId);
     }
 }
