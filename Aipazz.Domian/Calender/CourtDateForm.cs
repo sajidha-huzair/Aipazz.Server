@@ -1,5 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-//using Newtonsoft.Json;
 
 namespace Aipazz.Domian.Calender
 {
@@ -7,20 +7,36 @@ namespace Aipazz.Domian.Calender
     {
         [JsonPropertyName("id")]
         public string id { get; set; } = Guid.NewGuid().ToString();
-        
-        [JsonIgnore]
-        public Guid Id 
+
+        [JsonIgnore] // You can keep Guid-based Id internally if needed
+        public Guid Id
         {
             get => Guid.Parse(id);
             set => id = value.ToString();
         }
-        
-        public string CaseNumber { get; set; }
-        public string CourtName { get; set; }
-        public DateTime Date { get; set; }
-        public string Description { get; set; }
-        
-        // Partition key for Cosmos DB
-        public string PartitionKey => CaseNumber;
+
+        public string? Title { get; set; }
+        public string? CourtType { get; set; }
+        public string? Stage { get; set; }
+        public List<string>? Clients { get; set; }
+        public DateTime CourtDate { get; set; }
+
+        public TimeSpan Reminder { get; set; }
+
+        [NotMapped]
+        public string DueStatus
+        {
+            get
+            {
+                var reminderDate = CourtDate - Reminder;
+                return reminderDate.Date == DateTime.Today ? "Remind" : "Not Remind";
+            }
+        }
+
+        public string? Note { get; set; }
+        public List<string>? TeamMembers { get; set; }
+        public string? ClientEmail { get; set; }
+
+        public string PartitionKey => id;
     }
 }

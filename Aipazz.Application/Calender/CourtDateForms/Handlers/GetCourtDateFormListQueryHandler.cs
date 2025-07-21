@@ -1,11 +1,10 @@
 using Aipazz.Application.Calendar.CourtDateForms.Queries;
-using Aipazz.Application.Calender.Interfaces;
-using Aipazz.Domian.Calender;
+using Aipazz.Application.Calender.Interface;
 using MediatR;
 
-namespace Aipazz.Application.Calendar.CourtDateForms.Handlers
+namespace Aipazz.Application.Calender.CourtDateForms.Handlers
 {
-    public class GetCourtDateFormListQueryHandler : IRequestHandler<GetCourtDateFormListQuery, List<CourtDateForm>>
+    public class GetCourtDateFormListQueryHandler : IRequestHandler<GetCourtDateFormListQuery, List<Domian.Calender.CourtDateForm>>
     {
         private readonly ICourtDateFormRepository _repository;
 
@@ -14,7 +13,7 @@ namespace Aipazz.Application.Calendar.CourtDateForms.Handlers
             _repository = repository;
         }
 
-        public async Task<List<CourtDateForm>> Handle(GetCourtDateFormListQuery request, CancellationToken cancellationToken)
+        public async Task<List<Domian.Calender.CourtDateForm>> Handle(GetCourtDateFormListQuery request, CancellationToken cancellationToken)
         {
             var data = await _repository.GetAll();
             return data;

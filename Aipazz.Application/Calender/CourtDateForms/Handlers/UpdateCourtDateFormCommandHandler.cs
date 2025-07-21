@@ -1,5 +1,5 @@
 using Aipazz.Application.Calender.CourtDateForms.Commands;
-using Aipazz.Application.Calender.Interfaces;
+using Aipazz.Application.Calender.Interface;
 using MediatR;
 
 namespace Aipazz.Application.Calender.CourtDateForms.Handlers
@@ -18,9 +18,15 @@ namespace Aipazz.Application.Calender.CourtDateForms.Handlers
             var param = new Domian.Calender.CourtDateForm
             {
                 Id = request.Id,
-                CaseNumber = request.CaseNumber,
-                Date = request.Date,
-                CourtName = request.CourtName
+                Title = request.Title,
+                CourtDate = request.CourtDate,
+                Stage = request.Stage,
+                Clients = request.Clients,
+                CourtType = request.CourtType,
+                Reminder = request.Reminder,
+                Note = request.Note,
+                TeamMembers = request.TeamMembers,
+                ClientEmail = request.ClientEmail
             };
             var existing = await _repository.UpdateCourtDateForm(request.Id, param);
             if (existing == null) return null;
