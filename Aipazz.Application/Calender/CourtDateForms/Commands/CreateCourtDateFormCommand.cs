@@ -1,12 +1,19 @@
 using MediatR;
-using Aipazz.Domian.Calender;
 
-namespace Aipazz.Application.Calender.CourtDateForm.Commands
+namespace Aipazz.Application.Calender.CourtDateForms.Commands
 {
     public class CreateCourtDateFormCommand : IRequest<Domian.Calender.CourtDateForm>
     {
-        public string CaseNumber { get; set; } = null!;
-        public string CourtName { get; set; } = null!;
-        public DateTime Date { get; set; }
+        public string? Title { get; set; }
+        public string? CourtType { get; set; }
+        public string? Stage { get; set; }
+        public List<string>? Clients { get; set; }
+        public DateTime CourtDate { get; set; }
+
+        public TimeSpan Reminder { get; set; } // e.g., 2 or 7 days before CourtDate
+        
+        public string? Note { get; set; }
+        public List<string>? TeamMembers { get; set; }
+        public string? ClientEmail { get; set; }
     }
 }

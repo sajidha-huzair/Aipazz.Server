@@ -1,9 +1,9 @@
+using Aipazz.Domian.Calender;
 using MediatR;
-using System;
 
-namespace Aipazz.Application.Calendar.CourtDateForms.Commands
+namespace Aipazz.Application.Calender.CourtDateForms.Commands
 {
-    public class DeleteCourtDateFormCommand : IRequest<bool>
+    public class DeleteCourtDateFormCommand : IRequest<CourtDateForm?>
     {
         public Guid Id { get; set; }
 

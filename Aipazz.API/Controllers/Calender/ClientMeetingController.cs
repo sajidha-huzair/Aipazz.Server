@@ -25,13 +25,13 @@ namespace Aipazz.API.Controllers.Calendar
         }
         
         [HttpPost]
-        public async Task<IActionResult> CreateClientMeeting([FromBody] CreateClientMeetingCommand command)
+        public async Task<IActionResult> CreateClientMeeting( CreateClientMeetingCommand command)
         {
             var meeting = await _mediator.Send(command);
             return CreatedAtAction(nameof(GetClientMeetings), new { id = meeting.Id }, meeting);
         }
         
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetMeetingById(Guid id)
         {
             var meeting = await _mediator.Send(new GetClientMeetingByIdQuery(id));
@@ -44,7 +44,7 @@ namespace Aipazz.API.Controllers.Calendar
             return Ok(meeting); // 200 OK with meeting details
         }
         
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateClientMeeting(Guid id, [FromBody] UpdateClientMeetingCommand command)
         {
             if (id != command.Id)
