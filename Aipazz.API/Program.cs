@@ -108,7 +108,7 @@ builder.Services.AddScoped<ICourtDateFormRepository, CourtDateFormRepository>();
 builder.Services.AddScoped<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
 builder.Services.AddScoped<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
 
-builder.Services.AddScoped<IPaymentService, PayHerePaymentService>();
+builder.Services.AddScoped<IPaymentService, StripePaymentService>();
 
 
 
