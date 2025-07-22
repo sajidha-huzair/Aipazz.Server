@@ -11,6 +11,8 @@ namespace Aipazz.Application.Billing.Interfaces
             Task SendInvoiceAccessEmailAsync(string toEmail, string subject, string htmlContent, string replyToEmail);
             Task SendOtpEmailAsync(string toEmail, string subject, string htmlBody);
 
+        Task SendEmailToTeamCreator(string toEmail, string subject, string htmlBody);
+
     }
 }
 

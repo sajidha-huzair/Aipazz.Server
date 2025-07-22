@@ -8,6 +8,7 @@ namespace Aipazz.Application.Team.Commands
         string Name,
         string Description,
         string UserId,
+        string OwnerEmail, // Add this parameter
         string OwnerName, // Add this parameter
         List<TeamMember> Members
     ) : IRequest<string>;
