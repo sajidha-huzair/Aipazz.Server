@@ -157,6 +157,15 @@ namespace Aipazz.API.Controllers.Matters
             return Ok(new { Message = "Matter removed from team successfully" });
         }
 
+        [HttpGet("{teamid}/team-shared-matters")]
+        public async Task<IActionResult> GetTeamSharedMatters(string teamid)
+        {
+            var result = await _mediator.Send(new GetTeamSharedMattersQuery(teamid));
+            return(result == null || !result.Any())
+                ? NotFound("No shared matters found for this team.")
+                : Ok(result);
+        }
+
         // GET: api/Matter/type/{matterTypeId}
         // Retrieves all Matters associated with a specific MatterTypeId for the authenticated user
         [HttpGet("type/{matterTypeId}")]

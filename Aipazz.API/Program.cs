@@ -10,22 +10,17 @@ using AIpazz.Infrastructure.Calender;
 using AIpazz.Infrastructure.Documentmgt;
 using Aipazz.Infrastructure.Matters;
 using Aipazz.Infrastructure.Billing;
-using Aipazz.Application.DocumentMGT.documentmgt.Queries;
-using Aipazz.Infrastructure.Calendar;
 using AIpazz.Infrastructure.Calendar;
 using AIpazz.Infrastructure.Documentmgt.Services;
 using AIpazz.Infrastructure.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Azure.Storage.Blobs;
-using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
-using Aipazz.Application.Matters.Interfaces;
 using System.Text.Json;
 using Aipazz.Application.Common.Aipazz.Application.Common;
 using Aipazz.Application.Billing.Interfaces;
 using AIpazz.Infrastructure.Billing.Aipazz.Application.Common;
+using Aipazz.Infrastructure.Calender;
 using QuestPDF.Infrastructure;
 using Aipazz.Infrastructure.Billing;
 
@@ -113,11 +108,9 @@ builder.Services.AddScoped<ICourtDateFormRepository, CourtDateFormRepository>();
 builder.Services.AddScoped<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
 builder.Services.AddScoped<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
 
+builder.Services.AddScoped<IPaymentService, PayHerePaymentService>();
 
-builder.Services.AddSingleton<ICourtDateFormRepository, CourtDateFormRepository>();
-builder.Services.AddSingleton<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
-builder.Services.AddSingleton<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
-    
+
 
 builder.Services.AddSingleton(x =>
     new BlobServiceClient(builder.Configuration["AzureBlob:ConnectionString"])
@@ -127,6 +120,18 @@ builder.Services.AddScoped<IInvoicePdfGenerator, InvoicePdfGenerator>();
 builder.Services.Configure<InvoiceBlobOptions>(
     builder.Configuration.GetSection("InvoiceBlob"));
 
+
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173") // Allow frontend URL
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        });
+});
 builder.Services.AddScoped<IInvoiceBlobService, AzureInvoiceBlobService>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
@@ -134,6 +139,8 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 
 
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
@@ -149,9 +156,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-
-
 
 
 
