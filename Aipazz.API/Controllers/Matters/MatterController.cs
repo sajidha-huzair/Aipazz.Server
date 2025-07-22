@@ -165,5 +165,16 @@ namespace Aipazz.API.Controllers.Matters
                 ? NotFound("No shared matters found for this team.")
                 : Ok(result);
         }
+
+        // GET: api/Matter/type/{matterTypeId}
+        // Retrieves all Matters associated with a specific MatterTypeId for the authenticated user
+        [HttpGet("type/{matterTypeId}")]
+        public async Task<IActionResult> GetMattersByMatterTypeId(string matterTypeId)
+        {
+            var userId = GetUserId();
+            var result = await _mediator.Send(new GetMattersByMatterTypeIdQuery(matterTypeId, userId));
+            return Ok(result);
+        }
+
     }
 }

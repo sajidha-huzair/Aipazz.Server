@@ -13,17 +13,21 @@ namespace Aipazz.Application.Matters.matter.Commands
     {
         private readonly IMatterRepository _matterRepository;
         private readonly IStatusRepository _statusRepository;
-        private readonly IClientRepository _clientRepository; // 👈 Needed for client name
+        private readonly IClientRepository _clientRepository;
+        private readonly IMatterTypeRepository _matterTypeRepository; // ✅ Add this field
 
         public CreateMatterCommandHandler(
             IMatterRepository matterRepository,
             IStatusRepository statusRepository,
-            IClientRepository clientRepository)
+            IClientRepository clientRepository,
+            IMatterTypeRepository matterTypeRepository)
         {
             _matterRepository = matterRepository;
             _statusRepository = statusRepository;
             _clientRepository = clientRepository;
+            _matterTypeRepository = matterTypeRepository; // ✅ Now it will work
         }
+
 
         public async Task<MatterDto> Handle(CreateMatterCommand request, CancellationToken cancellationToken)
         {
@@ -47,6 +51,13 @@ namespace Aipazz.Application.Matters.matter.Commands
                     throw new Exception($"Client with NIC '{request.ClientNic}' not found.");
                 }
 
+                var matterType = await _matterTypeRepository.GetMatterTypeById(request.MatterTypeId, request.UserId);
+                if (matterType == null)
+                {
+                    throw new Exception("Invalid Matter Type ID.");
+                }
+
+
                 // Create new Matter
                 var matter = new Matter
                 {
@@ -59,7 +70,8 @@ namespace Aipazz.Application.Matters.matter.Commands
                     StatusId = string.IsNullOrEmpty(request.StatusId) ? openStatus.Name : request.StatusId,
                     TeamMembers = request.TeamMembers,
                     UserId = request.UserId,
-                    CourtType = request.CourtType
+                    CourtType = request.CourtType,
+                    MatterTypeId = request.MatterTypeId
                 };
 
                 await _matterRepository.AddMatter(matter);
@@ -75,7 +87,8 @@ namespace Aipazz.Application.Matters.matter.Commands
                     ClientNic = matter.ClientNic, // ✅ Keep as NIC for consistency
                     StatusId = string.IsNullOrEmpty(request.StatusId) ? openStatus.Name : request.StatusId,
                     TeamMembers = matter.TeamMembers,
-                    CourtType = matter.CourtType
+                    CourtType = matter.CourtType,
+                    MatterTypeId = request.MatterTypeId
                 };
 
                 Console.WriteLine($"✅ Matter created successfully: {matter.id}");
