@@ -36,7 +36,7 @@ namespace Aipazz.Application.Matters.matter.Commands
                 Console.WriteLine($"Creating matter for user: {request.UserId}");
                 Console.WriteLine($"Client NIC: {request.ClientNic}");
 
-                // Get "To Do" status from DB
+                // Get "Open" status from DB
                 var openStatus = await _statusRepository.GetStatusByName("Open", request.UserId);
 
                 if (openStatus == null)
@@ -51,10 +51,10 @@ namespace Aipazz.Application.Matters.matter.Commands
                     throw new Exception($"Client with NIC '{request.ClientNic}' not found.");
                 }
 
-                var matterType = await _matterTypeRepository.GetMatterTypeById(request.MatterTypeId, request.UserId);
+                var matterType = await _matterTypeRepository.GetMatterTypeByName(request.MatterTypeName, request.UserId);
                 if (matterType == null)
                 {
-                    throw new Exception("Invalid Matter Type ID.");
+                    throw new Exception("Invalid Matter Type name.");
                 }
 
 
@@ -71,7 +71,8 @@ namespace Aipazz.Application.Matters.matter.Commands
                     TeamMembers = request.TeamMembers,
                     UserId = request.UserId,
                     CourtType = request.CourtType,
-                    MatterTypeId = request.MatterTypeId
+                    MatterTypeName = request.MatterTypeName
+
                 };
 
                 await _matterRepository.AddMatter(matter);
@@ -88,7 +89,7 @@ namespace Aipazz.Application.Matters.matter.Commands
                     StatusId = string.IsNullOrEmpty(request.StatusId) ? openStatus.Name : request.StatusId,
                     TeamMembers = matter.TeamMembers,
                     CourtType = matter.CourtType,
-                    MatterTypeId = request.MatterTypeId
+                    MatterTypeName = request.MatterTypeName
                 };
 
                 Console.WriteLine($"✅ Matter created successfully: {matter.id}");
