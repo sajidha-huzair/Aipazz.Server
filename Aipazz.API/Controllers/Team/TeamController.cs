@@ -70,13 +70,9 @@ namespace Aipazz.API.Controllers.Team
             return Ok(result);
         }
 
-
-
         [HttpPost]
-        [Authorize]
         public async Task<IActionResult> CreateTeam([FromBody] CreateTeamCommand command)
         {
-            Console.WriteLine("Create Team Called");
             // Extract the user ID from the claim
             string? userId = User.Claims
                 .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
@@ -86,9 +82,6 @@ namespace Aipazz.API.Controllers.Team
             string? ownerName = User.Claims
                 .FirstOrDefault(c => c.Type == "name")?.Value;
 
-            string? ownerEmail = User.Claims
-                .FirstOrDefault(c => c.Type == "emails")?.Value;
-
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized("User ID not found in token.");
 
@@ -96,7 +89,7 @@ namespace Aipazz.API.Controllers.Team
                 return Unauthorized("User name not found in token.");
             
             var members = command.Members ?? new List<TeamMember>();
-            var result = await _mediator.Send(new CreateTeamCommand(command.Name, command.Description, userId,ownerEmail, ownerName, members));
+            var result = await _mediator.Send(new CreateTeamCommand(command.Name, command.Description, userId, ownerName, members));
             
             return Ok(new { 
                 Message = "Team created successfully", 
