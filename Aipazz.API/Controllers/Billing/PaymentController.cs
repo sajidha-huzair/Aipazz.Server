@@ -3,47 +3,67 @@ using Aipazz.Application.Billing.Interfaces;
 using Aipazz.Application.Billing.Invoices.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
+using Stripe.Checkout;
 
-namespace Aipazz.API.Controllers.Billing
+[ApiController]
+[Route("api/[controller]")]
+public class PaymentController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class PaymentController : ControllerBase
+    private readonly IPaymentService _paymentService;
+    private readonly IConfiguration _config;
+    private readonly IMediator _mediator;
+
+    public PaymentController(IPaymentService paymentService, IConfiguration config, IMediator mediator)
     {
-        private readonly IMediator _mediator;
-        private readonly IPaymentService _paymentService;
+        _paymentService = paymentService;
+        _config = config;
+        _mediator = mediator;
+    }
 
-        public PaymentController(IMediator mediator, IPaymentService paymentService)
-        {
-            _mediator = mediator;
-            _paymentService = paymentService;
-        }
+    [HttpPost("start")]
+    public async Task<ActionResult<StartPaymentResponse>> StartPayment([FromBody] StartPaymentRequest request)
+    {
+        var url = await _paymentService.GeneratePaymentRedirectUrlAsync(request);
+        return Ok(new StartPaymentResponse { RedirectUrl = url });
+    }
 
-        [HttpPost("payhere-notify")]
-        public async Task<IActionResult> Notify([FromForm] PayHereCallbackDto data)
+    [HttpPost("stripe-webhook")]
+    public async Task<IActionResult> StripeWebhook()
+    {
+        var json = await new StreamReader(HttpContext.Request.Body).ReadToEndAsync();
+        var secret = _config["Stripe:WebhookSecret"];
+
+        try
         {
-            if (data.status == "2")
+            var stripeEvent = EventUtility.ConstructEvent(
+                json,
+                Request.Headers["Stripe-Signature"],
+                secret
+            );
+
+            if (stripeEvent.Type == "checkout.session.completed")
             {
+                var session = stripeEvent.Data.Object as Session;
+                var invoiceId = session.Metadata["InvoiceId"];
+                var userId = session.Metadata["UserId"];
+
                 var cmd = new MarkInvoicePaidCommand
                 {
-                    InvoiceId = data.order_id,
-                    TransactionId = data.payment_id,
-                    PaidAmount = data.paid_amount,
-                    UserId = data.custom_1 // you can pass this from frontend
+                    InvoiceId = invoiceId,
+                    TransactionId = session.Id,
+                    PaidAmount = (decimal)session.AmountTotal / 100,
+                    UserId = userId
                 };
 
                 await _mediator.Send(cmd);
             }
 
-            return Ok(); // PayHere requires this
+            return Ok();
         }
-
-        [HttpPost("start")]
-        public async Task<ActionResult<StartPaymentResponse>> StartPayment([FromBody] StartPaymentRequest request)
+        catch (StripeException ex)
         {
-            var url = await _paymentService.GeneratePaymentRedirectUrlAsync(request);
-            return Ok(new StartPaymentResponse { RedirectUrl = url });
+            return BadRequest(new { error = ex.Message });
         }
     }
-
 }

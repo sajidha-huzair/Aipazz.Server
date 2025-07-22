@@ -11,7 +11,7 @@ namespace Aipazz.Application.Billing.Invoices.Commands
     {
         public string InvoiceId { get; set; } = string.Empty;
         public string TransactionId { get; set; } = string.Empty;
-        public string PaidAmount { get; set; } = string.Empty;
+        public decimal PaidAmount { get; set; } 
         public string UserId { get; set; } = string.Empty; // optional
     }
 
