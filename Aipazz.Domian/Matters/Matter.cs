@@ -15,7 +15,7 @@ namespace Aipazz.Domian.Matters
         public string ClientNic { get; set; } = string.Empty;// Partition Key
         public List<string>? TeamMembers { get; set; } = new();
         public required string StatusId { get; set; }
-        public required string MatterTypeId { get; set; }
+        public required string MatterTypeName { get; set; }
         public string? TeamId { get; set; } = null; // Add this property
 
         [JsonConverter(typeof(JsonStringEnumConverter))]

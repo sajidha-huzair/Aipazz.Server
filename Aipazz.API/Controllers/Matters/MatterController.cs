@@ -166,15 +166,15 @@ namespace Aipazz.API.Controllers.Matters
                 : Ok(result);
         }
 
-        // GET: api/Matter/type/{matterTypeId}
-        // Retrieves all Matters associated with a specific MatterTypeId for the authenticated user
-        [HttpGet("type/{matterTypeId}")]
-        public async Task<IActionResult> GetMattersByMatterTypeId(string matterTypeId)
+        // GET: api/Matter/type-name/{matterTypeName}
+        [HttpGet("type-name/{matterTypeName}")]
+        public async Task<IActionResult> GetMattersByMatterTypeName(string matterTypeName)
         {
             var userId = GetUserId();
-            var result = await _mediator.Send(new GetMattersByMatterTypeIdQuery(matterTypeId, userId));
+            var result = await _mediator.Send(new GetMattersByMatterTypeIdQuery(matterTypeName, userId));
             return Ok(result);
         }
+
 
     }
 }

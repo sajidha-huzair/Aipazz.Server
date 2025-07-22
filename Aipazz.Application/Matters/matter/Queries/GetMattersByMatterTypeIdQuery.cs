@@ -8,5 +8,5 @@ using MediatR;
 
 namespace Aipazz.Application.Matters.matter.Queries
 {
-    public record GetMattersByMatterTypeIdQuery(string MatterTypeId, string UserId) : IRequest<List<Matter>>;
+    public record GetMattersByMatterTypeIdQuery(string MatterTypeName, string UserId) : IRequest<List<Matter>>;
 }
