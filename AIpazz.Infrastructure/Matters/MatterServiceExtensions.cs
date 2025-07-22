@@ -25,6 +25,15 @@ namespace Aipazz.Infrastructure.Matters
 
             services.AddSingleton<StatusSeeder>();
 
+            services.AddSingleton<IMatterTypeRepository, MatterTypeRepository>(serviceProvider =>
+            {
+                var cosmosClient = serviceProvider.GetRequiredService<CosmosClient>();
+                var options = serviceProvider.GetRequiredService<IOptions<CosmosDbOptions>>();
+                return new MatterTypeRepository(cosmosClient, options);
+            });
+
+            services.AddSingleton<MatterTypeSeeder>();
+
 
             return services;
         }
