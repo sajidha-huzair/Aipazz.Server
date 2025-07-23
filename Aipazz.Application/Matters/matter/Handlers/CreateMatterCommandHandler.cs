@@ -71,7 +71,8 @@ namespace Aipazz.Application.Matters.matter.Commands
                     TeamMembers = request.TeamMembers,
                     UserId = request.UserId,
                     CourtType = request.CourtType,
-                    MatterTypeName = request.MatterTypeName
+                    MatterTypeName = request.MatterTypeName,
+                    //TeamId = request.TeamId
 
                 };
 
@@ -89,7 +90,8 @@ namespace Aipazz.Application.Matters.matter.Commands
                     StatusId = string.IsNullOrEmpty(request.StatusId) ? openStatus.Name : request.StatusId,
                     TeamMembers = matter.TeamMembers,
                     CourtType = matter.CourtType,
-                    MatterTypeName = request.MatterTypeName
+                    MatterTypeName = request.MatterTypeName,
+                    //TeamId = matter.TeamId
                 };
 
                 Console.WriteLine($"✅ Matter created successfully: {matter.id}");
