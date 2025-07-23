@@ -9,7 +9,8 @@ namespace Aipazz.Application.Billing.DTOs
     // Application/Billing/DTOs/StartPaymentResponse.cs
     public class StartPaymentResponse
     {
-        public string RedirectUrl { get; set; } = string.Empty;
+        public string? ClientSecret { get; set; }
+        public string? RedirectUrl { get; set; }
     }
 
 }

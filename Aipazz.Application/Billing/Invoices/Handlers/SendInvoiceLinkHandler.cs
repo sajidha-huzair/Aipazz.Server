@@ -35,7 +35,12 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
             var invoice = await _invoiceRepo.GetByIdAsync(request.InvoiceId, request.UserId);
             if (invoice == null)
                 return new SendLinkResult(false, "Invoice not found or unauthorized.");
-
+            // ✅ Update status to "Unpaid"
+            if (invoice.Status == "Draft")
+            {
+                invoice.Status = "Unpaid";
+                await _invoiceRepo.UpdateAsync(invoice);
+            }
             var token = Guid.NewGuid().ToString(); 
             var otp = new Random().Next(100000, 999999).ToString();
             var accessRecord = new InvoiceAccessToken
