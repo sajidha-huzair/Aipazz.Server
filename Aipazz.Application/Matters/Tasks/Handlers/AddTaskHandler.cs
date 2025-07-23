@@ -27,8 +27,11 @@ namespace Aipazz.Application.Matters.Tasks.Handlers
                 Title = request.Title,
                 Description = request.Description,
                 DueDate = request.DueDate,
-                Status = request.Status
+                Status = request.Status,
+                CreatedDate = request.CreatedDate ?? DateTime.UtcNow,
+                AssignedTo = request.AssignedTo
             };
+
             await _taskRepository.CreateAsync(task);
             return task;
         }
