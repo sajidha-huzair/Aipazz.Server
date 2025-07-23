@@ -27,8 +27,8 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                 throw new KeyNotFoundException("Document not found or you don't have permission to share it.");
 
             // Verify the team exists and user is a member/owner
-            var team = await _teamRepository.GetTeamByIdAsync(request.TeamId, request.UserId);
-            if (team == null)
+            var team = await _teamRepository.CheckTeamExistsAsync(request.TeamId);
+            if (team == false)
                 throw new KeyNotFoundException("Team not found or you're not a member of this team.");
 
             // Update document with TeamId

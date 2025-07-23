@@ -22,5 +22,9 @@ namespace Aipazz.Application.Team.Interfaces
         Task<TeamMember> AddTeamMemberAsync(string teamId, TeamMember member, string userId);
         Task UpdateTeamMemberAsync(string teamId, string memberId, TeamMember member, string userId);
         Task DeleteTeamMemberAsync(string teamId, string memberId, string userId);
+
+        //check whether team exits or not 
+
+        Task<bool> CheckTeamExistsAsync(string teamId);
     }
 }
