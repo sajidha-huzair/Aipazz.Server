@@ -19,5 +19,6 @@ namespace Aipazz.Application.Billing.DTOs
         public string City { get; set; } = string.Empty;
         public string Country { get; set; } = "Sri Lanka";
         public string UserId { get; set; } = string.Empty; // for notification after payment
+        public string PaymentMethod { get; set; } = string.Empty;
     }
 }

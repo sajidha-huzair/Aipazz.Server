@@ -11,6 +11,7 @@ namespace Aipazz.Application.Billing.Interfaces
     public interface IPaymentService
     {
         Task<string> GeneratePaymentRedirectUrlAsync(StartPaymentRequest request);
+        Task<string> CreatePaymentIntentAsync(StartPaymentRequest request);
     }
 
 }

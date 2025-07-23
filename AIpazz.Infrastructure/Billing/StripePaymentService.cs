@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Security.Cryptography;
 using Stripe.Checkout;
+using Stripe;
 
 
 namespace AIpazz.Infrastructure.Billing
@@ -31,30 +32,30 @@ namespace AIpazz.Infrastructure.Billing
             {
                 PaymentMethodTypes = new List<string> { "card" },
                 LineItems = new List<SessionLineItemOptions>
+            {
+                new()
                 {
-                    new()
+                    PriceData = new SessionLineItemPriceDataOptions
                     {
-                        PriceData = new SessionLineItemPriceDataOptions
+                        UnitAmount = (long)(request.Amount * 100),
+                        Currency = request.Currency.ToLower(),
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
-                            UnitAmount = (long)(request.Amount * 100), // cents
-                            Currency = request.Currency.ToLower(),
-                            ProductData = new SessionLineItemPriceDataProductDataOptions
-                            {
-                                Name = "Legal Invoice Payment",
-                                Description = $"Invoice #{request.InvoiceId}"
-                            }
-                        },
-                        Quantity = 1
-                    }
-                },
+                            Name = "Legal Invoice Payment",
+                            Description = $"Invoice #{request.InvoiceId}"
+                        }
+                    },
+                    Quantity = 1
+                }
+            },
                 Mode = "payment",
                 SuccessUrl = $"{domain}/payment-success?session_id={{CHECKOUT_SESSION_ID}}",
                 CancelUrl = $"{domain}/payment-cancel",
                 Metadata = new Dictionary<string, string>
-                {
-                    { "InvoiceId", request.InvoiceId },
-                    { "UserId", request.UserId }
-                }
+            {
+                { "InvoiceId", request.InvoiceId },
+                { "UserId", request.UserId }
+            }
             };
 
             var service = new SessionService();
@@ -62,5 +63,27 @@ namespace AIpazz.Infrastructure.Billing
 
             return Task.FromResult(session.Url);
         }
+
+        public async Task<string> CreatePaymentIntentAsync(StartPaymentRequest request)
+        {
+            var options = new PaymentIntentCreateOptions
+            {
+                Amount = (long)(request.Amount * 100),
+                Currency = request.Currency.ToLower(),
+                Metadata = new Dictionary<string, string>
+            {
+                { "InvoiceId", request.InvoiceId },
+                { "UserId", request.UserId }
+            },
+                Description = $"Invoice #{request.InvoiceId}",
+                ReceiptEmail = request.Email
+            };
+
+            var service = new PaymentIntentService();
+            var intent = await service.CreateAsync(options);
+
+            return intent.ClientSecret;
+        }
     }
+
 }
