@@ -22,7 +22,7 @@ namespace Aipazz.Application.Matters.matter.Handlers
         public async Task<List<Matter>> Handle(GetMattersByMatterTypeIdQuery request, CancellationToken cancellationToken)
         {
             var allMatters = await _repository.GetAllMatters(request.UserId);
-            return allMatters.Where(m => m.MatterTypeId == request.MatterTypeId).ToList();
+            return allMatters.Where(m => m.MatterTypeName == request.MatterTypeName).ToList();
         }
     }
 }
