@@ -76,16 +76,18 @@ builder.Services.AddScoped<IUserContext, UserContext>();
 
 
 
-// Register CORS Policy
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins",
-        policy =>
-        {
-            policy.AllowAnyOrigin()   // Allow all origins
-                  .AllowAnyMethod()   // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
-                  .AllowAnyHeader();  // Allow all headers
-        });
+    options.AddPolicy("AllowFrontendWithAuth", policy =>
+    {
+        policy.WithOrigins(
+                "http://localhost:5173",                          // Local development
+                "https://witty-field-0e9483e0f.6.azurestaticapps.net"           // Replace with actual deployed frontend URL
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials(); // Required for Authorization header (Bearer token)
+    });
 });
 
 
@@ -121,17 +123,7 @@ builder.Services.Configure<InvoiceBlobOptions>(
     builder.Configuration.GetSection("InvoiceBlob"));
 
 
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:5173") // Allow frontend URL
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-        });
-});
+
 builder.Services.AddScoped<IInvoiceBlobService, AzureInvoiceBlobService>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
@@ -150,7 +142,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("AllowAllOrigins");
+app.UseCors("AllowFrontendWithAuth");
 
 app.UseAuthentication();
 app.UseAuthorization();
