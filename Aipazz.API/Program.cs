@@ -106,6 +106,8 @@ builder.Services.AddScoped<IclientmeetingRepository, Clientmeetingrepository>();
 builder.Services.AddScoped<ICourtDateFormRepository, CourtDateFormRepository>();
 builder.Services.AddScoped<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
 builder.Services.AddScoped<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
+
+builder.Services.AddTransient<IEmailService, EmailService>();
     
 
 builder.Services.AddSingleton(x =>

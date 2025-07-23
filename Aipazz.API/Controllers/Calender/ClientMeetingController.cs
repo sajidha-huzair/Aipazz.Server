@@ -1,6 +1,8 @@
 
 using Aipazz.Application.Calender.clientmeeting.Commands;
 using Aipazz.Application.Calender.clientmeeting.queries;
+using Aipazz.Application.Calender.Interface;
+using Aipazz.Domian.Calender;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,10 +13,11 @@ namespace Aipazz.API.Controllers.Calendar
     public class ClientMeetingController : ControllerBase
     {
         private readonly IMediator _mediator;
-
-        public ClientMeetingController(IMediator mediator)
+        private readonly IEmailService _emailService;
+        public ClientMeetingController(IMediator mediator, IEmailService emailService)
         {
             _mediator = mediator;
+            _emailService = emailService;
         }
 
         [HttpGet]
@@ -28,6 +31,9 @@ namespace Aipazz.API.Controllers.Calendar
         public async Task<IActionResult> CreateClientMeeting( CreateClientMeetingCommand command)
         {
             var meeting = await _mediator.Send(command);
+
+
+            await _emailService.sendEmaiToClient(command.ClientEmail ,command.Title, EmailTemplate.WelcomeBody(command.Title,command.Date,new TimeOnly(10,30),command.MeetingLink,command.Location));
             return CreatedAtAction(nameof(GetClientMeetings), new { id = meeting.Id }, meeting);
         }
         
