@@ -123,6 +123,8 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
             invoice.DiscountType = cmd.Invoice.DiscountType;
             invoice.UpdatedBy = cmd.Invoice.UpdatedBy;
             invoice.UpdatedAt = DateTime.UtcNow;
+            invoice.PaymentDate = cmd.Invoice.PaymentDate;       // ✅ ADD THIS
+            invoice.TransactionId = cmd.Invoice.TransactionId;
 
             // Update EntryIds
             invoice.EntryIds = cmd.Invoice.EntryIds;

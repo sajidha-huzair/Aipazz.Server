@@ -88,8 +88,7 @@ namespace AIpazz.Infrastructure.Billing
         // UPDATE
         public async Task UpdateAsync(Invoice invoice)
         {
-            // ReplaceItemAsync keeps same id & partition key, enforces “replace” semantics.
-            // If you prefer upsert, swap to UpsertItemAsync.
+            
             await _container.ReplaceItemAsync(
                 item: invoice,
                 id: invoice.id,
@@ -107,7 +106,7 @@ namespace AIpazz.Infrastructure.Billing
             }
             catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
-                // swallow  -idempotent delete
+                
             }
         }
 
