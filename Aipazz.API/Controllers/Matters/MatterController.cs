@@ -135,7 +135,7 @@ namespace Aipazz.API.Controllers.Matters
             var userId = GetUserId();
 
             var success = await _mediator.Send(new ShareMatterToTeamCommand(id, clientNic, shareDto.TeamId, userId));
-            
+
             if (!success)
                 return NotFound("Matter not found.");
 
@@ -150,7 +150,7 @@ namespace Aipazz.API.Controllers.Matters
             var userId = GetUserId();
 
             var success = await _mediator.Send(new RemoveMatterFromTeamCommand(id, clientNic, userId));
-            
+
             if (!success)
                 return NotFound("Matter not found or not shared with any team.");
 
@@ -161,7 +161,7 @@ namespace Aipazz.API.Controllers.Matters
         public async Task<IActionResult> GetTeamSharedMatters(string teamid)
         {
             var result = await _mediator.Send(new GetTeamSharedMattersQuery(teamid));
-            return(result == null || !result.Any())
+            return (result == null || !result.Any())
                 ? NotFound("No shared matters found for this team.")
                 : Ok(result);
         }
@@ -175,6 +175,15 @@ namespace Aipazz.API.Controllers.Matters
             return Ok(result);
         }
 
+        // GET: api/Matter/client/{clientNic}
+        [HttpGet("getmattersbyclientnic/{clientNic}")]
+        public async Task<IActionResult> GetMattersByNic(string clientNic)
+        {
+            var userId = GetUserId();
+            var result = await _mediator.Send(new GetMattersByClientNicQuery(clientNic, userId));
+            return Ok(result);
 
+
+        }
     }
 }
