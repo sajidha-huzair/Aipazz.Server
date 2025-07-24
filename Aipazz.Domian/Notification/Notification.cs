@@ -15,5 +15,6 @@ namespace Aipazz.Domian.Notification
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public string? ActionUrl { get; set; }                    // Deep link to relevant page
         public string? CreatedBy { get; set; }                    // Who triggered the notification
+        public string? InvoiceId { get; set; }
     }
 }
