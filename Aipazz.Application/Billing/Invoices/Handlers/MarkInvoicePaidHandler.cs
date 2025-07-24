@@ -1,5 +1,6 @@
 ﻿using Aipazz.Application.Billing.Interfaces;
 using Aipazz.Application.Billing.Invoices.Commands;
+using Aipazz.Application.Notification.Interfaces;
 using Aipazz.Application.Notification.Services;
 using MediatR;
 using System;
@@ -14,11 +15,14 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
     {
         private readonly IInvoiceRepository _repo;
         private readonly INotificationService _notifier;
+        private readonly INotificationRepository _notificationRepository;
 
-        public MarkInvoicePaidHandler(IInvoiceRepository repo, INotificationService notifier)
+
+        public MarkInvoicePaidHandler(IInvoiceRepository repo, INotificationService notifier, INotificationRepository notificationRepository)
         {
             _repo = repo;
             _notifier = notifier;
+            _notificationRepository = notificationRepository;
         }
 
         public async Task<bool> Handle(MarkInvoicePaidCommand request, CancellationToken ct)
@@ -31,7 +35,14 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
             invoice.TransactionId = request.TransactionId;
             await _repo.UpdateAsync(invoice);
 
-            await _notifier.NotifyLawyerPaymentReceived(invoice); // via email + in-app
+            await _notificationRepository.CreateNotificationAsync(new Aipazz.Domian.Notification.Notification
+            {
+                UserId = invoice.UserId,
+                InvoiceId = invoice.id,
+                Title = "Invoice Paid",
+                Message = $"{invoice.ClientName} has paid invoice #{invoice.InvoiceNumber}.",
+            });
+
 
             return true;
         }
