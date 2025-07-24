@@ -69,25 +69,57 @@ public class InvoicePdfGenerator : IInvoicePdfGenerator
                     /* TOTALS */
                     col.Item().PaddingTop(12).AlignRight().Column(total =>
                     {
+                        // Calculate discount amount
+                        var discountAmount = invoice.DiscountType == "%"
+                            ? (invoice.TotalAmount * invoice.DiscountValue) / (100 - invoice.DiscountValue)
+                            : invoice.DiscountValue;
+
+                        // Subtotal is Total + Discount
+                        var subtotal = invoice.TotalAmount + discountAmount;
+
+                        // Final paid & balance logic
+                        var isPaid = invoice.Status?.Equals("Paid", StringComparison.OrdinalIgnoreCase) == true;
+                        var paidAmount = isPaid ? invoice.TotalAmount : invoice.PaidAmount;
+                        var balanceDue = isPaid ? 0 : invoice.TotalAmount - paidAmount;
+
+
+                        // Subtotal
                         total.Item().Row(r =>
                         {
                             r.RelativeItem().Text("Subtotal");
                             r.ConstantItem(90).AlignRight()
-                                 .Text($"{currency} {(invoice.TotalAmount + invoice.PaidAmount):0.00}");
+                                .Text($"{currency} {subtotal:0.00}");
                         });
+
+                        // Discount
+                        if (discountAmount > 0)
+                        {
+                            total.Item().Row(r =>
+                            {
+                                r.RelativeItem().Text($"Discount ({invoice.DiscountValue}{invoice.DiscountType})");
+                                r.ConstantItem(90).AlignRight()
+                                    .Text($"- {currency} {discountAmount:0.00}");
+                            });
+                        }
+
+                        // Paid
                         total.Item().Row(r =>
                         {
                             r.RelativeItem().Text("Paid");
                             r.ConstantItem(90).AlignRight()
-                                 .Text($"{currency} {invoice.PaidAmount:0.00}");
+                                .Text($"{currency} {paidAmount:0.00}");
                         });
+
+                        // Balance
                         total.Item().Row(r =>
                         {
                             r.RelativeItem().Text("Balance Due").Bold();
                             r.ConstantItem(90).AlignRight()
-                                 .Text($"{currency} {invoice.TotalAmount:0.00}").Bold();
+                                .Text($"{currency} {balanceDue:0.00}").Bold();
                         });
+
                     });
+
 
                     /* NOTES */
                     col.Item().PaddingTop(20).Text(invoice.FooterNotes);
