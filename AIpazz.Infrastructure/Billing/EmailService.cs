@@ -56,7 +56,7 @@ namespace AIpazz.Infrastructure.Billing
             }
         }
 
-        public async Task SendEmailtoMembers( string teamName, string MemberName, string MemberEmail)
+        public async Task SendEmailtoMembers( string teamName, string MemberName, string MemberEmail, string ownerEmail)
         {
             string toEmail = MemberEmail;
             string apiKey = "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"; 
@@ -138,6 +138,10 @@ namespace AIpazz.Infrastructure.Billing
 
         <a href=""https://witty-field-0e9483e0f.6.azurestaticapps.net/"" style=""display:inline-block;padding:12px 20px;background-color:#2b7a78;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:bold;""  >Go to Aipazz Dashboard</a>
       </div>
+
+<p>
+          If you have any question , Contact Team Owner through Email {ownerEmail}
+        </p>
 
       <div class=""footer"">
         &copy; 2025 Aipazz. All rights reserved.
