@@ -17,6 +17,35 @@ namespace Aipazz.API.Controllers.Notification
             _repository = repository;
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreateNotification([FromBody] Aipazz.Domian.Notification.Notification request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            string? userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
+
+            // Set the server-controlled fields
+            request.id = Guid.NewGuid().ToString();
+            request.UserId = userId; // Override with token userId for security
+            request.IsRead = false; // Always start as unread
+            request.CreatedAt = DateTime.UtcNow; // Server timestamp
+
+            // Set default CreatedBy if not provided
+            if (string.IsNullOrWhiteSpace(request.CreatedBy))
+                request.CreatedBy = "System";
+
+            var notificationId = await _repository.CreateNotificationAsync(request);
+
+            // Return the created notification
+            return Ok(request);
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetUserNotifications()
         {
