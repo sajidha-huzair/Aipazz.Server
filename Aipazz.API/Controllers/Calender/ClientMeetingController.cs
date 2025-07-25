@@ -4,7 +4,11 @@ using Aipazz.Application.Calender.clientmeeting.queries;
 using Aipazz.Application.Calender.Interface;
 using Aipazz.Domian.Calender;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Aipazz.API.Controllers.Calendar
 {
@@ -28,10 +32,18 @@ namespace Aipazz.API.Controllers.Calendar
         }
         
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateClientMeeting( CreateClientMeetingCommand command)
         {
-            var meeting = await _mediator.Send(command);
+            
+            
+            string? userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+            Console.WriteLine("userId: " + userId);
+            command.UserId = userId;
 
+            var meeting = await _mediator.Send(command);
 
             await _emailService.sendEmaiToClient(command.ClientEmail ,command.Title, EmailTemplate.WelcomeBody(command.Title,command.Date,new TimeOnly(10,30),command.MeetingLink,command.Location));
             return CreatedAtAction(nameof(GetClientMeetings), new { id = meeting.Id }, meeting);
