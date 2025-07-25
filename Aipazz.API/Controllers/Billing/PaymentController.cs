@@ -54,18 +54,12 @@ public class PaymentController : ControllerBase
             {
                 case "checkout.session.completed":
                     var session = stripeEvent.Data.Object as Session;
-                    if (session?.Metadata != null && session.AmountTotal.HasValue)
-                    {
-                        await HandlePaymentAsync(session.Metadata, session.Id, session.AmountTotal.Value);
-                    }
+                    
                     break;
 
                 case "payment_intent.succeeded":
                     var intent = stripeEvent.Data.Object as PaymentIntent;
-                    if (intent?.Metadata != null)
-                    {
-                        await HandlePaymentAsync(intent.Metadata, intent.Id, intent.AmountReceived);
-                    }
+                    
                     break;
 
                 default:
@@ -81,19 +75,5 @@ public class PaymentController : ControllerBase
         }
     }
 
-    private async Task HandlePaymentAsync(IDictionary<string, string> metadata, string transactionId, long amountCents)
-    {
-        if (!metadata.TryGetValue("InvoiceId", out var invoiceId)) return;
-        metadata.TryGetValue("UserId", out var userId);
-
-        var cmd = new MarkInvoicePaidCommand
-        {
-            InvoiceId = invoiceId,
-            TransactionId = transactionId,
-            PaidAmount = (decimal)amountCents / 100,
-            UserId = userId ?? string.Empty
-        };
-
-        await _mediator.Send(cmd);
-    }
+    
 }
