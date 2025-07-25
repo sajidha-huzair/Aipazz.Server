@@ -35,17 +35,13 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
             invoice.TransactionId = request.TransactionId;
             await _repo.UpdateAsync(invoice);
 
-            await _notificationRepository.CreateNotificationAsync(new Aipazz.Domian.Notification.Notification
-            {
-                UserId = invoice.UserId,
-                InvoiceId = invoice.id,
-                Title = "Invoice Paid",
-                Message = $"{invoice.ClientName} has paid invoice #{invoice.InvoiceNumber}.",
-            });
-
+            // Use the service — not direct repository
+            await _notifier.NotifyLawyerPaymentReceived(invoice);
 
             return true;
         }
-    }
 
+    }
 }
+
+
