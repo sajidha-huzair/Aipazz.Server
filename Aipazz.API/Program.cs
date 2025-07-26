@@ -23,6 +23,7 @@ using AIpazz.Infrastructure.Billing.Aipazz.Application.Common;
 using Aipazz.Infrastructure.Calender;
 using QuestPDF.Infrastructure;
 using Aipazz.Infrastructure.Billing;
+using Aipazz.API.Controllers;
 
 
 
@@ -107,7 +108,6 @@ builder.Services.AddScoped<IclientmeetingRepository, Clientmeetingrepository>();
 builder.Services.AddScoped<ICourtDateFormRepository, CourtDateFormRepository>();
 builder.Services.AddScoped<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
 builder.Services.AddScoped<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
-
 builder.Services.AddScoped<IPaymentService, StripePaymentService>();
 
 
@@ -153,6 +153,7 @@ app.UseHttpsRedirection();
 app.UseCors("AllowAllOrigins");
 
 app.UseAuthentication();
+app.UseMiddleware<NotificationUserAssignmentMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();

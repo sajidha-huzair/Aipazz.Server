@@ -8,7 +8,8 @@ namespace Aipazz.Application.Notification.Interfaces
     public interface INotificationRepository
     {
         Task<string> CreateNotificationAsync(Aipazz.Domian.Notification.Notification notification);
-        Task<List<Aipazz.Domian.Notification.Notification>> GetUserNotificationsAsync(string userId);
+        Task<List<Aipazz.Domian.Notification.Notification>> GetUserNotificationsAsync(string userId, string userEmail);
+        Task AssignNotificationsToUserAsync(string userEmail, string userId);
         Task<List<Aipazz.Domian.Notification.Notification>> GetUnreadNotificationsAsync(string userId);
         Task<bool> MarkAsReadAsync(string notificationId, string userId);
         Task<bool> DeleteNotificationAsync(string notificationId, string userId);
