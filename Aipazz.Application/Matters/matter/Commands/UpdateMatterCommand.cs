@@ -17,6 +17,7 @@ namespace Aipazz.Application.Matters.matter.Commands
         public required string StatusId { get; set; }
         public List<string> TeamMembers { get; set; } = new();
         public CourtType? CourtType { get; set; }
+     
 
     }
 }
