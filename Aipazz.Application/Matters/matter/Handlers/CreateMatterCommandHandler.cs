@@ -72,6 +72,8 @@ namespace Aipazz.Application.Matters.matter.Commands
                     UserId = request.UserId,
                     CourtType = request.CourtType,
                     MatterTypeName = request.MatterTypeName,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                     //TeamId = request.TeamId
 
                 };
