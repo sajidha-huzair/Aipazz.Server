@@ -51,7 +51,9 @@ namespace Aipazz.Application.Team.Handlers
                 team.Name, 
                 team.OwnerName, 
                 team.OwnerId, 
-                memberIds
+                memberIds,
+                team.Members.Select(m => m.Email).ToList()
+
             );
 
             var userEmail = request.UserEmail;
