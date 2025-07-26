@@ -54,10 +54,12 @@ namespace Aipazz.Application.Team.Handlers
                 memberIds
             );
 
+            var userEmail = request.UserEmail;
+
             foreach (var member in team.Members)
             {
                 Console.WriteLine($"Sending notification to member: {member.Email}");
-                await _emailService.SendEmailtoMembers(team.Name, member.FirstName, member.Email);
+                await _emailService.SendEmailtoMembers(team.Name, member.FirstName, member.Email, userEmail);
 
             }
             return teamId;
