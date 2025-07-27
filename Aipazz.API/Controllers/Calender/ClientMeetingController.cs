@@ -25,9 +25,15 @@ namespace Aipazz.API.Controllers.Calendar
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetClientMeetings()
         {
-            var results = await _mediator.Send(new GetAllClientMeetingsquery());
+            string? userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+            Console.WriteLine(userId);
+            if (userId == null) return BadRequest();
+            var results = await _mediator.Send(new GetAllClientMeetingsquery(userId));
             return Ok(results);
         }
         
@@ -63,6 +69,7 @@ namespace Aipazz.API.Controllers.Calendar
         }
         
         [HttpPut("{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> UpdateClientMeeting(Guid id, [FromBody] UpdateClientMeetingCommand command)
         {
             if (id != command.Id)
@@ -77,7 +84,8 @@ namespace Aipazz.API.Controllers.Calendar
         }
         
         
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> DeleteMeeting(Guid id)
         {
             var deleted = await _mediator.Send(new DeleteClientMeetingCommand(id));

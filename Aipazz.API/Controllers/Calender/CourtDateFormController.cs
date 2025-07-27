@@ -2,6 +2,7 @@ using Aipazz.Application.Calendar.CourtDateForms.Queries;
 using Aipazz.Application.Calender.CourtDateForms.Commands;
 using Aipazz.Application.Calender.CourtDateForms.Queries;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aipazz.API.Controllers.Calender
@@ -11,9 +12,15 @@ namespace Aipazz.API.Controllers.Calender
     public class CourtDateFormController(IMediator mediator) : ControllerBase
     {
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult> GetAll()
         {
-            var result = await mediator.Send(new GetCourtDateFormListQuery());
+            string? UserId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+            Console.WriteLine("UserId: " + UserId);
+            
+            var result = await mediator.Send(new GetCourtDateFormListQuery(UserId));
             return Ok(result);
         }
         
@@ -28,13 +35,20 @@ namespace Aipazz.API.Controllers.Calender
         }
         
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create(CreateCourtDateFormCommand command)
         {
+            string? UserId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+            Console.WriteLine("UserId: " + UserId);
+            command.UserId = UserId;
             var result = await mediator.Send(command);
             return Ok(result);
         }
         
         [HttpPut("{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> UpdateCourtDateForm([FromRoute]Guid id, [FromBody]UpdateCourtDateFormCommand command)
         {
             if (id != command.Id)
@@ -48,6 +62,7 @@ namespace Aipazz.API.Controllers.Calender
         }
         
         [HttpDelete("{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> Delete(Guid id)
         {
             var result = await mediator.Send(new DeleteCourtDateFormCommand(id));

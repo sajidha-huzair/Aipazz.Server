@@ -2,6 +2,7 @@ using Aipazz.Application.Calender.Commands.FilingsDeadlineForms;
 using Aipazz.Application.Calender.FilingsDeadlineForm.Queries;
 using Aipazz.Application.Calender.Queries.FilingsDeadlineForms;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aipazz.API.Controllers.Calendar
@@ -18,11 +19,16 @@ namespace Aipazz.API.Controllers.Calendar
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             try
             {
-                var result = await _mediator.Send(new GetAllFilingsDeadlineFormsQuery());
+                string? userId = User.Claims
+                    .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                    ?.Value;
+                Console.WriteLine("User Id :" + userId);
+                var result = await _mediator.Send(new GetAllFilingsDeadlineFormsQuery(userId));
                 return Ok(result);
             }
             catch (Exception ex)
@@ -31,7 +37,7 @@ namespace Aipazz.API.Controllers.Calendar
             }
         }
         
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
             try
@@ -52,6 +58,7 @@ namespace Aipazz.API.Controllers.Calendar
         }
         
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Post([FromBody] AddFilingsDeadlineFormCommand command)
         {
             try
@@ -67,6 +74,12 @@ namespace Aipazz.API.Controllers.Calendar
                     
                 if (command.Date == default(DateTime))
                     return BadRequest("Valid date is required");
+                
+                string? userId = User.Claims
+                    .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                    ?.Value;
+                Console.WriteLine("userId: " + userId);
+                command.UserId = userId;
 
                 var result = await _mediator.Send(command);
                 return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
@@ -77,7 +90,8 @@ namespace Aipazz.API.Controllers.Calendar
             }
         }
         
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> Put(Guid id, [FromBody] UpdateFilingsDeadlineFormCommand command)
         {
             try
@@ -114,7 +128,8 @@ namespace Aipazz.API.Controllers.Calendar
             }
         }
         
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
+        [Authorize]
         public async Task<IActionResult> Delete(Guid id)
         {
             try
