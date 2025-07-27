@@ -1,6 +1,7 @@
 ﻿using Aipazz.Application.Matters.DTO;
 using Aipazz.Application.Matters.matter.Commands;
 using Aipazz.Application.Matters.matter.Queries;
+using Aipazz.Domian.Matters;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -184,6 +185,30 @@ namespace Aipazz.API.Controllers.Matters
             return Ok(result);
 
 
+        }
+
+        // GET: api/Matter/summary
+        [HttpGet("{id}/updates")]
+        public async Task<ActionResult<List<MatterUpdateHistory>>> GetMatterUpdates(
+    string id,
+    [FromQuery] string clientNic,
+    [FromQuery] string userId)
+        {
+            try
+            {
+                var updates = await _mediator.Send(new GetMatterUpdatesQuery
+                {
+                    MatterId = id,
+                    ClientNic = clientNic,
+                    UserId = userId
+                });
+
+                return Ok(updates);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
