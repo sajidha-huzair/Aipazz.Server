@@ -5,8 +5,8 @@ using Aipazz.Application.Matters.Tasks.Queries;
 
 namespace LawfirmAPI.API.Controllers.Matters
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class TasksController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -19,8 +19,15 @@ namespace LawfirmAPI.API.Controllers.Matters
         [HttpPost]
         public async Task<IActionResult> AddTask([FromBody] AddTaskCommand command)
         {
-            var task = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetTaskByTitle), new { title = task.Title }, task);
+            try
+            {
+                var task = await _mediator.Send(command);
+                return CreatedAtAction(nameof(GetTaskByTitle), new { title = task.Title }, task);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to create task: {ex.Message}");
+            }
         }
 
         [HttpPut("{id}")]
@@ -29,41 +36,76 @@ namespace LawfirmAPI.API.Controllers.Matters
             if (id != command.Id)
                 return BadRequest("ID mismatch");
 
-            var task = await _mediator.Send(command);
-            return Ok(task);
+            try
+            {
+                var task = await _mediator.Send(command);
+                return Ok(task);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to update task: {ex.Message}");
+            }
         }
 
         [HttpDelete("{id}/{matterId}")]
         public async Task<IActionResult> DeleteTask(string id, string matterId)
         {
-            var command = new DeleteTaskCommand { Id = id, MatterId = matterId };
-            await _mediator.Send(command);
-            return NoContent();
+            try
+            {
+                var command = new DeleteTaskCommand { Id = id, MatterId = matterId };
+                await _mediator.Send(command);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to delete task: {ex.Message}");
+            }
         }
 
         [HttpGet("{title}")]
         public async Task<IActionResult> GetTaskByTitle(string title)
         {
-            var query = new GetTaskByTitleQuery { Title = title };
-            var task = await _mediator.Send(query);
-            if (task == null)
-                return NotFound();
-            return Ok(task);
+            try
+            {
+                var query = new GetTaskByTitleQuery { Title = title };
+                var task = await _mediator.Send(query);
+                if (task == null)
+                    return NotFound();
+                return Ok(task);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to get task: {ex.Message}");
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _mediator.Send(new GetAllTasksQuery());
-            return Ok(result);
+            try
+            {
+                var result = await _mediator.Send(new GetAllTasksQuery());
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to get tasks: {ex.Message}");
+            }
         }
 
         [HttpGet("Matter/{matterId}")]
         public async Task<IActionResult> GetTasksByMatterId(string matterId)
         {
-            var query = new GetTasksByMatterIdQuery { MatterId = matterId };
-            var tasks = await _mediator.Send(query);
-            return Ok(tasks);
+            try
+            {
+                var query = new GetTasksByMatterIdQuery { MatterId = matterId };
+                var tasks = await _mediator.Send(query);
+                return Ok(tasks);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to get tasks for matter: {ex.Message}");
+            }
         }
     }
 }

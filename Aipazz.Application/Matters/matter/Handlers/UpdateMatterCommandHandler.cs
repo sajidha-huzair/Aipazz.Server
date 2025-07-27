@@ -35,6 +35,7 @@ namespace Aipazz.Application.Matters.matter.Handlers
             matter.TeamMembers = request.TeamMembers;
             matter.CourtType = request.CourtType;
             matter.StatusId = request.StatusId;
+            matter.UpdatedAt = DateTime.UtcNow;
 
             // Persist the changes
             await _repository.UpdateMatter(matter);

@@ -13,17 +13,21 @@ namespace Aipazz.Application.Matters.matter.Commands
     {
         private readonly IMatterRepository _matterRepository;
         private readonly IStatusRepository _statusRepository;
-        private readonly IClientRepository _clientRepository; // 👈 Needed for client name
+        private readonly IClientRepository _clientRepository;
+        private readonly IMatterTypeRepository _matterTypeRepository; // ✅ Add this field
 
         public CreateMatterCommandHandler(
             IMatterRepository matterRepository,
             IStatusRepository statusRepository,
-            IClientRepository clientRepository)
+            IClientRepository clientRepository,
+            IMatterTypeRepository matterTypeRepository)
         {
             _matterRepository = matterRepository;
             _statusRepository = statusRepository;
             _clientRepository = clientRepository;
+            _matterTypeRepository = matterTypeRepository; // ✅ Now it will work
         }
+
 
         public async Task<MatterDto> Handle(CreateMatterCommand request, CancellationToken cancellationToken)
         {
@@ -32,12 +36,12 @@ namespace Aipazz.Application.Matters.matter.Commands
                 Console.WriteLine($"Creating matter for user: {request.UserId}");
                 Console.WriteLine($"Client NIC: {request.ClientNic}");
 
-                // Get "To Do" status from DB
-                var toDoStatus = await _statusRepository.GetStatusByName("To Do", request.UserId);
+                // Get "Open" status from DB
+                var openStatus = await _statusRepository.GetStatusByName("Open", request.UserId);
 
-                if (toDoStatus == null)
+                if (openStatus == null)
                 {
-                    throw new Exception("Default status 'To Do' not found.");
+                    throw new Exception("Default status 'Open' not found.");
                 }
 
                 // Verify client exists
@@ -46,6 +50,13 @@ namespace Aipazz.Application.Matters.matter.Commands
                 {
                     throw new Exception($"Client with NIC '{request.ClientNic}' not found.");
                 }
+
+                var matterType = await _matterTypeRepository.GetMatterTypeByName(request.MatterTypeName, request.UserId);
+                if (matterType == null)
+                {
+                    throw new Exception("Invalid Matter Type name.");
+                }
+
 
                 // Create new Matter
                 var matter = new Matter
@@ -56,10 +67,15 @@ namespace Aipazz.Application.Matters.matter.Commands
                     Date = request.Date,
                     Description = request.Description,
                     ClientNic = request.ClientNic,
-                    StatusId = string.IsNullOrEmpty(request.StatusId) ? toDoStatus.Name : request.StatusId,
+                    StatusId = string.IsNullOrEmpty(request.StatusId) ? openStatus.Name : request.StatusId,
                     TeamMembers = request.TeamMembers,
                     UserId = request.UserId,
-                    CourtType = request.CourtType
+                    CourtType = request.CourtType,
+                    MatterTypeName = request.MatterTypeName,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                    //TeamId = request.TeamId
+
                 };
 
                 await _matterRepository.AddMatter(matter);
@@ -73,9 +89,11 @@ namespace Aipazz.Application.Matters.matter.Commands
                     Date = matter.Date,
                     Description = matter.Description,
                     ClientNic = matter.ClientNic, // ✅ Keep as NIC for consistency
-                    StatusId = string.IsNullOrEmpty(request.StatusId) ? toDoStatus.Name : request.StatusId,
+                    StatusId = string.IsNullOrEmpty(request.StatusId) ? openStatus.Name : request.StatusId,
                     TeamMembers = matter.TeamMembers,
-                    CourtType = matter.CourtType
+                    CourtType = matter.CourtType,
+                    MatterTypeName = request.MatterTypeName,
+                    //TeamId = matter.TeamId
                 };
 
                 Console.WriteLine($"✅ Matter created successfully: {matter.id}");

@@ -126,5 +126,64 @@ namespace Aipazz.API.Controllers.Matters
             var result = await _mediator.Send(new GetMattersByStatusIdQuery(statusId, userId));
             return Ok(result);
         }
+
+        // PUT: api/Matter/{id}/share-to-team
+        // Shares a Matter with a team
+        [HttpPut("{id}/share-to-team")]
+        public async Task<IActionResult> ShareMatterToTeam(string id, [FromQuery] string clientNic, [FromBody] ShareMatterToTeamDto shareDto)
+        {
+            var userId = GetUserId();
+
+            var success = await _mediator.Send(new ShareMatterToTeamCommand(id, clientNic, shareDto.TeamId, userId));
+
+            if (!success)
+                return NotFound("Matter not found.");
+
+            return Ok(new { Message = "Matter shared to team successfully" });
+        }
+
+        // DELETE: api/Matter/{id}/remove-from-team
+        // Removes a Matter from the team
+        [HttpDelete("{id}/remove-from-team")]
+        public async Task<IActionResult> RemoveMatterFromTeam(string id, [FromQuery] string clientNic)
+        {
+            var userId = GetUserId();
+
+            var success = await _mediator.Send(new RemoveMatterFromTeamCommand(id, clientNic, userId));
+
+            if (!success)
+                return NotFound("Matter not found or not shared with any team.");
+
+            return Ok(new { Message = "Matter removed from team successfully" });
+        }
+
+        [HttpGet("{teamid}/team-shared-matters")]
+        public async Task<IActionResult> GetTeamSharedMatters(string teamid)
+        {
+            var result = await _mediator.Send(new GetTeamSharedMattersQuery(teamid));
+            return (result == null || !result.Any())
+                ? NotFound("No shared matters found for this team.")
+                : Ok(result);
+        }
+
+        // GET: api/Matter/type-name/{matterTypeName}
+        [HttpGet("type-name/{matterTypeName}")]
+        public async Task<IActionResult> GetMattersByMatterTypeName(string matterTypeName)
+        {
+            var userId = GetUserId();
+            var result = await _mediator.Send(new GetMattersByMatterTypeIdQuery(matterTypeName, userId));
+            return Ok(result);
+        }
+
+        // GET: api/Matter/client/{clientNic}
+        [HttpGet("getmattersbyclientnic/{clientNic}")]
+        public async Task<IActionResult> GetMattersByNic(string clientNic)
+        {
+            var userId = GetUserId();
+            var result = await _mediator.Send(new GetMattersByClientNicQuery(clientNic, userId));
+            return Ok(result);
+
+
+        }
     }
 }

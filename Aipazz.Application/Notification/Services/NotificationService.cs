@@ -1,0 +1,100 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Aipazz.Application.Notification.Interfaces;
+using Aipazz.Application.Notification.Services;
+using Aipazz.Domian.Billing;
+using Aipazz.Domian.Notification;
+
+namespace Aipazz.Application.Notification.Services
+{
+    public class NotificationService : INotificationService
+    {
+        private readonly INotificationRepository _notificationRepository;
+
+        public NotificationService(INotificationRepository notificationRepository)
+        {
+            _notificationRepository = notificationRepository;
+        }
+
+        public async Task SendTeamCreatedNotificationAsync(string teamId, string teamName, string ownerName, string ownerId, List<string> memberIds, List<string> memberEmails)
+        {
+            var notifications = new List<Aipazz.Domian.Notification.Notification>();
+
+            // Notification for the owner
+            notifications.Add(new Aipazz.Domian.Notification.Notification
+            {
+                id = Guid.NewGuid().ToString(),
+                UserId = ownerId,
+                Type = "TeamCreated",
+                Title = "Team Created Successfully",
+                Message = $"You have successfully created the team '{teamName}'.",
+                RelatedEntityId = teamId,
+                RelatedEntityType = "Team",
+                CreatedBy = ownerName,
+                ActionUrl = $"/teams/{teamId}"
+            });
+
+            // Notifications for team members
+            for (int i = 0; i < memberIds.Count; i++)
+            {
+                var memberId = memberIds[i];
+                var memberEmail = memberEmails[i];
+                var isUserIdValid = !string.IsNullOrWhiteSpace(memberId);
+
+                notifications.Add(new Aipazz.Domian.Notification.Notification
+                {
+                    id = Guid.NewGuid().ToString(),
+                    UserId = isUserIdValid ? memberId : null,
+                    RecipientEmail = isUserIdValid ? null : memberEmail,
+                    Type = "TeamAssignment",
+                    Title = "Added to New Team",
+                    Message = $"You have been added to the team '{teamName}' by {ownerName}.",
+                    RelatedEntityId = teamId,
+                    RelatedEntityType = "Team",
+                    CreatedBy = ownerName,
+                    ActionUrl = $"/teams/{teamId}"
+                });
+            }
+
+
+            // Save all notifications
+            var tasks = notifications.Select(n => _notificationRepository.CreateNotificationAsync(n));
+            await Task.WhenAll(tasks);
+        }
+
+        public async Task SendTeamAssignmentNotificationAsync(string teamId, string teamName, string memberEmail, string assignedBy)
+        {
+            // Implementation for future use
+            throw new NotImplementedException("Team assignment notifications will be implemented next");
+        }
+
+        public async Task SendDocumentSharedNotificationAsync(string documentId, string documentName, string teamId, string teamName, string sharedBy)
+        {
+            // Implementation for future use
+            throw new NotImplementedException("Document shared notifications will be implemented next");
+        }
+
+        public async Task NotifyLawyerPaymentReceived(Invoice invoice)
+        {
+            var notification = new Aipazz.Domian.Notification.Notification
+            {
+                id = Guid.NewGuid().ToString(),
+                UserId = invoice.UserId, // or however you're storing the lawyer's user ID
+                Type = "InvoicePaid",
+                Title = "Invoice Paid",
+                Message = $"Client has paid invoice #{invoice.InvoiceNumber}.",
+                RelatedEntityId = invoice.id,
+                RelatedEntityType = "Invoice",
+                CreatedBy = "System",
+                ActionUrl = $"/invoices/view/{invoice.id}"
+            };
+
+            await _notificationRepository.CreateNotificationAsync(notification);
+
+            // Optional: Send email notification
+            // await _emailService.SendPaymentReceivedEmail(invoice); // if you have such a service
+        }
+
+    }
+}

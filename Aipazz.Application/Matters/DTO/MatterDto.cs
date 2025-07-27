@@ -14,10 +14,12 @@ namespace Aipazz.Application.Matters.DTO
         public string title { get; set; } = string.Empty;
         public string CaseNumber { get; set; } = string.Empty;
         public DateTime? Date { get; set; }
-        public string Description { get; set; } = string.Empty;
+        public string? Description { get; set; } = string.Empty;
         public string ClientNic { get; set; } = string.Empty;// Partition Key
         public string StatusId { get; set; } = string.Empty;
-        public List<string> TeamMembers { get; set; } = new();
+        public string MatterTypeName { get; set; } = string.Empty;
+        public List<string>? TeamMembers { get; set; } = new();
+        //public string? TeamId { get; set; } = null;
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public CourtType? CourtType { get; set; }

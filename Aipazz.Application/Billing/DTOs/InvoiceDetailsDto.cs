@@ -38,5 +38,7 @@
         public string Subject { get; set; } = string.Empty;
         public decimal DiscountValue { get; set; }
         public string DiscountType { get; set; } = "%";
+        public DateTime? PaymentDate { get; set; }
+        public string? TransactionId { get; set; }
     }
 }

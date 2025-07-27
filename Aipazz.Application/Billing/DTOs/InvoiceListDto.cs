@@ -14,6 +14,6 @@ namespace Aipazz.Application.Billing.DTOs
         public DateTime IssueDate { get; set; }
         public int DaysUntilDue { get; set; }
         public decimal TotalAmount { get; set; }
-        public bool IsSent { get; set; } // You can customize based on status
+        public string Status { get; set; } = string.Empty;// You can customize based on status
     }
 }

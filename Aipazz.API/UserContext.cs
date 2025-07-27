@@ -17,4 +17,11 @@ public class UserContext : IUserContext
     public string FullName =>
         _http.HttpContext?.User.FindFirst("name")?.Value
         ?? $"{_http.HttpContext?.User.FindFirst("given_name")?.Value} {_http.HttpContext?.User.FindFirst("family_name")?.Value}".Trim();
+
+    public string Email =>
+        _http.HttpContext?.User?.FindFirstValue(ClaimTypes.Email)
+        ?? _http.HttpContext?.User?.FindFirstValue("emails")
+        ?? _http.HttpContext?.User?.FindFirstValue("preferred_username")
+        ?? throw new UnauthorizedAccessException("Email not found in user claims");
+
 }

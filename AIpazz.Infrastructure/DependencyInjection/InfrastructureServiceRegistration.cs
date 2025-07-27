@@ -4,6 +4,8 @@ using Aipazz.Application.client.Interfaces;
 using Aipazz.Application.DocumentMGT.documentmgt.Commands;
 using Aipazz.Application.DocumentMGT.Interfaces;
 using Aipazz.Application.Matters.Interfaces;
+using Aipazz.Application.Notification.Interfaces;
+using Aipazz.Application.Notification.Services;
 using Aipazz.Application.Team.Interfaces;
 using Aipazz.Domian;
 using Aipazz.Infrastructure.client;
@@ -14,6 +16,10 @@ using AIpazz.Infrastructure.Team;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using AIpazz.Infrastructure.Notification;
+using Aipazz.Application.OtherDocuments.Interfaces;
+using AIpazz.Infrastructure.OtherDocuments.Repository;
+using AIpazz.Infrastructure.OtherDocuments.Services;
 
 
 namespace AIpazz.Infrastructure.DependencyInjection
@@ -37,7 +43,11 @@ namespace AIpazz.Infrastructure.DependencyInjection
                 new TaskRepository(
                     sp.GetRequiredService<CosmosClient>(),
                     sp.GetRequiredService<IOptions<CosmosDbOptions>>()));
-
+            
+            services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<IOtherDocumentRepository, OtherDocumentRepository>();
+            services.AddScoped<IOtherDocumentStorageService, OtherDocumentStorageService>();
 
             return services;
         }
