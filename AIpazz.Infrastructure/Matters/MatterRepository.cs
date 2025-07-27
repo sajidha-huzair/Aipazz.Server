@@ -114,6 +114,7 @@ namespace Aipazz.Infrastructure.Matters
                 Console.WriteLine($"✅ Successfully deleted matter ID: {id}");
             }
         }
+        
         public async Task<List<Matter>> GetMattersByIdsAsync(List<string> matterIds, string userId)
         {
             var query = _container.GetItemLinqQueryable<Matter>(true)
@@ -135,6 +136,23 @@ namespace Aipazz.Infrastructure.Matters
         {
             var query = _container.GetItemLinqQueryable<Matter>()
                 .Where(m => m.ClientNic == clientNic && m.UserId == userId)
+                .ToFeedIterator();
+
+            List<Matter> results = new();
+            while (query.HasMoreResults)
+            {
+                var response = await query.ReadNextAsync();
+                results.AddRange(response);
+            }
+
+            return results;
+        }
+
+        // 7. GetMattersByTeamIdAsync
+        public async Task<List<Matter>> GetMattersByTeamIdAsync(string teamId)
+        {
+            var query = _container.GetItemLinqQueryable<Matter>()
+                .Where(m => m.TeamId == teamId)
                 .ToFeedIterator();
 
             List<Matter> results = new();

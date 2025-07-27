@@ -209,5 +209,20 @@ namespace AIpazz.Infrastructure.Team
             
             await UpdateTeamAsync(team);
         }
+
+        public async Task<bool> CheckTeamExistsAsync(string teamId)
+        {
+            var query = new QueryDefinition("SELECT VALUE COUNT(1) FROM c WHERE c.id = @teamId")
+                .WithParameter("@teamId", teamId);
+            var iterator = _container.GetItemQueryIterator<int>(query);
+            if (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                if (response.FirstOrDefault() > 0)
+                    return true;
+                
+            }
+            return false;
+        }
     }
 }

@@ -14,7 +14,6 @@ namespace Aipazz.Application.Matters.Interfaces
         Task DeleteMatter(string id, string clientNic, string userId); 
         Task<List<Matter>> GetMattersByClientNicAsync(string ClientNic, string userId);
         Task<List<Matter>> GetMattersByIdsAsync(List<string> matterIds, string userId);
-
-
+        Task<List<Matter>> GetMattersByTeamIdAsync(string teamId);
     }
 }

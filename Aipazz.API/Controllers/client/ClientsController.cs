@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Aipazz.Application.client.Commands;
 using Aipazz.Application.client.Queries;
+using Aipazz.Application.client.DTOs;
 using System.Security.Claims;
 
 namespace Aipazz.API.Controllers.client
@@ -53,6 +54,29 @@ namespace Aipazz.API.Controllers.client
             return Ok(result);
         }
 
+        // Fixed team sharing endpoints
+        [HttpPut("{clientNic}/share-to-team")]
+        [Authorize]
+        public async Task<IActionResult> ShareClientToTeam(string clientNic, [FromBody] ShareClientToTeamDto shareDto)
+        {
+            var userId = GetUserId();
+            await _mediator.Send(new ShareClientToTeamCommand(clientNic, shareDto.TeamId, userId));
+            return Ok(new { Message = "Client shared to team successfully" });
+        }
+
+        [HttpPut("{clientNic}/remove-from-team")]
+        [Authorize]
+        public async Task<IActionResult> RemoveClientFromTeam(string clientNic)
+        {
+            var userId = GetUserId();
+            var success = await _mediator.Send(new RemoveClientFromTeamCommand(clientNic, userId));
+            
+            if (!success)
+                return NotFound("Client not found or not shared with any team.");
+
+            return Ok(new { Message = "Client removed from team successfully" });
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id, [FromQuery] string nic)
         {
@@ -83,16 +107,21 @@ namespace Aipazz.API.Controllers.client
         {
             var userId = GetUserId();
             var exists = await _mediator.Send(new CheckClientNICExistsQuery(nic, userId));
-            return Ok(exists); // true or false
+            return Ok(exists);
         }
-
-
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id, [FromQuery] string nic)
         {
             var result = await _mediator.Send(new GetClientByIdQuery(id, nic, GetUserId()));
             return result == null ? NotFound() : Ok(result);
+        }
+
+        [HttpGet("{teamid}/team-shared-clients")]
+        public async Task<IActionResult> GetTeamsharedClients(string teamid) {
+           
+            var result = await _mediator.Send(new GetTeamClientsQuery(teamid));
+            return Ok(result);  // 200 + list of clients shared with the team
         }
 
         // GET api/clients/with-entries

@@ -31,7 +31,7 @@ namespace Aipazz.Application.Billing.Invoices.Handlers
                 IssueDate = invoice.IssueDate,
                 DaysUntilDue = (invoice.DueDate - DateTime.UtcNow).Days,
                 TotalAmount = invoice.TotalAmount,
-                IsSent = invoice.Status != "Draft"
+                Status = invoice.Status
             }).ToList();
         }
     }

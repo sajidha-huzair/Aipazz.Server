@@ -59,7 +59,8 @@ namespace Aipazz.Application.DocumentMGT.documentmgt.Handlers
                 UserName = request.UserName,
                 Url = wordUrl,
                 HtmlUrl = htmlUrl,
-                MatterId = request.MatterId // Add this line
+                MatterId = request.MatterId,
+                MatterName = request.MatterName // Add this line
             };
 
             await _repo.SaveAsync(document);

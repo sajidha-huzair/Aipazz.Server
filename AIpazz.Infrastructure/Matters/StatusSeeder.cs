@@ -15,9 +15,10 @@ namespace Aipazz.Infrastructure.Matters
 
         private static readonly List<string> DefaultStatuses = new()
         {
-            "To Do",
+            "Open",
             "In Progress",
-            "On Hold"
+            "On Hold",
+            "Closed"
         };
 
         public StatusSeeder(CosmosClient client, IOptions<CosmosDbOptions> options)
@@ -29,7 +30,7 @@ namespace Aipazz.Infrastructure.Matters
 
         public async Task SeedDefaultStatusesAsync(string userId)
         {
-            // 1. Check if the user already has statuses
+            // 1. Fetch existing statuses for the user
             var query = new QueryDefinition("SELECT * FROM c WHERE c.UserId = @userId")
                 .WithParameter("@userId", userId);
 
@@ -45,23 +46,28 @@ namespace Aipazz.Infrastructure.Matters
                 existingStatuses.AddRange(response);
             }
 
-            // If statuses already exist for the user, skip seeding
-            if (existingStatuses.Any())
-                return;
+            // 2. Extract existing status names
+            var existingNames = existingStatuses
+                .Select(s => s.Name)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            // 2. Seed default statuses for this user
+            // 3. Add only missing statuses
             foreach (var statusName in DefaultStatuses)
             {
-                var status = new Status
+                if (!existingNames.Contains(statusName))
                 {
-                    id = Guid.NewGuid().ToString(),
-                    Name = statusName,
-                    UserId = userId // Ensure the userId is set
-                };
+                    var status = new Status
+                    {
+                        id = Guid.NewGuid().ToString(),
+                        Name = statusName,
+                        UserId = userId
+                    };
 
-                await _container.CreateItemAsync(status, new PartitionKey(userId));  // Use UserId as partition key
+                    await _container.CreateItemAsync(status, new PartitionKey(userId));
+                }
             }
         }
+
 
 
 

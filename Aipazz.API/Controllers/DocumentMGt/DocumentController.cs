@@ -128,7 +128,27 @@ namespace Aipazz.API.Controllers.DocumentMGt
             return Ok(result);
         }
 
-     
+        [HttpDelete("{id}/remove-from-team")]
+        [Authorize]
+        public async Task<IActionResult> RemoveDocumentFromTeam(string id)
+        {
+            // Extract the user ID from the claim
+            string? userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
+
+            var success = await _mediatR.Send(new RemoveDocumentFromTeamCommand(id, userId));
+
+            if (!success)
+                return NotFound("Document not found or not shared with any team.");
+
+            return Ok(new { Message = "Document removed from team successfully" });
+        }
+
+
 
         [HttpGet("{id}")]
         [Authorize]
