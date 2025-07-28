@@ -18,7 +18,9 @@ public class CreateClientMeetingHandler : IRequestHandler<CreateClientMeetingCom
     {
         var meeting = new ClientMeeting(
             request.Id,
+            request.UserId,
             request.Title,
+            
             request.Date,
             request.Time,
             request.Repeat,

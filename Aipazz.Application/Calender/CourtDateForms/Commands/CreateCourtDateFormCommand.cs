@@ -1,9 +1,11 @@
+using System.Security.AccessControl;
 using MediatR;
 
 namespace Aipazz.Application.Calender.CourtDateForms.Commands
 {
     public class CreateCourtDateFormCommand : IRequest<Domian.Calender.CourtDateForm>
     {
+        public string? UserId { get; set; }
         public string? Title { get; set; }
         public string? CourtType { get; set; }
         public string? Stage { get; set; }

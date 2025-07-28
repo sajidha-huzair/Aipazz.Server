@@ -18,9 +18,11 @@ namespace Aipazz.Infrastructure.Calender
             _container = db.GetContainer(containerName);
         }
 
-        public async Task<List<CourtDateForm>> GetAll()
+        public async Task<List<CourtDateForm>> GetAll(string userId)
         {
-            var query = new QueryDefinition("SELECT * FROM c");
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.UserId = @userId")
+                .WithParameter("@userId", userId);
+
             var iterator = _container.GetItemQueryIterator<CourtDateForm>(query);
             var courtDates = new List<CourtDateForm>();
 
@@ -39,6 +41,8 @@ namespace Aipazz.Infrastructure.Calender
 
             return courtDates;
         }
+
+
 
         public async Task<CourtDateForm?> GetById(Guid id)
         {

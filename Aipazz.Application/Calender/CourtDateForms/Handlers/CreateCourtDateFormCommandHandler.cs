@@ -18,6 +18,7 @@ namespace Aipazz.Application.Calender.CourtDateForms.Handlers
             var newCourtDate = new Domian.Calender.CourtDateForm
             {
                 id = Guid.NewGuid().ToString(),
+                UserId = request.UserId,
                 Title = request.Title,
                 CourtDate = request.CourtDate,
                 Stage = request.Stage,

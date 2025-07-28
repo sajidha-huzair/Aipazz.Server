@@ -15,6 +15,8 @@ namespace Aipazz.Domian.Calender
             set => id = value.ToString();
         }
 
+        public string UserId { get; set; }
+
         public string? Title { get; set; }
         public string? CourtType { get; set; }
         public string? Stage { get; set; }

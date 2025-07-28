@@ -14,6 +14,8 @@ public class ClientMeeting
         set => id = value.ToString();
     }
 
+    public  string UserId { get; set; }
+
     public string Title { get; private set; }
     public DateOnly Date { get; private set; }
     public TimeOnly Time { get; private set; }
@@ -33,6 +35,7 @@ public class ClientMeeting
 
     public ClientMeeting(
         Guid id,
+        string UserId,
         string title,
         DateOnly date,
         TimeOnly time,
@@ -46,6 +49,7 @@ public class ClientMeeting
     {
         Id = id;
         Title = title;
+        this.UserId = UserId;
         Date = date;
         Time = time;
         Repeat = repeat;

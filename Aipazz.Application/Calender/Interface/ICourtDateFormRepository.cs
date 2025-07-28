@@ -4,7 +4,7 @@ namespace Aipazz.Application.Calender.Interface
 {
     public interface ICourtDateFormRepository
     {
-        Task<List<CourtDateForm>> GetAll();
+        Task<List<CourtDateForm>> GetAll(string userId);
         Task<CourtDateForm?> GetById(Guid id);
         
         Task<CourtDateForm> AddCourtDateForm(CourtDateForm courtDateForm);

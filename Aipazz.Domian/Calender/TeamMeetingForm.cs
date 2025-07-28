@@ -16,6 +16,8 @@ namespace Aipazz.Domian.Calender
             set => id = value.ToString();
         }
         
+        
+        public string? UserId { get; set; }
         public string Title { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public string Time { get; set; } = string.Empty;
@@ -29,7 +31,7 @@ namespace Aipazz.Domian.Calender
         public string matterId { get; set; } = string.Empty;
         
         // Partition key for Cosmos DB
-        public string PartitionKey => Title;
-        //public string PartitionKey => matterId;
+        //public string PartitionKey => Title;
+        public string PartitionKey => matterId;
     }
 }

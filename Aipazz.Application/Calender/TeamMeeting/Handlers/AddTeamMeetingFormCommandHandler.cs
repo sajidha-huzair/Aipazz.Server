@@ -20,6 +20,7 @@ namespace Aipazz.Application.Calender.TeamMeeting.Handlers
             var form = new Domian.Calender.TeamMeetingForm
             {
                 Id = Guid.NewGuid(),
+                UserId = request.UserId,
                 Title = request.Title,
                 Date = request.Date,
                 Time = request.Time,

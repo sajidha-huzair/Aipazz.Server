@@ -20,6 +20,7 @@ namespace Aipazz.Application.Calender.Handlers.FilingsDeadlineForms
             var newForm = new FilingsDeadlineFormEntity
             {
                 Id = Guid.NewGuid(),
+                UserId = request.UserId,
                 Title = request.Title,
                 Date = request.Date,
                 Time = request.Time,

@@ -19,9 +19,11 @@ namespace AIpazz.Infrastructure.Calender
             _container = db.GetContainer(containerName);
         }
 
-        public async Task<List<TeamMeetingForm>> GetAll()
+        public async Task<List<TeamMeetingForm>> GetAll(string userId)
         {
-            var query = new QueryDefinition("SELECT * FROM c");
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.UserId = @userId")
+                .WithParameter("@userId", userId);
+
             var iterator = _container.GetItemQueryIterator<TeamMeetingForm>(query);
             var results = new List<TeamMeetingForm>();
 
@@ -40,6 +42,7 @@ namespace AIpazz.Infrastructure.Calender
 
             return results;
         }
+
 
         public async Task<TeamMeetingForm?> GetById(Guid id)
         {

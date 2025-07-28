@@ -5,14 +5,14 @@ using Microsoft.Extensions.Configuration;
 
 namespace AIpazz.Infrastructure.Calender;
 
-public class CalenderEmailService : IEmailService
+public class CalenderCalenderEmailService : ICalenderEmailService
 {
     private readonly string _email;
     private readonly string _password;
     private readonly string _host;
     private readonly int _port;
 
-    public CalenderEmailService(IConfiguration configuration)
+    public CalenderCalenderEmailService(IConfiguration configuration)
     {
         _email = configuration.GetValue<string>("EMAIL_CONFIGURATION:EMAIL");
         _password = configuration.GetValue<string>("EMAIL_CONFIGURATION:PASSWORD");

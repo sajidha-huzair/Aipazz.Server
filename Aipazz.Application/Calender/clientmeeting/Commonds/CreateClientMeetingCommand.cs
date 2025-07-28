@@ -16,5 +16,9 @@ namespace Aipazz.Application.Calender.clientmeeting.Commands
         string? Location,
         List<string> TeamMembers,
         string ClientEmail
-    ) : IRequest<ClientMeeting>;
+    ) : IRequest<ClientMeeting>
+    {
+        public string? UserId { get; set; }
+    
+    }
 }

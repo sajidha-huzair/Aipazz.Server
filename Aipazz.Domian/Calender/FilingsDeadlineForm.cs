@@ -13,6 +13,8 @@ namespace Aipazz.Domain.Calender
             get => Guid.Parse(id);
             set => id = value.ToString();
         }
+        
+        public string? UserId { get; set; }
 
         public string Title { get; set; } = string.Empty;
         public DateTime Date { get; set; }
