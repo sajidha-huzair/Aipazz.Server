@@ -26,7 +26,6 @@ using Aipazz.Infrastructure.Billing;
 using Aipazz.API.Controllers;
 
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 QuestPDF.Settings.License = LicenseType.Community;
@@ -126,6 +125,7 @@ builder.Services.Configure<InvoiceBlobOptions>(
 builder.Services.AddScoped<IInvoiceBlobService, AzureInvoiceBlobService>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ICalenderEmailService, CalenderCalenderEmailService>();
 
 
 

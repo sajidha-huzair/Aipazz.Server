@@ -91,7 +91,6 @@ namespace Aipazz.API.Controllers.Calendar
         }
         
         [HttpPut("{id:guid}")]
-        [Authorize]
         public async Task<IActionResult> Put(Guid id, [FromBody] UpdateFilingsDeadlineFormCommand command)
         {
             try
@@ -129,7 +128,6 @@ namespace Aipazz.API.Controllers.Calendar
         }
         
         [HttpDelete("{id:guid}")]
-        [Authorize]
         public async Task<IActionResult> Delete(Guid id)
         {
             try

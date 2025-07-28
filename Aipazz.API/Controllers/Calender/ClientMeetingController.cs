@@ -17,11 +17,11 @@ namespace Aipazz.API.Controllers.Calendar
     public class ClientMeetingController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IEmailService _emailService;
-        public ClientMeetingController(IMediator mediator, IEmailService emailService)
+        private readonly ICalenderEmailService _calenderEmailService;
+        public ClientMeetingController(IMediator mediator, ICalenderEmailService calenderEmailService)
         {
             _mediator = mediator;
-            _emailService = emailService;
+            _calenderEmailService = calenderEmailService;
         }
 
         [HttpGet]
@@ -51,7 +51,7 @@ namespace Aipazz.API.Controllers.Calendar
 
             var meeting = await _mediator.Send(command);
 
-            await _emailService.sendEmaiToClient(command.ClientEmail ,command.Title, EmailTemplate.WelcomeBody(command.Title,command.Date,new TimeOnly(10,30),command.MeetingLink,command.Location));
+            await _calenderEmailService.sendEmaiToClient(command.ClientEmail ,command.Title, EmailTemplate.WelcomeBody(command.Title,command.Date,new TimeOnly(10,30),command.MeetingLink,command.Location));
             return CreatedAtAction(nameof(GetClientMeetings), new { id = meeting.Id }, meeting);
         }
         
@@ -69,7 +69,6 @@ namespace Aipazz.API.Controllers.Calendar
         }
         
         [HttpPut("{id:guid}")]
-        [Authorize]
         public async Task<IActionResult> UpdateClientMeeting(Guid id, [FromBody] UpdateClientMeetingCommand command)
         {
             if (id != command.Id)
@@ -85,7 +84,6 @@ namespace Aipazz.API.Controllers.Calendar
         
         
         [HttpDelete("{id:guid}")]
-        [Authorize]
         public async Task<IActionResult> DeleteMeeting(Guid id)
         {
             var deleted = await _mediator.Send(new DeleteClientMeetingCommand(id));

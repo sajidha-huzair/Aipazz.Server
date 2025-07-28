@@ -5,7 +5,7 @@ namespace Aipazz.API.Controllers.Calender;
 
 [Route("api/[controller]")]
 [ApiController]
-public class EmailController(IEmailService emailService) : ControllerBase
+public class EmailController(ICalenderEmailService calenderEmailService) : ControllerBase
 {
     
     
@@ -14,7 +14,7 @@ public class EmailController(IEmailService emailService) : ControllerBase
     [HttpPost("clients/sendEmailtoClient")]
     public async Task<IActionResult> sendEmailAsync(string receptor, string subject, string body)
     {
-        await emailService.sendEmaiToClient(receptor, subject, body);
+        await calenderEmailService.sendEmaiToClient(receptor, subject, body);
         return Ok();
     }
 }

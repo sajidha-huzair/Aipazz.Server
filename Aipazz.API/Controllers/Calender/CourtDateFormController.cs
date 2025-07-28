@@ -48,7 +48,6 @@ namespace Aipazz.API.Controllers.Calender
         }
         
         [HttpPut("{id:guid}")]
-        [Authorize]
         public async Task<IActionResult> UpdateCourtDateForm([FromRoute]Guid id, [FromBody]UpdateCourtDateFormCommand command)
         {
             if (id != command.Id)
@@ -62,7 +61,6 @@ namespace Aipazz.API.Controllers.Calender
         }
         
         [HttpDelete("{id:guid}")]
-        [Authorize]
         public async Task<IActionResult> Delete(Guid id)
         {
             var result = await mediator.Send(new DeleteCourtDateFormCommand(id));
