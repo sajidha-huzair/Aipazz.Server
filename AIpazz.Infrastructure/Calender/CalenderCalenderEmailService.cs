@@ -54,4 +54,64 @@ public class CalenderCalenderEmailService : ICalenderEmailService
             throw;
         }
     }
+    
+    public async Task SendCourtDateEmailToClientAsync(
+        string clientEmail,
+        string title,
+        string? courtType,
+        string? stage,
+        DateTime courtDate,
+        TimeSpan reminder,
+        string? note)
+    {
+        try
+        {
+            var smtpClient = new SmtpClient(_host)
+            {
+                Port = _port,
+                Credentials = new NetworkCredential(_email, _password),
+                EnableSsl = true,
+            };
+
+            string formattedDate = courtDate.ToString("dddd, MMMM dd, yyyy");
+            string formattedTime = courtDate.ToString("hh:mm tt");
+
+            string subject = $"Court Date Scheduled: {title}";
+
+            string body = $@"
+            <html>
+            <body style='font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;'>
+                <div style='background-color: #fff; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; box-shadow: 0 2px 6px rgba(0,0,0,0.1);'>
+                    <h2 style='color: #2b7a78;'>Court Date Notification</h2>
+                    <p><strong>Title:</strong> {title}</p>
+                    {(string.IsNullOrWhiteSpace(courtType) ? "" : $"<p><strong>Court Type:</strong> {courtType}</p>")}
+                    {(string.IsNullOrWhiteSpace(stage) ? "" : $"<p><strong>Stage:</strong> {stage}</p>")}
+                    <p><strong>Date:</strong> {formattedDate}</p>
+                    <p><strong>Time:</strong> {formattedTime}</p>
+                    <p><strong>Reminder:</strong> {reminder.TotalDays} day(s) before</p>
+                    {(string.IsNullOrWhiteSpace(note) ? "" : $"<p><strong>Note:</strong> {note}</p>")}
+                    <p>Kindly check your Aipazz dashboard for more details.</p>
+                    <a href='https://witty-field-0e9483e0f.6.azurestaticapps.net/' style='display:inline-block;margin-top:20px;padding:10px 15px;background-color:#2b7a78;color:#fff;text-decoration:none;border-radius:6px;'>Open Dashboard</a>
+                </div>
+            </body>
+            </html>";
+
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress(_email),
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true
+            };
+
+            mailMessage.To.Add(clientEmail);
+
+            await smtpClient.SendMailAsync(mailMessage);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending court date email: {ex.Message}");
+            throw;
+        }
+    }
 }

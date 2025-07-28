@@ -1,5 +1,6 @@
 using Aipazz.Application.Calender.CourtDateForms.Commands;
 using Aipazz.Application.Calender.Interface;
+using Aipazz.Application.Billing.Interfaces;
 using MediatR;
 
 namespace Aipazz.Application.Calender.CourtDateForms.Handlers
@@ -7,13 +8,15 @@ namespace Aipazz.Application.Calender.CourtDateForms.Handlers
     public class CreateCourtDateFormCommandHandler : IRequestHandler<CreateCourtDateFormCommand, Domian.Calender.CourtDateForm>
     {
         private readonly ICourtDateFormRepository _repository;
+        private readonly IEmailService _emailService;
 
-        public CreateCourtDateFormCommandHandler(ICourtDateFormRepository repository)
+        public CreateCourtDateFormCommandHandler(ICourtDateFormRepository repository, IEmailService emailService)
         {
             _repository = repository;
+            _emailService = emailService;
         }
 
-        public Task<Domian.Calender.CourtDateForm> Handle(CreateCourtDateFormCommand request, CancellationToken cancellationToken)
+        public async Task<Domian.Calender.CourtDateForm> Handle(CreateCourtDateFormCommand request, CancellationToken cancellationToken)
         {
             var newCourtDate = new Domian.Calender.CourtDateForm
             {
@@ -30,8 +33,25 @@ namespace Aipazz.Application.Calender.CourtDateForms.Handlers
                 ClientEmail = request.ClientEmail
             };
 
+            // Save to repository
             _repository.AddCourtDateForm(newCourtDate);
-            return Task.FromResult(newCourtDate);
+
+            // Send email notifications to team members
+            if (request.TeamMemberEmails != null && request.TeamMemberEmails.Any())
+            {
+                await _emailService.SendCourtDateEmailToMembersAsync(
+                    teamMemberEmails: request.TeamMemberEmails,
+                    title: request.Title!,
+                    courtType: request.CourtType!,
+                    stage: request.Stage!,
+                    courtDate: request.CourtDate,
+                    reminder: request.Reminder,
+                    note: request.Note,
+                    ownerEmail: request.UserId // Assuming this is the organizer/owner email
+                );
+            }
+
+            return newCourtDate;
         }
     }
 }

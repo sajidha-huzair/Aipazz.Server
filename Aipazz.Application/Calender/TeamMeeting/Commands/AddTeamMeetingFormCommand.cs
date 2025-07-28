@@ -15,5 +15,6 @@ namespace Aipazz.Application.Calender.TeamMeeting.Commands
         public string VideoConferencingLink { get; set; } = null!;
         public string LocationLink { get; set; } = null!;
         public List<string> TeamMembers { get; set; } = new();
+        public List<string> TeamMemberEmails { get; set; }
     }
 }

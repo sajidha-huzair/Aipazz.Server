@@ -41,8 +41,6 @@ namespace Aipazz.API.Controllers.Calendar
         [Authorize]
         public async Task<IActionResult> CreateClientMeeting( CreateClientMeetingCommand command)
         {
-            
-            
             string? userId = User.Claims
                 .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
                 ?.Value;

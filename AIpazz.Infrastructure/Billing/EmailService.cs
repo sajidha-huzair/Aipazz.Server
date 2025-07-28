@@ -159,8 +159,6 @@ namespace AIpazz.Infrastructure.Billing
                 From = new EmailAddress("sajidhamhf.22@uom.lk", "Aipazz Legal"),
                 Subject = "You have been added as a team owner",
                 HtmlContent = htmlContent
-
-
             };
             msg.AddTo(new EmailAddress(toEmail));
             var response = await client.SendEmailAsync(msg);
@@ -170,10 +168,277 @@ namespace AIpazz.Infrastructure.Billing
                 throw new Exception($"SendGrid failed: {response.StatusCode} - {error}");
             }
         }
-
         
+        public async Task SendClientMeetingEmailToMembersAsync(
+            List<string> memberEmails,
+            string meetingTitle,
+            DateOnly meetingDate,
+            TimeOnly meetingTime,
+            string meetingLink,
+            string ownerEmail)
+        {
+            string apiKey = "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";
+            var client = new SendGridClient(apiKey);
 
+            foreach (var memberEmail in memberEmails)
+            {
+                var htmlContent = $@"
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset='UTF-8'>
+                    <title>Client Meeting Invitation</title>
+                    <style>
+                        body {{
+                            font-family: Arial, sans-serif;
+                            background-color: #f6f9fc;
+                            padding: 20px;
+                            color: #333;
+                        }}
+                        .container {{
+                            background-color: #ffffff;
+                            border-radius: 8px;
+                            padding: 30px;
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                            max-width: 600px;
+                            margin: 0 auto;
+                        }}
+                        h2 {{
+                            color: #2b7a78;
+                        }}
+                        p {{
+                            font-size: 16px;
+                            line-height: 1.5;
+                        }}
+                        a.button {{
+                            display: inline-block;
+                            padding: 10px 15px;
+                            margin-top: 20px;
+                            background-color: #2b7a78;
+                            color: #fff;
+                            text-decoration: none;
+                            border-radius: 6px;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class='container'>
+                        <h2>You're Invited to a Client Meeting</h2>
+                        <p><strong>Title:</strong> {meetingTitle}</p>
+                        <p><strong>Date:</strong> {meetingDate:dddd, MMMM dd, yyyy}</p>
+                        <p><strong>Time:</strong> {meetingTime}</p>
+                        {(string.IsNullOrWhiteSpace(meetingLink) ? "" : $"<p><strong>Meeting Link:</strong> <a href='{meetingLink}'>{meetingLink}</a></p>")}
+                        <p>This meeting has been organized by your team. Please attend it on time.</p>
+                        <p>Contact the meeting organizer at: <strong>{ownerEmail}</strong></p>
+                        <a href='https://witty-field-0e9483e0f.6.azurestaticapps.net/' class='button'>Open Aipazz Dashboard</a>
+                    </div>
+                </body>
+                </html>";
 
+                var msg = new SendGridMessage
+                {
+                    From = new EmailAddress("sajidhamhf.22@uom.lk", "Aipazz Legal"),
+                    Subject = $"Client Meeting: {meetingTitle}",
+                    HtmlContent = htmlContent
+                };
+                msg.AddTo(new EmailAddress(memberEmail));
+
+                var response = await client.SendEmailAsync(msg);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Body.ReadAsStringAsync();
+                    throw new Exception($"SendGrid failed for {memberEmail}: {response.StatusCode} - {error}");
+                }
+            }
+        }
+        
+        public async Task SendCourtDateEmailToMembersAsync(
+            List<string> teamMemberEmails,
+            string title,
+            string courtType,
+            string stage,
+            DateTime courtDate,
+            TimeSpan reminder,
+            string? note,
+            string ownerEmail)
+        {
+            string apiKey = "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";
+            var client = new SendGridClient(apiKey);
+
+            string formattedDate = courtDate.ToString("dddd, MMMM dd, yyyy");
+            string formattedTime = courtDate.ToString("hh:mm tt");
+            string reminderDays = $"{reminder.TotalDays} days";
+
+            foreach (var memberEmail in teamMemberEmails)
+            {
+                var htmlContent = $@"
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset='UTF-8'>
+                    <title>Court Date Notification</title>
+                    <style>
+                        body {{
+                            font-family: Arial, sans-serif;
+                            background-color: #f6f9fc;
+                            padding: 20px;
+                            color: #333;
+                        }}
+                        .container {{
+                            background-color: #ffffff;
+                            border-radius: 8px;
+                            padding: 30px;
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                            max-width: 600px;
+                            margin: 0 auto;
+                        }}
+                        h2 {{
+                            color: #2b7a78;
+                        }}
+                        p {{
+                            font-size: 16px;
+                            line-height: 1.5;
+                        }}
+                        .button {{
+                            display: inline-block;
+                            padding: 10px 15px;
+                            margin-top: 20px;
+                            background-color: #2b7a78;
+                            color: #fff;
+                            text-decoration: none;
+                            border-radius: 6px;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class='container'>
+                        <h2>New Court Date Assigned</h2>
+                        <p>Dear Team Member,</p>
+
+                        <p>You have been assigned to a new court session. Please find the details below:</p>
+
+                        <p><strong>Title:</strong> {title}</p>
+                        <p><strong>Court Type:</strong> {courtType}</p>
+                        <p><strong>Stage:</strong> {stage}</p>
+                        <p><strong>Date:</strong> {formattedDate}</p>
+                        <p><strong>Time:</strong> {formattedTime}</p>
+                        {(string.IsNullOrWhiteSpace(note) ? "" : $"<p><strong>Note:</strong> {note}</p>")}
+
+                        <p>Please be prepared and make arrangements accordingly.</p>
+                        <p>For any clarification, contact the organizer: <strong>{ownerEmail}</strong></p>
+
+                        <a href='https://witty-field-0e9483e0f.6.azurestaticapps.net/' class='button'>Open Aipazz Dashboard</a>
+                    </div>
+                </body>
+                </html>";
+
+                var msg = new SendGridMessage
+                {
+                    From = new EmailAddress("sajidhamhf.22@uom.lk", "Aipazz Legal"),
+                    Subject = $"Court Date Assigned: {title}",
+                    HtmlContent = htmlContent
+                };
+                msg.AddTo(new EmailAddress(memberEmail));
+
+                var response = await client.SendEmailAsync(msg);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Body.ReadAsStringAsync();
+                    throw new Exception($"SendGrid failed for {memberEmail}: {response.StatusCode} - {error}");
+                }
+            }
+        }
+        
+        public async Task SendTeamMeetingEmailToMembersAsync(
+            List<string> teamMemberEmails,
+            string title,
+            DateTime meetingDate,
+            string meetingTime,
+            string? description,
+            string? videoConferencingLink,
+            string? locationLink,
+            string ownerEmail)
+        {
+            string apiKey = "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";
+            var client = new SendGridClient(apiKey);
+
+            string formattedDate = meetingDate.ToString("dddd, MMMM dd, yyyy");
+
+            foreach (var memberEmail in teamMemberEmails)
+            {
+                var htmlContent = $@"
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset='UTF-8'>
+                    <title>Team Meeting Notification</title>
+                    <style>
+                        body {{
+                            font-family: Arial, sans-serif;
+                            background-color: #f6f9fc;
+                            padding: 20px;
+                            color: #333;
+                        }}
+                        .container {{
+                            background-color: #ffffff;
+                            border-radius: 8px;
+                            padding: 30px;
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                            max-width: 600px;
+                            margin: 0 auto;
+                        }}
+                        h2 {{
+                            color: #2b7a78;
+                        }}
+                        p {{
+                            font-size: 16px;
+                            line-height: 1.5;
+                        }}
+                        .button {{
+                            display: inline-block;
+                            padding: 10px 15px;
+                            margin-top: 20px;
+                            background-color: #2b7a78;
+                            color: #fff;
+                            text-decoration: none;
+                            border-radius: 6px;
+                        }}
+                    </style>
+                </head>
+                <body>
+                    <div class='container'>
+                        <h2>You've Been Assigned to a Team Meeting</h2>
+                        <p><strong>Title:</strong> {title}</p>
+                        <p><strong>Date:</strong> {formattedDate}</p>
+                        <p><strong>Time:</strong> {meetingTime}</p>
+                        {(string.IsNullOrWhiteSpace(description) ? "" : $"<p><strong>Description:</strong> {description}</p>")}
+                        {(string.IsNullOrWhiteSpace(videoConferencingLink) ? "" : $"<p><strong>Video Link:</strong> <a href='{videoConferencingLink}' target='_blank'>{videoConferencingLink}</a></p>")}
+                        {(string.IsNullOrWhiteSpace(locationLink) ? "" : $"<p><strong>Location:</strong> <a href='{locationLink}' target='_blank'>{locationLink}</a></p>")}
+
+                        <p>This meeting has been scheduled for your team. Please check the calendar and be prepared.</p>
+                        <p>Contact the organizer at: <strong>{ownerEmail}</strong></p>
+
+                        <a href='https://witty-field-0e9483e0f.6.azurestaticapps.net/' class='button'>Open Aipazz Dashboard</a>
+                    </div>
+                </body>
+                </html>";
+
+                var msg = new SendGridMessage
+                {
+                    From = new EmailAddress("sajidhamhf.22@uom.lk", "Aipazz Legal"),
+                    Subject = $"📅 Team Meeting Scheduled: {title}",
+                    HtmlContent = htmlContent
+                };
+                msg.AddTo(new EmailAddress(memberEmail));
+
+                var response = await client.SendEmailAsync(msg);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Body.ReadAsStringAsync();
+                    throw new Exception($"SendGrid failed for {memberEmail}: {response.StatusCode} - {error}");
+                }
+            }
+        }
 
     }
 }

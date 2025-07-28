@@ -1,6 +1,7 @@
 using Aipazz.Application.Calendar.CourtDateForms.Queries;
 using Aipazz.Application.Calender.CourtDateForms.Commands;
 using Aipazz.Application.Calender.CourtDateForms.Queries;
+using Aipazz.Application.Calender.Interface;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +10,9 @@ namespace Aipazz.API.Controllers.Calender
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CourtDateFormController(IMediator mediator) : ControllerBase
+    public class CourtDateFormController(IMediator mediator, ICalenderEmailService calenderEmailService) : ControllerBase
     {
+        
         [HttpGet]
         [Authorize]
         public async Task<ActionResult> GetAll()
@@ -44,6 +46,9 @@ namespace Aipazz.API.Controllers.Calender
             Console.WriteLine("UserId: " + UserId);
             command.UserId = UserId;
             var result = await mediator.Send(command);
+
+            await calenderEmailService.SendCourtDateEmailToClientAsync(command.ClientEmail, command.Title,
+                command.CourtType, command.Stage, command.CourtDate, command.Reminder, command.Note);
             return Ok(result);
         }
         

@@ -24,6 +24,8 @@ using Aipazz.Infrastructure.Calender;
 using QuestPDF.Infrastructure;
 using Aipazz.Infrastructure.Billing;
 using Aipazz.API.Controllers;
+using Quartz;
+using AIpazz.Infrastructure.Jobs;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -126,8 +128,6 @@ builder.Services.AddScoped<IInvoiceBlobService, AzureInvoiceBlobService>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICalenderEmailService, CalenderCalenderEmailService>();
-
-
 
 var app = builder.Build();
 
