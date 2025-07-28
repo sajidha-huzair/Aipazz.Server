@@ -13,5 +13,6 @@ namespace Aipazz.Application.Calender.Commands.FilingsDeadlineForms
         public string Reminder { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string AssignedMatter { get; set; } = string.Empty;
+        public string? UserEmail { get; set; }
     }
 }

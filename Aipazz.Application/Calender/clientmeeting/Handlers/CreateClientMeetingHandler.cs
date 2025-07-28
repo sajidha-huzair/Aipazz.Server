@@ -3,6 +3,7 @@ using Aipazz.Application.Calender.Interface;
 using Aipazz.Application.Billing.Interfaces;
 using Aipazz.Domian.Calender;
 using MediatR;
+using Quartz;
 
 namespace Aipazz.Application.Calender.clientmeeting.Handlers;
 
@@ -10,11 +11,13 @@ public class CreateClientMeetingHandler : IRequestHandler<CreateClientMeetingCom
 {
     private readonly IclientmeetingRepository _repository;
     private readonly IEmailService _emailService;
+    private readonly ISchedulerFactory  _schedulerFactory;
 
-    public CreateClientMeetingHandler(IclientmeetingRepository repository, IEmailService emailService)
+    public CreateClientMeetingHandler(IclientmeetingRepository repository, IEmailService emailService, ISchedulerFactory schedulerFactory)
     {
         _repository = repository;
         _emailService = emailService;
+        _schedulerFactory = schedulerFactory;
     }
 
     public async Task<ClientMeeting> Handle(CreateClientMeetingCommand request, CancellationToken cancellationToken)
@@ -39,7 +42,6 @@ public class CreateClientMeetingHandler : IRequestHandler<CreateClientMeetingCom
         await _repository.AddClientMeeting(meeting);
         
         // send notifications to the owner and team members assigned to client meeting
-        // 2. Send email to team members
         var teamMemberEmails = request.ClientEmails ?? new List<string>();
 
         if (teamMemberEmails.Any())
@@ -53,6 +55,8 @@ public class CreateClientMeetingHandler : IRequestHandler<CreateClientMeetingCom
                 ownerEmail: request.UserId // This assumes UserId is the organizer's email — adjust if needed
             );
         }
+
+        
         return meeting;
     }
 }
