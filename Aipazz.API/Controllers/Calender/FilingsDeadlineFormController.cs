@@ -1,9 +1,11 @@
 using Aipazz.Application.Calender.Commands.FilingsDeadlineForms;
 using Aipazz.Application.Calender.FilingsDeadlineForm.Queries;
 using Aipazz.Application.Calender.Queries.FilingsDeadlineForms;
+using AIpazz.Infrastructure.Jobs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Quartz;
 
 namespace Aipazz.API.Controllers.Calendar
 {
@@ -12,10 +14,12 @@ namespace Aipazz.API.Controllers.Calendar
     public class FilingsDeadlineFormController : ControllerBase
     {
         private readonly IMediator _mediator;
+        private readonly ISchedulerFactory _schedulerFactory;
 
-        public FilingsDeadlineFormController(IMediator mediator)
+        public FilingsDeadlineFormController(IMediator mediator,  ISchedulerFactory schedulerFactory)
         {
             _mediator = mediator;
+            _schedulerFactory = schedulerFactory;
         }
 
         [HttpGet]
@@ -82,6 +86,42 @@ namespace Aipazz.API.Controllers.Calendar
                 command.UserId = userId;
 
                 var result = await _mediator.Send(command);
+                
+                // scheduled an email for filling deadline to client
+                if (!string.IsNullOrEmpty(command.UserEmail))
+                {
+                    var scheduler = await _schedulerFactory.GetScheduler();
+
+                    var jobData = new JobDataMap
+                    {
+                        { "email", command.UserEmail },
+                        { "subject", $"Reminder: Upcoming Deadline - {command.Title}" },
+                        { "body", $@"
+                        <h3>This is a reminder for your Deadline</h3>
+                        <p><strong>Title:</strong> {command.Title}</p>
+                        <p><strong>Date:</strong> {command.Date:dddd, MMM dd, yyyy}</p>
+                        <p><strong>Time:</strong> {command.Time}</p>
+                        <p><strong>Assigned matter:</strong> {command.AssignedMatter}</p>
+                        {(string.IsNullOrWhiteSpace(command.Description) ? "" : $"<p><strong>Note:</strong> {command.Description}</p>")}
+                    "}
+                    };
+
+                    var job = JobBuilder.Create<FillingDeadlineReminder>() // Ensure this job implements IJob
+                        .UsingJobData(jobData)
+                        .WithIdentity($"reminder_{result.id}", "filling_deadline_reminder")
+                        .Build();
+
+                    DateTime reminderTime = DateTime.Now.AddMinutes(1); // this must be implement in order to request
+
+                    var trigger = TriggerBuilder.Create()
+                        .WithIdentity($"trigger_{result.id}", "filling_deadline_reminder")
+                        .StartAt(reminderTime.ToUniversalTime()) // must be UTC
+                        .Build();
+
+                    await scheduler.ScheduleJob(job, trigger);
+                    Console.WriteLine("Filling deadLine reminder scheduled.");
+                }
+                
                 return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
             }
             catch (Exception ex)

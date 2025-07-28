@@ -7,7 +7,10 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using AIpazz.Infrastructure.Jobs;
 using Microsoft.AspNetCore.Authorization;
+using Quartz;
+using System.Linq.Expressions;
 
 
 namespace Aipazz.API.Controllers.Calendar
@@ -18,10 +21,12 @@ namespace Aipazz.API.Controllers.Calendar
     {
         private readonly IMediator _mediator;
         private readonly ICalenderEmailService _calenderEmailService;
-        public ClientMeetingController(IMediator mediator, ICalenderEmailService calenderEmailService)
+        private readonly ISchedulerFactory _schedulerFactory;
+        public ClientMeetingController(IMediator mediator, ICalenderEmailService calenderEmailService,  ISchedulerFactory schedulerFactory)
         {
             _mediator = mediator;
             _calenderEmailService = calenderEmailService;
+            _schedulerFactory = schedulerFactory;
         }
 
         [HttpGet]
@@ -48,8 +53,38 @@ namespace Aipazz.API.Controllers.Calendar
             command.UserId = userId;
 
             var meeting = await _mediator.Send(command);
-
+            
+            // send email to the client
             await _calenderEmailService.sendEmaiToClient(command.ClientEmail ,command.Title, EmailTemplate.WelcomeBody(command.Title,command.Date,new TimeOnly(10,30),command.MeetingLink,command.Location));
+            
+            // 3. Schedule reminder email using Quartz (based on request.Reminder)
+            if (!string.IsNullOrEmpty(command.ClientEmail) && command.Reminder > TimeSpan.Zero)
+            {
+                var scheduler = await _schedulerFactory.GetScheduler();
+
+                var jobData = new JobDataMap
+                {
+                    { "email", command.ClientEmail },
+                    { "subject", "Reminder: Upcoming Client Meeting" },
+                    { "body", $"You have a meeting titled '{command.Title}' scheduled on {command.Date:dddd, MMM dd, yyyy} at {command.Time}." }
+                };
+
+                IJobDetail job = JobBuilder.Create<ClientMeetingReminderJob>()
+                    .UsingJobData(jobData)
+                    .WithIdentity($"reminder_{meeting.Id}", "email_reminders")
+                    .Build();
+
+                DateTime reminderTime = DateTime.Now.AddMinutes(1); // this must be implement using request
+                
+                ITrigger trigger = TriggerBuilder.Create()
+                    .WithIdentity($"trigger_{meeting.Id}", "email_reminders")
+                    .StartAt(reminderTime)  
+                    .Build();
+
+                await scheduler.ScheduleJob(job, trigger);
+                Console.WriteLine("client meeting reminder scheduled");
+            }
+
             return CreatedAtAction(nameof(GetClientMeetings), new { id = meeting.Id }, meeting);
         }
         
