@@ -11,7 +11,7 @@ public interface ICalenderEmailService
         string? courtType,
         string? stage,
         DateTime courtDate,
-        TimeSpan reminder,
+        DateTime reminder,
         string? note);
 
 }

@@ -25,7 +25,6 @@ namespace Aipazz.Application.Calender.TeamMeeting.Handlers
                 Title = request.Title,
                 Date = request.Date,
                 Time = request.Time,
-                Repeat = request.Repeat,
                 Reminder = request.Reminder,
                 Description = request.Description,
                 VideoConferencingLink = request.VideoConferencingLink,

@@ -91,7 +91,7 @@ namespace Aipazz.API.Controllers.Calender
                         .Build();
 
                     await scheduler.ScheduleJob(job, trigger);
-                    Console.WriteLine("Court date reminder scheduled.");
+                    Console.WriteLine("Team meeting reminder scheduled.");
                 }
             }
             
@@ -118,10 +118,6 @@ namespace Aipazz.API.Controllers.Calender
             if (!result) return NotFound();
             return NoContent();
         }
-
-
-
-
-
+        
     }
 }

@@ -26,16 +26,14 @@ public class CreateClientMeetingHandler : IRequestHandler<CreateClientMeetingCom
             request.Id,
             request.UserId,
             request.Title,
-            
             request.Date,
             request.Time,
-            request.Repeat,
             request.Reminder,
             request.Description,
             request.MeetingLink,
             request.Location,
             request.TeamMembers,
-            request.ClientEmail
+            request.ClientEmails
         );
         
         // create client meeting

@@ -61,7 +61,7 @@ public class CalenderCalenderEmailService : ICalenderEmailService
         string? courtType,
         string? stage,
         DateTime courtDate,
-        TimeSpan reminder,
+        DateTime reminder,
         string? note)
     {
         try
@@ -88,7 +88,7 @@ public class CalenderCalenderEmailService : ICalenderEmailService
                     {(string.IsNullOrWhiteSpace(stage) ? "" : $"<p><strong>Stage:</strong> {stage}</p>")}
                     <p><strong>Date:</strong> {formattedDate}</p>
                     <p><strong>Time:</strong> {formattedTime}</p>
-                    <p><strong>Reminder:</strong> {reminder.TotalDays} day(s) before</p>
+                    <p><strong>Reminder:</strong> {reminder} day(s) before</p>
                     {(string.IsNullOrWhiteSpace(note) ? "" : $"<p><strong>Note:</strong> {note}</p>")}
                     <p>Kindly check your Aipazz dashboard for more details.</p>
                     <a href='https://witty-field-0e9483e0f.6.azurestaticapps.net/' style='display:inline-block;margin-top:20px;padding:10px 15px;background-color:#2b7a78;color:#fff;text-decoration:none;border-radius:6px;'>Open Dashboard</a>

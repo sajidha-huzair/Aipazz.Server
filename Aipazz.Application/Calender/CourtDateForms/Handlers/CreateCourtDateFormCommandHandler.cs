@@ -30,7 +30,7 @@ namespace Aipazz.Application.Calender.CourtDateForms.Handlers
                 Reminder = request.Reminder,
                 Note = request.Note,
                 TeamMembers = request.TeamMembers,
-                ClientEmail = request.ClientEmail
+                ClientEmails = request.ClientEmails
             };
 
             // Save to repository
@@ -39,6 +39,7 @@ namespace Aipazz.Application.Calender.CourtDateForms.Handlers
             // Send email notifications to team members
             if (request.TeamMemberEmails != null && request.TeamMemberEmails.Any())
             {
+                // this is for team members
                 await _emailService.SendCourtDateEmailToMembersAsync(
                     teamMemberEmails: request.TeamMemberEmails,
                     title: request.Title!,

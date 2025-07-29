@@ -9,14 +9,13 @@ namespace Aipazz.Application.Calender.clientmeeting.Commands
         string Title,
         DateOnly Date,
         TimeOnly Time,
-        bool Repeat,
-        TimeSpan? Reminder,
+        DateTime Reminder,
         string? Description,
         string? MeetingLink,
         string? Location,
         List<string> TeamMembers,
-        string ClientEmail,
-        List<string> ClientEmails
+        List<string> TeamMemberEmails, // this is for client names
+        List<string> ClientEmails // this is for client emails
     ) : IRequest<ClientMeeting>
     {
         public string? UserId { get; set; }

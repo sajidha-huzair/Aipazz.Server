@@ -101,7 +101,7 @@ namespace Aipazz.Infrastructure.Calender
                 existing.Reminder = courtDateForm.Reminder;
                 existing.Note = courtDateForm.Note;
                 existing.TeamMembers = courtDateForm.TeamMembers;
-                existing.ClientEmail = courtDateForm.ClientEmail;
+                existing.ClientEmails = courtDateForm.ClientEmails;
                 await _container.UpsertItemAsync(existing, new PartitionKey(existing.PartitionKey));
                 return existing;
             }

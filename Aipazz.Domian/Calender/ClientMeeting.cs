@@ -19,13 +19,12 @@ public class ClientMeeting
     public string Title { get; private set; }
     public DateOnly Date { get; private set; }
     public TimeOnly Time { get; private set; }
-    public bool Repeat { get; private set; }
-    public TimeSpan? Reminder { get; private set; }
+    public DateTime Reminder { get; private set; }
     public string? Description { get; private set; }
     public string? MeetingLink { get; private set; }
     public string? Location { get; private set; }
-    public List<string> TeamMembers { get; private set; } = new();
-    public string ClientEmail { get; private set; }
+    public List<string> TeamMembers { get; private set; } = new(); // team member names
+    public List<string> ClientEmails { get; private set; }
     
     public string matterId { get; set; } = string.Empty;
 
@@ -39,49 +38,45 @@ public class ClientMeeting
         string title,
         DateOnly date,
         TimeOnly time,
-        bool repeat,
-        TimeSpan? reminder,
+        DateTime reminder,
         string? description,
         string? meetingLink,
         string? location,
         List<string> teamMembers,
-        string clientEmail)
+        List<string> clientEmails)
     {
         Id = id;
         Title = title;
         this.UserId = UserId;
         Date = date;
         Time = time;
-        Repeat = repeat;
         Reminder = reminder;
         Description = description;
         MeetingLink = meetingLink;
         Location = location;
         TeamMembers = teamMembers ?? new List<string>();
-        ClientEmail = clientEmail;
+        ClientEmails = clientEmails;
     }
 
     public void UpdateDetails(
         string title,
         DateOnly date,
         TimeOnly time,
-        bool repeat,
-        TimeSpan? reminder,
+        DateTime reminder,
         string? description,
         string? meetingLink,
         string? location,
         List<string> teamMembers,
-        string clientEmail)
+        List<string> clientEmails)
     {
         Title = title;
         Date = date;
         Time = time;
-        Repeat = repeat;
         Reminder = reminder;
         Description = description;
         MeetingLink = meetingLink;
         Location = location;
         TeamMembers = teamMembers ?? new();
-        ClientEmail = clientEmail;
+        ClientEmails = clientEmails;
     }
 }

@@ -28,7 +28,7 @@ namespace Aipazz.Application.Billing.Interfaces
             string courtType,
             string stage,
             DateTime courtDate,
-            TimeSpan reminder,
+            DateTime reminder,
             string? note,
             string ownerEmail);
 

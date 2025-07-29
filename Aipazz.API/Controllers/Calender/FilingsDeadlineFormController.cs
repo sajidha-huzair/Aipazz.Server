@@ -111,7 +111,7 @@ namespace Aipazz.API.Controllers.Calendar
                         .WithIdentity($"reminder_{result.id}", "filling_deadline_reminder")
                         .Build();
 
-                    DateTime reminderTime = DateTime.Now.AddMinutes(1); // this must be implement in order to request
+                    DateTime reminderTime = command.Reminder; // this must be implement in order to request
 
                     var trigger = TriggerBuilder.Create()
                         .WithIdentity($"trigger_{result.id}", "filling_deadline_reminder")

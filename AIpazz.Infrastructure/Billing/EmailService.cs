@@ -258,7 +258,7 @@ namespace AIpazz.Infrastructure.Billing
             string courtType,
             string stage,
             DateTime courtDate,
-            TimeSpan reminder,
+            DateTime reminder,
             string? note,
             string ownerEmail)
         {
@@ -267,7 +267,7 @@ namespace AIpazz.Infrastructure.Billing
 
             string formattedDate = courtDate.ToString("dddd, MMMM dd, yyyy");
             string formattedTime = courtDate.ToString("hh:mm tt");
-            string reminderDays = $"{reminder.TotalDays} days";
+            string reminderDays = $"{reminder}";
 
             foreach (var memberEmail in teamMemberEmails)
             {

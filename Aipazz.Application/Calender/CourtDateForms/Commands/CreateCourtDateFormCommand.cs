@@ -12,11 +12,11 @@ namespace Aipazz.Application.Calender.CourtDateForms.Commands
         public List<string>? Clients { get; set; }
         public DateTime CourtDate { get; set; }
 
-        public TimeSpan Reminder { get; set; } // e.g., 2 or 7 days before CourtDate
+        public DateTime Reminder { get; set; } // e.g., 2 or 7 days before CourtDate
         
         public string? Note { get; set; }
         public List<string>? TeamMembers { get; set; }
-        public string? ClientEmail { get; set; }
+        public List<string> ClientEmails { get; set; }
         public List<string>? TeamMemberEmails { get; set; }
     }
 }

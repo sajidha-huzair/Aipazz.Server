@@ -49,20 +49,25 @@ namespace Aipazz.API.Controllers.Calender
             command.UserId = UserId;
             var result = await mediator.Send(command);
 
-            // send creation court date to the client
-            await calenderEmailService.SendCourtDateEmailToClientAsync(command.ClientEmail, command.Title,
-                command.CourtType, command.Stage, command.CourtDate, command.Reminder, command.Note);
+            // send creation court date to the clients
+            foreach (var email in command.ClientEmails)
+            {
+                await calenderEmailService.SendCourtDateEmailToClientAsync(email, command.Title,
+                    command.CourtType, command.Stage, command.CourtDate, command.Reminder, command.Note);
+            }
 
             // scheduled reminder for client
-            if (!string.IsNullOrEmpty(command.ClientEmail) && command.Reminder > TimeSpan.Zero)
+            foreach (var email in command.ClientEmails)
             {
-                var scheduler = await schedulerFactory.GetScheduler();
-
-                var jobData = new JobDataMap
+                if (!string.IsNullOrEmpty(email))
                 {
-                    { "email", command.ClientEmail },
-                    { "subject", $"Reminder: Upcoming Court Date - {command.Title}" },
-                    { "body", $@"
+                    var scheduler = await schedulerFactory.GetScheduler();
+
+                    var jobData = new JobDataMap
+                    {
+                        { "email", email },
+                        { "subject", $"Reminder: Upcoming Court Date - {command.Title}" },
+                        { "body", $@"
                         <h3>This is a reminder for your court date</h3>
                         <p><strong>Title:</strong> {command.Title}</p>
                         <p><strong>Date:</strong> {command.CourtDate:dddd, MMM dd, yyyy}</p>
@@ -70,24 +75,24 @@ namespace Aipazz.API.Controllers.Calender
                         <p><strong>Stage:</strong> {command.Stage}</p>
                         {(string.IsNullOrWhiteSpace(command.Note) ? "" : $"<p><strong>Note:</strong> {command.Note}</p>")}
                     "}
-                };
+                    };
 
-                var job = JobBuilder.Create<CourtDateReminder>() // Ensure this job implements IJob
-                    .UsingJobData(jobData)
-                    .WithIdentity($"reminder_{result.id}", "courtdate_reminders")
-                    .Build();
+                    var job = JobBuilder.Create<CourtDateReminder>() // Ensure this job implements IJob
+                        .UsingJobData(jobData)
+                        .WithIdentity($"reminder_{result.id}", "courtdate_reminders")
+                        .Build();
 
-                DateTime reminderTime = DateTime.Now.AddMinutes(1); // this must be implement according to the request
+                    DateTime reminderTime = DateTime.Now.AddMinutes(1); // this must be implement according to the request
 
-                var trigger = TriggerBuilder.Create()
-                    .WithIdentity($"trigger_{result.id}", "courtdate_reminders")
-                    .StartAt(reminderTime.ToUniversalTime()) // must be UTC
-                    .Build();
+                    var trigger = TriggerBuilder.Create()
+                        .WithIdentity($"trigger_{result.id}", "courtdate_reminders")
+                        .StartAt(reminderTime.ToUniversalTime()) // must be UTC
+                        .Build();
 
-                await scheduler.ScheduleJob(job, trigger);
-                Console.WriteLine("Court date reminder scheduled.");
+                    await scheduler.ScheduleJob(job, trigger);
+                    Console.WriteLine("Court date reminder scheduled.");
+                }
             }
-
             
             return Ok(result);
         }

@@ -96,7 +96,6 @@ namespace AIpazz.Infrastructure.Calender
                 existing.Title = updatedForm.Title;
                 existing.Date = updatedForm.Date;
                 existing.Time = updatedForm.Time;
-                existing.Repeat = updatedForm.Repeat;
                 existing.Reminder = updatedForm.Reminder;
                 existing.Description = updatedForm.Description;
                 existing.VideoConferencingLink = updatedForm.VideoConferencingLink;
