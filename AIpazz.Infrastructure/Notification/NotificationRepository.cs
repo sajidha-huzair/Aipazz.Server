@@ -7,6 +7,8 @@ using Aipazz.Domian;
 using Aipazz.Domian.Notification;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
+using NotificationModel = Aipazz.Domian.Notification.Notification;
+
 
 namespace AIpazz.Infrastructure.Notification
 {
@@ -27,14 +29,22 @@ namespace AIpazz.Infrastructure.Notification
             return notification.id;
         }
 
-        public async Task<List<Aipazz.Domian.Notification.Notification>> GetUserNotificationsAsync(string userId)
+        public async Task<List<NotificationModel>> GetUserNotificationsAsync(string userId, string userEmail)
         {
-            var query = new QueryDefinition("SELECT * FROM c WHERE c.UserId = @userId ORDER BY c.CreatedAt DESC")
-                .WithParameter("@userId", userId);
+            var query = new QueryDefinition(@"
+        SELECT * FROM c 
+        WHERE (c.UserId = @userId 
+               OR (IS_NULL(c.UserId) OR c.UserId = '') AND c.RecipientEmail = @userEmail)
+        ORDER BY c.CreatedAt DESC")
+                .WithParameter("@userId", userId)
+                .WithParameter("@userEmail", userEmail);
 
-            var iterator = _container.GetItemQueryIterator<Aipazz.Domian.Notification.Notification>(query);
-            var notifications = new List<Aipazz.Domian.Notification.Notification>();
+            var iterator = _container.GetItemQueryIterator<NotificationModel>(
+                query,
+                requestOptions: new QueryRequestOptions());
 
+
+            var notifications = new List<NotificationModel>();
             while (iterator.HasMoreResults)
             {
                 var response = await iterator.ReadNextAsync();
@@ -43,6 +53,7 @@ namespace AIpazz.Infrastructure.Notification
 
             return notifications;
         }
+
 
         public async Task<List<Aipazz.Domian.Notification.Notification>> GetUnreadNotificationsAsync(string userId)
         {
@@ -104,5 +115,32 @@ namespace AIpazz.Infrastructure.Notification
 
             return 0;
         }
+
+        public async Task AssignNotificationsToUserAsync(string userEmail, string userId)
+        {
+            var query = new QueryDefinition(@"
+        SELECT * FROM c 
+        WHERE (IS_NULL(c.UserId) OR c.UserId = '') AND c.RecipientEmail = @userEmail")
+                .WithParameter("@userEmail", userEmail);
+
+            var iterator = _container.GetItemQueryIterator<NotificationModel>(
+     query,
+     requestOptions: new QueryRequestOptions()); // no EnableCrossPartitionQuery here
+
+            while (iterator.HasMoreResults)
+            {
+                var response = await iterator.ReadNextAsync();
+                foreach (var notification in response)
+                {
+                    // Only patch if UserId is missing
+                    if (string.IsNullOrWhiteSpace(notification.UserId))
+                    {
+                        notification.UserId = userId;
+                        await _container.UpsertItemAsync(notification, new PartitionKey(userId));
+                    }
+                }
+            }
+        }
+
     }
 }

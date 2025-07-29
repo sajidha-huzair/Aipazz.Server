@@ -9,8 +9,7 @@ namespace Aipazz.Application.Calender.TeamMeeting.Commands
         public string Title { get; set; } = "";
         public DateTime Date { get; set; }
         public string Time { get; set; } = "";
-        public string Repeat { get; set; } = "";
-        public string Reminder { get; set; } = "";
+        public DateTime Reminder { get; set; }
         public string Description { get; set; } = "";
         public string VideoConferencingLink { get; set; } = "";
         public string LocationLink { get; set; } = "";

@@ -5,7 +5,8 @@ namespace Aipazz.Domian.Notification
     public class Notification
     {
         public string id { get; set; } = string.Empty;
-        public string UserId { get; set; } = string.Empty;        // Who receives it
+        public string UserId { get; set; } = string.Empty;// Who receives it
+        public string? RecipientEmail { get; set; } // Add this
         public string Type { get; set; } = string.Empty;          // "TeamCreated", "TeamAssignment", etc.
         public string Title { get; set; } = string.Empty;         // "New Team Created"
         public string Message { get; set; } = string.Empty;       // Detailed message

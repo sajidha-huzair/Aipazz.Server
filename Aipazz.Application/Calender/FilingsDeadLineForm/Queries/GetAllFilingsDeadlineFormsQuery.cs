@@ -5,7 +5,7 @@ using FilingsDeadlineFormEntity = Aipazz.Domain.Calender.FilingsDeadlineForm;
 
 namespace Aipazz.Application.Calender.FilingsDeadlineForm.Queries
 {
-    public class GetAllFilingsDeadlineFormsQuery : IRequest<List<FilingsDeadlineFormEntity>> { }
+    public record GetAllFilingsDeadlineFormsQuery(string UserId) : IRequest<List<FilingsDeadlineFormEntity>> { }
 
     public class GetAllFilingsDeadlineFormsHandler : IRequestHandler<GetAllFilingsDeadlineFormsQuery, List<FilingsDeadlineFormEntity>>
     {
@@ -18,7 +18,7 @@ namespace Aipazz.Application.Calender.FilingsDeadlineForm.Queries
 
         public async Task<List<FilingsDeadlineFormEntity>> Handle(GetAllFilingsDeadlineFormsQuery request, CancellationToken cancellationToken)
         {
-            var forms = await _repository.GetAll();
+            var forms = await _repository.GetAll(request.UserId);
             return forms;
         }
     }

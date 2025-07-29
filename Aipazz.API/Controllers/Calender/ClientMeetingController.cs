@@ -1,8 +1,17 @@
 
 using Aipazz.Application.Calender.clientmeeting.Commands;
 using Aipazz.Application.Calender.clientmeeting.queries;
+using Aipazz.Application.Calender.Interface;
+using Aipazz.Domian.Calender;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using AIpazz.Infrastructure.Jobs;
+using Microsoft.AspNetCore.Authorization;
+using Quartz;
+using System.Linq.Expressions;
+
 
 namespace Aipazz.API.Controllers.Calendar
 {
@@ -11,23 +20,79 @@ namespace Aipazz.API.Controllers.Calendar
     public class ClientMeetingController : ControllerBase
     {
         private readonly IMediator _mediator;
-
-        public ClientMeetingController(IMediator mediator)
+        private readonly ICalenderEmailService _calenderEmailService;
+        private readonly ISchedulerFactory _schedulerFactory;
+        public ClientMeetingController(IMediator mediator, ICalenderEmailService calenderEmailService,  ISchedulerFactory schedulerFactory)
         {
             _mediator = mediator;
+            _calenderEmailService = calenderEmailService;
+            _schedulerFactory = schedulerFactory;
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetClientMeetings()
         {
-            var results = await _mediator.Send(new GetAllClientMeetingsquery());
+            string? userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+            Console.WriteLine(userId);
+            if (userId == null) return BadRequest();
+            var results = await _mediator.Send(new GetAllClientMeetingsquery(userId));
             return Ok(results);
         }
         
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateClientMeeting( CreateClientMeetingCommand command)
         {
+            string? userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+            Console.WriteLine("userId: " + userId);
+            command.UserId = userId;
+
             var meeting = await _mediator.Send(command);
+            
+            // send email to the client
+            foreach (var email in command.ClientEmails)
+            {
+                await _calenderEmailService.sendEmaiToClient(email ,command.Title, EmailTemplate.WelcomeBody(command.Title,command.Date,new TimeOnly(10,30),command.MeetingLink,command.Location));
+            }
+            
+            
+            // 3. Schedule reminder email using Quartz (based on request.Reminder)
+            foreach (var email in command.ClientEmails)
+            {
+                if (!string.IsNullOrEmpty(email))
+                {
+                    var scheduler = await _schedulerFactory.GetScheduler();
+
+                    var jobData = new JobDataMap
+                    {
+                        { "email", email },
+                        { "subject", "Reminder: Upcoming Client Meeting" },
+                        { "body", $"You have a meeting titled '{command.Title}' scheduled on {command.Date:dddd, MMM dd, yyyy} at {command.Time}." }
+                    };
+
+                    IJobDetail job = JobBuilder.Create<ClientMeetingReminderJob>()
+                        .UsingJobData(jobData)
+                        .WithIdentity($"reminder_{meeting.Id}", "email_reminders")
+                        .Build();
+                    
+                    DateTime reminderTime = command.Reminder;
+                
+                    ITrigger trigger = TriggerBuilder.Create()
+                        .WithIdentity($"trigger_{meeting.Id}", "email_reminders")
+                        .StartAt(reminderTime)  
+                        .Build();
+
+                    await scheduler.ScheduleJob(job, trigger);
+                    Console.WriteLine("client meeting reminder scheduled");
+                }
+            }
+            
+
             return CreatedAtAction(nameof(GetClientMeetings), new { id = meeting.Id }, meeting);
         }
         
@@ -59,7 +124,7 @@ namespace Aipazz.API.Controllers.Calendar
         }
         
         
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteMeeting(Guid id)
         {
             var deleted = await _mediator.Send(new DeleteClientMeetingCommand(id));

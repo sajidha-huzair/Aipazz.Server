@@ -17,7 +17,7 @@ namespace Aipazz.Application.Notification.Services
             _notificationRepository = notificationRepository;
         }
 
-        public async Task SendTeamCreatedNotificationAsync(string teamId, string teamName, string ownerName, string ownerId, List<string> memberIds)
+        public async Task SendTeamCreatedNotificationAsync(string teamId, string teamName, string ownerName, string ownerId, List<string> memberIds, List<string> memberEmails)
         {
             var notifications = new List<Aipazz.Domian.Notification.Notification>();
 
@@ -36,30 +36,31 @@ namespace Aipazz.Application.Notification.Services
             });
 
             // Notifications for team members
-            foreach (var memberId in memberIds)
+            for (int i = 0; i < memberIds.Count; i++)
             {
-                if (memberId != ownerId) // Don't send duplicate notification to owner
+                var memberId = memberIds[i];
+                var memberEmail = memberEmails[i];
+                var isUserIdValid = !string.IsNullOrWhiteSpace(memberId);
+
+                notifications.Add(new Aipazz.Domian.Notification.Notification
                 {
-                    notifications.Add(new Aipazz.Domian.Notification.Notification
-                    {
-                        id = Guid.NewGuid().ToString(),
-                        UserId = memberId,
-                        Type = "TeamAssignment",
-                        Title = "Added to New Team",
-                        Message = $"You have been added to the team '{teamName}' by {ownerName}.",
-                        RelatedEntityId = teamId,
-                        RelatedEntityType = "Team",
-                        CreatedBy = ownerName,
-                        ActionUrl = $"/teams/{teamId}"
-                    });
-                }
+                    id = Guid.NewGuid().ToString(),
+                    UserId = isUserIdValid ? memberId : null,
+                    RecipientEmail = isUserIdValid ? null : memberEmail,
+                    Type = "TeamAssignment",
+                    Title = "Added to New Team",
+                    Message = $"You have been added to the team '{teamName}' by {ownerName}.",
+                    RelatedEntityId = teamId,
+                    RelatedEntityType = "Team",
+                    CreatedBy = ownerName,
+                    ActionUrl = $"/teams/{teamId}"
+                });
             }
 
+
             // Save all notifications
-            foreach (var notification in notifications)
-            {
-                await _notificationRepository.CreateNotificationAsync(notification);
-            }
+            var tasks = notifications.Select(n => _notificationRepository.CreateNotificationAsync(n));
+            await Task.WhenAll(tasks);
         }
 
         public async Task SendTeamAssignmentNotificationAsync(string teamId, string teamName, string memberEmail, string assignedBy)

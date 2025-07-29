@@ -15,7 +15,7 @@ namespace Aipazz.Application.Calender.CourtDateForms.Handlers
 
         public async Task<List<Domian.Calender.CourtDateForm>> Handle(GetCourtDateFormListQuery request, CancellationToken cancellationToken)
         {
-            var data = await _repository.GetAll();
+            var data = await _repository.GetAll(request.UserId);
             return data;
         }
     }

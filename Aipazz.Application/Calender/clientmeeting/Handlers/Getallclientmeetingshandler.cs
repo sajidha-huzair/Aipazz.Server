@@ -17,7 +17,7 @@ public class Getallclientmeetingshandler:IRequestHandler<GetAllClientMeetingsque
     public async Task<List<ClientMeeting>> Handle(GetAllClientMeetingsquery request,
         CancellationToken cancellationToken)
     {
-        return await _repository.GetAllClientMeetings();
+        return await _repository.GetAllClientMeetings(request.UserId);
     }
         
 

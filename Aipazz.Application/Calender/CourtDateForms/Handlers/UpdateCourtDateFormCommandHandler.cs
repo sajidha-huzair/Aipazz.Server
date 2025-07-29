@@ -26,7 +26,7 @@ namespace Aipazz.Application.Calender.CourtDateForms.Handlers
                 Reminder = request.Reminder,
                 Note = request.Note,
                 TeamMembers = request.TeamMembers,
-                ClientEmail = request.ClientEmail
+                ClientEmails = request.ClientEmails
             };
             var existing = await _repository.UpdateCourtDateForm(request.Id, param);
             if (existing == null) return null;
