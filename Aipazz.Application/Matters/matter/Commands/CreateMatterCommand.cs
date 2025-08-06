@@ -18,6 +18,8 @@ namespace Aipazz.Application.Matters.matter.Commands
         public string MatterTypeName { get; set; } = string.Empty;
         public string UserId { get; set; } = string.Empty; // Now this can be set in controller
         //public string? TeamId { get; set; } = null;
+        public DateTime? UpdatedAt { get; set; }
+
         public List<string>? TeamMembers { get; set; } = new();
     }
 }

@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Aipazz.Application.Calender.clientmeeting.queries;
 
-public record GetAllClientMeetingsquery():IRequest<List<ClientMeeting>>;
+public record GetAllClientMeetingsquery(string UserId):IRequest<List<ClientMeeting>>;

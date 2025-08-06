@@ -23,8 +23,10 @@ using AIpazz.Infrastructure.Billing.Aipazz.Application.Common;
 using Aipazz.Infrastructure.Calender;
 using QuestPDF.Infrastructure;
 using Aipazz.Infrastructure.Billing;
-
-
+using Aipazz.API.Controllers;
+using Quartz;
+using AIpazz.Infrastructure.Jobs;
+using Quartz.Spi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,8 +93,6 @@ builder.Services.AddCors(options =>
 });
 
 
-
-
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -109,9 +109,7 @@ builder.Services.AddScoped<IclientmeetingRepository, Clientmeetingrepository>();
 builder.Services.AddScoped<ICourtDateFormRepository, CourtDateFormRepository>();
 builder.Services.AddScoped<IFilingsDeadlineFormRepository, FilingsDeadlineFormRepository>();
 builder.Services.AddScoped<ITeamMeetingFormRepository, TeamMeetingFormRepository>();
-
 builder.Services.AddScoped<IPaymentService, StripePaymentService>();
-
 
 
 builder.Services.AddSingleton(x =>
@@ -127,6 +125,24 @@ builder.Services.Configure<InvoiceBlobOptions>(
 builder.Services.AddScoped<IInvoiceBlobService, AzureInvoiceBlobService>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ICalenderEmailService, CalenderCalenderEmailService>();
+
+// register quartz service
+builder.Services.AddQuartz(q =>
+{
+    q.UseMicrosoftDependencyInjectionJobFactory(); // allows DI in jobs
+});
+// Add Quartz.NET as a hosted service
+builder.Services.AddQuartzHostedService(options =>
+{
+    options.WaitForJobsToComplete = true;
+});
+
+// Register IScheduler as singleton so it can be injected
+builder.Services.AddSingleton(provider => 
+    provider.GetRequiredService<ISchedulerFactory>().GetScheduler().GetAwaiter().GetResult());
+
+builder.Services.AddSingleton<IReminderScheduler, ReminderScheduler>();
 
 
 
@@ -145,6 +161,7 @@ app.UseHttpsRedirection();
 app.UseCors("AllowFrontendWithAuth");
 
 app.UseAuthentication();
+app.UseMiddleware<NotificationUserAssignmentMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();

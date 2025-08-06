@@ -50,13 +50,15 @@ namespace Aipazz.API.Controllers.Notification
         public async Task<IActionResult> GetUserNotifications()
         {
             string? userId = User.Claims
-                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
-                ?.Value;
+                .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-            if (string.IsNullOrWhiteSpace(userId))
-                return Unauthorized("User ID not found in token.");
+            string? userEmail = User.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
 
-            var notifications = await _repository.GetUserNotificationsAsync(userId);
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(userEmail))
+                return Unauthorized("User ID or email not found in token.");
+
+            var notifications = await _repository.GetUserNotificationsAsync(userId, userEmail);
             return Ok(notifications);
         }
 

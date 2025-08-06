@@ -19,9 +19,11 @@ namespace AIpazz.Infrastructure.Calendar
             _container = db.GetContainer(containerName);
         }
 
-        public async Task<List<FilingsDeadlineFormEntity>> GetAll()
+        public async Task<List<FilingsDeadlineFormEntity>> GetAll(string userId)
         {
-            var query = new QueryDefinition("SELECT * FROM c");
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.UserId = @userId")
+                .WithParameter("@userId", userId);
+
             var iterator = _container.GetItemQueryIterator<FilingsDeadlineFormEntity>(query);
             var results = new List<FilingsDeadlineFormEntity>();
 
@@ -40,6 +42,7 @@ namespace AIpazz.Infrastructure.Calendar
 
             return results;
         }
+
 
         public async Task<FilingsDeadlineFormEntity?> GetById(Guid id)
         {

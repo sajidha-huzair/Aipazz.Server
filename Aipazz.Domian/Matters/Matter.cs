@@ -17,6 +17,8 @@ namespace Aipazz.Domian.Matters
         public required string StatusId { get; set; }
         public required string MatterTypeName { get; set; }
         public string? TeamId { get; set; } = null; // Add this property
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public CourtType? CourtType { get; set; }

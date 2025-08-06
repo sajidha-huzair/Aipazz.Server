@@ -17,7 +17,7 @@ namespace Aipazz.Application.Calender.TeamMeeting.Handlers
 
         public async Task<List<Aipazz.Domian.Calender.TeamMeetingForm>> Handle(GetAllTeamMeetingFormsQuery request, CancellationToken cancellationToken)
         {
-            var data = await _repository.GetAll();
+            var data = await _repository.GetAll(request.UserId);
             return data;
         }
     }

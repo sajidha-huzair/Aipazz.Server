@@ -10,7 +10,7 @@ namespace Aipazz.Application.Calender.Commands.FilingsDeadlineForms
         public string Title { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public string Time { get; set; } = string.Empty;
-        public string Reminder { get; set; } = string.Empty;
+        public DateTime Reminder { get; set; }
         public string Description { get; set; } = string.Empty;
         public string AssignedMatter { get; set; } = string.Empty;
     }
