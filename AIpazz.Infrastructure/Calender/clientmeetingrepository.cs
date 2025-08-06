@@ -4,6 +4,7 @@ using Aipazz.Domian;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Options;
 using System.Net;
+using Microsoft.Azure.Cosmos.Linq;
 
 namespace AIpazz.Infrastructure.Calender
 {
@@ -123,5 +124,22 @@ namespace AIpazz.Infrastructure.Calender
                 throw;
             }
         }
+
+        public async Task<List<ClientMeeting>> GetMeetingsByMatterIdAsync(string matterId, string userId)
+        {
+            var query = _container.GetItemLinqQueryable<ClientMeeting>(true)
+                .Where(m => m.matterId == matterId && m.UserId == userId)
+                .ToFeedIterator();
+
+            var results = new List<ClientMeeting>();
+            while (query.HasMoreResults)
+            {
+                var response = await query.ReadNextAsync();
+                results.AddRange(response);
+            }
+
+            return results;
+        }
+
     }
 }

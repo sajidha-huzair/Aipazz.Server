@@ -119,5 +119,21 @@ namespace Aipazz.API.Controllers.Calender
 
             return Ok(result);
         }
+
+        [HttpGet("matter/{matterId}")]
+        [Authorize]
+        public async Task<IActionResult> GetByMatterId(string matterId)
+        {
+            string? userId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var result = await mediator.Send(new GetCourtDatesByMatterIdQuery(userId, matterId));
+            return Ok(result);
+        }
+
     }
 }

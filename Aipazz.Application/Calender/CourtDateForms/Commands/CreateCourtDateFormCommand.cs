@@ -18,5 +18,7 @@ namespace Aipazz.Application.Calender.CourtDateForms.Commands
         public List<string>? TeamMembers { get; set; }
         public List<string> ClientEmails { get; set; }
         public List<string>? TeamMemberEmails { get; set; }
+        public string? MatterId { get; set; }
+
     }
 }

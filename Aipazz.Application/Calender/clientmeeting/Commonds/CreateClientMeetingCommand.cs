@@ -15,7 +15,8 @@ namespace Aipazz.Application.Calender.clientmeeting.Commands
         string? Location,
         List<string> TeamMembers,
         List<string> TeamMemberEmails, // this is for client names
-        List<string> ClientEmails // this is for client emails
+        List<string> ClientEmails, // this is for client emails
+        string matterId
     ) : IRequest<ClientMeeting>
     {
         public string? UserId { get; set; }
