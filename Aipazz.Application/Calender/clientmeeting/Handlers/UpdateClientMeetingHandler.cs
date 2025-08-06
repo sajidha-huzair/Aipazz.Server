@@ -24,13 +24,12 @@ namespace Aipazz.Application.Calender.clientmeeting.Handlers
                 request.Title,
                 request.Date,
                 request.Time,
-                request.Repeat,
                 request.Reminder,
                 request.Description,
                 request.MeetingLink,
                 request.Location,
                 request.TeamMembers,
-                request.ClientEmail
+                request.ClientEmails
             );
             
             // ✅ Save changes to Cosmos DB

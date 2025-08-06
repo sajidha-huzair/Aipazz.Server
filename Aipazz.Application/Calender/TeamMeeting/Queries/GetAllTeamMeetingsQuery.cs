@@ -4,5 +4,5 @@ using System.Collections.Generic;
 
 namespace Aipazz.Application.Calender.TeamMeetingForms.Queries
 {
-    public class GetAllTeamMeetingFormsQuery : IRequest<List<Domian.Calender.TeamMeetingForm>> { }
+    public record GetAllTeamMeetingFormsQuery(string UserId) : IRequest<List<Domian.Calender.TeamMeetingForm>> { }
 }

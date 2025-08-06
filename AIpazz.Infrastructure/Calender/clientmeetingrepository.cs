@@ -57,9 +57,11 @@ namespace AIpazz.Infrastructure.Calender
             }
         }
 
-        public async Task<List<ClientMeeting>> GetAllClientMeetings()
+        public async Task<List<ClientMeeting>> GetAllClientMeetings(string userId)
         {
-            var query = new QueryDefinition("SELECT * FROM c");
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.UserId = @userId")
+                .WithParameter("@userId", userId);
+
             var iterator = _container.GetItemQueryIterator<ClientMeeting>(query);
             var results = new List<ClientMeeting>();
 
@@ -78,6 +80,7 @@ namespace AIpazz.Infrastructure.Calender
 
             return results;
         }
+
 
         public async Task<ClientMeeting> UpdateClientMeeting(ClientMeeting meeting)
         {

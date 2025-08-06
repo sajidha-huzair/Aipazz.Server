@@ -15,27 +15,28 @@ namespace Aipazz.Domian.Calender
             set => id = value.ToString();
         }
 
+        public string UserId { get; set; }
+
         public string? Title { get; set; }
         public string? CourtType { get; set; }
         public string? Stage { get; set; }
         public List<string>? Clients { get; set; }
         public DateTime CourtDate { get; set; }
 
-        public TimeSpan Reminder { get; set; }
+        public DateTime Reminder { get; set; }
 
         [NotMapped]
         public string DueStatus
         {
             get
             {
-                var reminderDate = CourtDate - Reminder;
-                return reminderDate.Date == DateTime.Today ? "Remind" : "Not Remind";
+                return Reminder.Date == DateTime.Today ? "Remind" : "Not Remind";
             }
         }
 
         public string? Note { get; set; }
         public List<string>? TeamMembers { get; set; }
-        public string? ClientEmail { get; set; }
+        public List<string> ClientEmails { get; set; }
 
         public string PartitionKey => id;
     }

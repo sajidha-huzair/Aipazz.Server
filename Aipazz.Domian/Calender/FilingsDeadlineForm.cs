@@ -13,11 +13,13 @@ namespace Aipazz.Domain.Calender
             get => Guid.Parse(id);
             set => id = value.ToString();
         }
+        
+        public string? UserId { get; set; }
 
         public string Title { get; set; } = string.Empty;
         public DateTime Date { get; set; }
         public string Time { get; set; } = string.Empty;
-        public string Reminder { get; set; } = string.Empty;
+        public DateTime Reminder { get; set; }
         public string Description { get; set; } = string.Empty;
         public string AssignedMatter { get; set; } = string.Empty;
         

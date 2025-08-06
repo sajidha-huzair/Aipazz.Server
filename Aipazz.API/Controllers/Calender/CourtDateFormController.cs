@@ -1,19 +1,30 @@
 using Aipazz.Application.Calendar.CourtDateForms.Queries;
 using Aipazz.Application.Calender.CourtDateForms.Commands;
 using Aipazz.Application.Calender.CourtDateForms.Queries;
+using Aipazz.Application.Calender.Interface;
+using AIpazz.Infrastructure.Jobs;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Quartz;
 
 namespace Aipazz.API.Controllers.Calender
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CourtDateFormController(IMediator mediator) : ControllerBase
+    public class CourtDateFormController(IMediator mediator, ICalenderEmailService calenderEmailService, ISchedulerFactory schedulerFactory) : ControllerBase
     {
+        
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult> GetAll()
         {
-            var result = await mediator.Send(new GetCourtDateFormListQuery());
+            string? UserId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+            Console.WriteLine("UserId: " + UserId);
+            
+            var result = await mediator.Send(new GetCourtDateFormListQuery(UserId));
             return Ok(result);
         }
         
@@ -28,9 +39,61 @@ namespace Aipazz.API.Controllers.Calender
         }
         
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create(CreateCourtDateFormCommand command)
         {
+            string? UserId = User.Claims
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
+            Console.WriteLine("UserId: " + UserId);
+            command.UserId = UserId;
             var result = await mediator.Send(command);
+
+            // send creation court date to the clients
+            foreach (var email in command.ClientEmails)
+            {
+                await calenderEmailService.SendCourtDateEmailToClientAsync(email, command.Title,
+                    command.CourtType, command.Stage, command.CourtDate, command.Reminder, command.Note);
+            }
+
+            // scheduled reminder for client
+            foreach (var email in command.ClientEmails)
+            {
+                if (!string.IsNullOrEmpty(email))
+                {
+                    var scheduler = await schedulerFactory.GetScheduler();
+
+                    var jobData = new JobDataMap
+                    {
+                        { "email", email },
+                        { "subject", $"Reminder: Upcoming Court Date - {command.Title}" },
+                        { "body", $@"
+                        <h3>This is a reminder for your court date</h3>
+                        <p><strong>Title:</strong> {command.Title}</p>
+                        <p><strong>Date:</strong> {command.CourtDate:dddd, MMM dd, yyyy}</p>
+                        <p><strong>Court Type:</strong> {command.CourtType}</p>
+                        <p><strong>Stage:</strong> {command.Stage}</p>
+                        {(string.IsNullOrWhiteSpace(command.Note) ? "" : $"<p><strong>Note:</strong> {command.Note}</p>")}
+                    "}
+                    };
+
+                    var job = JobBuilder.Create<CourtDateReminder>() // Ensure this job implements IJob
+                        .UsingJobData(jobData)
+                        .WithIdentity($"reminder_{result.id}", "courtdate_reminders")
+                        .Build();
+
+                    DateTime reminderTime = DateTime.Now.AddMinutes(1); // this must be implement according to the request
+
+                    var trigger = TriggerBuilder.Create()
+                        .WithIdentity($"trigger_{result.id}", "courtdate_reminders")
+                        .StartAt(reminderTime.ToUniversalTime()) // must be UTC
+                        .Build();
+
+                    await scheduler.ScheduleJob(job, trigger);
+                    Console.WriteLine("Court date reminder scheduled.");
+                }
+            }
+            
             return Ok(result);
         }
         
