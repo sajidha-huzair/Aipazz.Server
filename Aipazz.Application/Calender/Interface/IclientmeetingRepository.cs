@@ -8,6 +8,9 @@ public interface IclientmeetingRepository
     Task AddClientMeeting(ClientMeeting Meeting);
     Task<ClientMeeting> GetClientMeetingByID(Guid id);
     Task<ClientMeeting> UpdateClientMeeting(ClientMeeting Meeting);
-    Task<bool> DeleteClientMeeting(Guid id);  
-   
+    Task<bool> DeleteClientMeeting(Guid id);
+    Task<List<ClientMeeting>> GetMeetingsByMatterIdAsync(string matterId, string userId);
+
+
+
 }

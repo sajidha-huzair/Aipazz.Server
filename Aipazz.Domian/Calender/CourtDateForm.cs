@@ -24,6 +24,8 @@ namespace Aipazz.Domian.Calender
         public DateTime CourtDate { get; set; }
 
         public DateTime Reminder { get; set; }
+        public string? MatterId { get; set; }
+
 
         [NotMapped]
         public string DueStatus
@@ -37,6 +39,7 @@ namespace Aipazz.Domian.Calender
         public string? Note { get; set; }
         public List<string>? TeamMembers { get; set; }
         public List<string> ClientEmails { get; set; }
+
 
         public string PartitionKey => id;
     }

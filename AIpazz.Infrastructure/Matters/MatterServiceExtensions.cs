@@ -15,6 +15,9 @@ namespace Aipazz.Infrastructure.Matters
             // Register MatterRepository using scoped lifetime
             services.AddScoped<IMatterRepository, MatterRepository>();
 
+            // Register MatterUpdateHistoryRepository
+            services.AddScoped<IMatterUpdateHistoryRepository, MatterUpdateHistoryRepository>();
+
             // Register StatusRepository with Cosmos DB connection
             services.AddSingleton<IStatusRepository, StatusRepository>(serviceProvider =>
             {

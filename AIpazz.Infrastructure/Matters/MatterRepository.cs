@@ -164,5 +164,51 @@ namespace Aipazz.Infrastructure.Matters
 
             return results;
         }
+
+        //// 8. GetMatterUpdateHistory
+
+        //public async Task<List<MatterUpdateHistory>> GetMatterUpdateHistory(string matterId, string clientNic, string userId)
+        //{
+        //    var query = _container.GetItemLinqQueryable<MatterUpdateHistory>(allowSynchronousQueryExecution: false)
+        //        .Where(h => h.MatterId == matterId && h.ClientNic == clientNic && h.UserId == userId)
+        //        .OrderByDescending(h => h.UpdatedAt)
+        //        .ToFeedIterator();
+
+        //    var results = new List<MatterUpdateHistory>();
+
+        //    while (query.HasMoreResults)
+        //    {
+        //        var response = await query.ReadNextAsync();
+        //        results.AddRange(response);
+        //    }
+
+        //    return results;
+        //}
+
+        
+        //public async Task AddMatterUpdateHistory(MatterUpdateHistory updateHistory)
+        //{
+        //    try
+        //    {
+        //        Console.WriteLine("Saving MatterUpdateHistory to Cosmos DB:");
+        //        Console.WriteLine(JsonSerializer.Serialize(updateHistory, new JsonSerializerOptions { WriteIndented = true }));
+
+        //        await _container.CreateItemAsync(updateHistory, new PartitionKey(updateHistory.ClientNic));
+
+        //        Console.WriteLine($"✅ Successfully added update history ID: {updateHistory.id}");
+        //    }
+        //    catch (CosmosException ex)
+        //    {
+        //        Console.WriteLine($"❌ Cosmos DB Error adding update history: {ex.StatusCode} - {ex.Message}");
+        //        Console.WriteLine($"ActivityId: {ex.ActivityId}");
+        //        throw;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"❌ General error while adding update history: {ex.Message}");
+        //        throw;
+        //    }
+        //}
+
     }
 }

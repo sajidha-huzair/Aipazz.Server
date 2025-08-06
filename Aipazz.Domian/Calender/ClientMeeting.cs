@@ -43,7 +43,8 @@ public class ClientMeeting
         string? meetingLink,
         string? location,
         List<string> teamMembers,
-        List<string> clientEmails)
+        List<string> clientEmails,
+        string matterId)
     {
         Id = id;
         Title = title;
@@ -56,6 +57,7 @@ public class ClientMeeting
         Location = location;
         TeamMembers = teamMembers ?? new List<string>();
         ClientEmails = clientEmails;
+        this.matterId = matterId;
     }
 
     public void UpdateDetails(

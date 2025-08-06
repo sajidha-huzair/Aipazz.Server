@@ -11,6 +11,8 @@ namespace Aipazz.Application.Calender.Interface
         
         Task<CourtDateForm?> UpdateCourtDateForm(Guid id, CourtDateForm courtDateForm);
         Task<CourtDateForm?> DeleteCourtDateForm(Guid id);
+        Task<List<CourtDateForm>> GetByMatterIdAsync(string userId, string matterId);
+
 
     }
 }

@@ -11,6 +11,7 @@ using AIpazz.Infrastructure.Jobs;
 using Microsoft.AspNetCore.Authorization;
 using Quartz;
 using System.Linq.Expressions;
+using Aipazz.Application.Calender.clientmeeting.Queries;
 
 
 namespace Aipazz.API.Controllers.Calendar
@@ -137,7 +138,23 @@ namespace Aipazz.API.Controllers.Calendar
             return NoContent(); // 204 No Content (successfully deleted)
         }
 
+        [HttpGet("by-matter/{matterId}")]
+        [Authorize]
+        public async Task<IActionResult> GetClientMeetingsByMatterId(string matterId)
+        {
+            string? userId = User.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)
+                ?.Value;
 
-        
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var meetings = await _mediator.Send(new GetClientMeetingsByMatterIdQuery(matterId, userId));
+            return Ok(meetings);
+        }
+
+
+
+
     }
 }

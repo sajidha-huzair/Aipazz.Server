@@ -30,7 +30,9 @@ namespace Aipazz.Application.Calender.CourtDateForms.Handlers
                 Reminder = request.Reminder,
                 Note = request.Note,
                 TeamMembers = request.TeamMembers,
-                ClientEmails = request.ClientEmails
+                ClientEmails = request.ClientEmails,
+                MatterId = request.MatterId,
+
             };
 
             // Save to repository
