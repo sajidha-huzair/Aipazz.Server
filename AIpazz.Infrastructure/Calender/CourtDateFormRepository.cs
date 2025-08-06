@@ -133,5 +133,33 @@ namespace Aipazz.Infrastructure.Calender
                 throw;
             }
         }
+
+        public async Task<List<CourtDateForm>> GetByMatterIdAsync(string userId, string matterId)
+        {
+            var query = new QueryDefinition(
+                "SELECT * FROM c WHERE c.UserId = @userId AND c.MatterId = @matterId"
+            )
+            .WithParameter("@userId", userId)
+            .WithParameter("@matterId", matterId);
+
+            var iterator = _container.GetItemQueryIterator<CourtDateForm>(query);
+            var results = new List<CourtDateForm>();
+
+            while (iterator.HasMoreResults)
+            {
+                try
+                {
+                    var response = await iterator.ReadNextAsync();
+                    results.AddRange(response);
+                }
+                catch (CosmosException ex)
+                {
+                    Console.WriteLine($"Error fetching court dates by MatterId: {ex.Message}");
+                }
+            }
+
+            return results;
+        }
+
     }
 }

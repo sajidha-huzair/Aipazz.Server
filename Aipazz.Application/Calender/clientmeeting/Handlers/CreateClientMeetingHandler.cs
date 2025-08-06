@@ -33,7 +33,8 @@ public class CreateClientMeetingHandler : IRequestHandler<CreateClientMeetingCom
             request.MeetingLink,
             request.Location,
             request.TeamMembers,
-            request.ClientEmails
+            request.ClientEmails,
+            request.matterId
         );
         
         // create client meeting

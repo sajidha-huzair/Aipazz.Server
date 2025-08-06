@@ -15,5 +15,6 @@ namespace Aipazz.Application.Matters.Interfaces
         Task<List<Matter>> GetMattersByClientNicAsync(string ClientNic, string userId);
         Task<List<Matter>> GetMattersByIdsAsync(List<string> matterIds, string userId);
         Task<List<Matter>> GetMattersByTeamIdAsync(string teamId);
+        
     }
 }
