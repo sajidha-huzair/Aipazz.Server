@@ -3,12 +3,18 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using Aipazz.Domian.Billing;
 using Aipazz.Application.Billing.Interfaces;
+using Aipazz.Application.Common.Aipazz.Application.Common;
 
 namespace AIpazz.Infrastructure.Billing;
 
 public class InvoicePdfGenerator : IInvoicePdfGenerator
 {
     private const string Font = Fonts.Arial;
+    private readonly IUserContext _userContext;
+    public InvoicePdfGenerator(IUserContext userContext)
+    {
+        _userContext = userContext;
+    }
 
     public Task<byte[]> GeneratePdfAsync(
         Invoice invoice,
@@ -31,7 +37,7 @@ public class InvoicePdfGenerator : IInvoicePdfGenerator
                 {
                     row.ConstantItem(310).Column(col =>
                     {
-                        col.Item().Text($"Law Office of {invoice.ClientName}")
+                        col.Item().Text($"Law Office of {_userContext.FullName}")
                                   .FontSize(20).Bold();
                         col.Item().Text(invoice.ClientAddress);
 
@@ -55,14 +61,14 @@ public class InvoicePdfGenerator : IInvoicePdfGenerator
                     /* TIME ENTRIES */
                     if (timeEntries.Any())
                     {
-                        col.Item().PaddingTop(10).Text("Time Entries").Bold();
+                        col.Item().PaddingTop(10).Text("Consultations").Bold();
                         col.Item().Element(ComposeTimeTable);
                     }
 
                     /* EXPENSE ENTRIES */
                     if (expenseEntries.Any())
                     {
-                        col.Item().PaddingTop(10).Text("Expense Entries").Bold();
+                        col.Item().PaddingTop(10).Text("Expenses").Bold();
                         col.Item().Element(ComposeExpenseTable);
                     }
 
@@ -113,7 +119,7 @@ public class InvoicePdfGenerator : IInvoicePdfGenerator
                         // Balance
                         total.Item().Row(r =>
                         {
-                            r.RelativeItem().Text("Balance Due").Bold();
+                            r.RelativeItem().Text("Due Amount").Bold();
                             r.ConstantItem(90).AlignRight()
                                 .Text($"{currency} {balanceDue:0.00}").Bold();
                         });
