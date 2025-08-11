@@ -29,22 +29,14 @@ namespace AIpazz.Infrastructure.Notification
             return notification.id;
         }
 
-        public async Task<List<NotificationModel>> GetUserNotificationsAsync(string userId, string userEmail)
+        public async Task<List<Aipazz.Domian.Notification.Notification>> GetUserNotificationsAsync(string userId)
         {
-            var query = new QueryDefinition(@"
-        SELECT * FROM c 
-        WHERE (c.UserId = @userId 
-               OR (IS_NULL(c.UserId) OR c.UserId = '') AND c.RecipientEmail = @userEmail)
-        ORDER BY c.CreatedAt DESC")
-                .WithParameter("@userId", userId)
-                .WithParameter("@userEmail", userEmail);
+            var query = new QueryDefinition("SELECT * FROM c WHERE c.UserId = @userId ORDER BY c.CreatedAt DESC")
+                .WithParameter("@userId", userId);
 
-            var iterator = _container.GetItemQueryIterator<NotificationModel>(
-                query,
-                requestOptions: new QueryRequestOptions());
+            var iterator = _container.GetItemQueryIterator<Aipazz.Domian.Notification.Notification>(query);
+            var notifications = new List<Aipazz.Domian.Notification.Notification>();
 
-
-            var notifications = new List<NotificationModel>();
             while (iterator.HasMoreResults)
             {
                 var response = await iterator.ReadNextAsync();
