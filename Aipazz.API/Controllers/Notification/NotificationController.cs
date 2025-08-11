@@ -23,9 +23,7 @@ namespace Aipazz.API.Controllers.Notification
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            string? userId = User.Claims
-                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
-                ?.Value;
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized("User ID not found in token.");
@@ -42,7 +40,6 @@ namespace Aipazz.API.Controllers.Notification
 
             var notificationId = await _repository.CreateNotificationAsync(request);
 
-            // Return the created notification
             return Ok(request);
         }
 
@@ -50,24 +47,20 @@ namespace Aipazz.API.Controllers.Notification
         public async Task<IActionResult> GetUserNotifications()
         {
             string? userId = User.Claims
-                .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
+                ?.Value;
 
-            string? userEmail = User.Claims
-                .FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized("User ID not found in token.");
 
-            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(userEmail))
-                return Unauthorized("User ID or email not found in token.");
-
-            var notifications = await _repository.GetUserNotificationsAsync(userId, userEmail);
+            var notifications = await _repository.GetUserNotificationsAsync(userId);
             return Ok(notifications);
         }
 
         [HttpGet("unread")]
         public async Task<IActionResult> GetUnreadNotifications()
         {
-            string? userId = User.Claims
-                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
-                ?.Value;
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized("User ID not found in token.");
@@ -79,9 +72,7 @@ namespace Aipazz.API.Controllers.Notification
         [HttpGet("count")]
         public async Task<IActionResult> GetUnreadCount()
         {
-            string? userId = User.Claims
-                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
-                ?.Value;
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized("User ID not found in token.");
@@ -93,9 +84,7 @@ namespace Aipazz.API.Controllers.Notification
         [HttpPut("{id}/read")]
         public async Task<IActionResult> MarkAsRead(string id)
         {
-            string? userId = User.Claims
-                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
-                ?.Value;
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized("User ID not found in token.");
@@ -107,9 +96,7 @@ namespace Aipazz.API.Controllers.Notification
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteNotification(string id)
         {
-            string? userId = User.Claims
-                .FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")
-                ?.Value;
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized("User ID not found in token.");
