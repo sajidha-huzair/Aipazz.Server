@@ -36,7 +36,7 @@ namespace AIpazz.Infrastructure.Billing
 
         public async Task SendOtpEmailAsync(string toEmail, string subject, string htmlBody)
         {
-            var apiKey = "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"; // move to config in prod
+            var apiKey = ""; // move to config in prod
             var client = new SendGridClient(apiKey);
 
             var msg = new SendGridMessage
@@ -59,7 +59,7 @@ namespace AIpazz.Infrastructure.Billing
         public async Task SendEmailtoMembers( string teamName, string MemberName, string MemberEmail, string ownerEmail)
         {
             string toEmail = MemberEmail;
-            string apiKey = "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"; 
+            string apiKey = ""; 
             var client = new SendGridClient(apiKey);
             var htmlContent = $@"
 <!DOCTYPE html>
@@ -262,7 +262,7 @@ namespace AIpazz.Infrastructure.Billing
             string? note,
             string ownerEmail)
         {
-            string apiKey = "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";
+            string apiKey = "";
             var client = new SendGridClient(apiKey);
 
             string formattedDate = courtDate.ToString("dddd, MMMM dd, yyyy");
@@ -359,7 +359,7 @@ namespace AIpazz.Infrastructure.Billing
             string? locationLink,
             string ownerEmail)
         {
-            string apiKey = "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";
+            string apiKey = "";
             var client = new SendGridClient(apiKey);
 
             string formattedDate = meetingDate.ToString("dddd, MMMM dd, yyyy");
