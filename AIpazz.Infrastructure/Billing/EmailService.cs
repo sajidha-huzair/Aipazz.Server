@@ -16,7 +16,7 @@ namespace AIpazz.Infrastructure.Billing
     {
         public async Task SendInvoiceAccessEmailAsync(string recipientEmail, string subject, string htmlBody, string replyToEmail)
         {
-            var apiKey = "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"; // Use IConfiguration in prod
+            var apiKey = ""; // Use IConfiguration in prod
             var client = new SendGridClient(apiKey);
 
             var from = new EmailAddress("sajidhamhf.22@uom.lk", "Aipazz Legal");
